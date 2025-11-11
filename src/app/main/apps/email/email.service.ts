@@ -105,10 +105,10 @@ export class EmailService implements Resolve<any> {
    * @returns {Promise<Email[]>}
    */
   getEmailsByFolder(folderHandle) {
-    const apiUrl = 'api/emails-data?folder=' + folderHandle;
+    const baseURL = 'api/emails-data?folder=' + folderHandle;
 
     return new Promise<void>((resolve, reject) => {
-      this._httpClient.get(apiUrl).subscribe((response: any) => {
+      this._httpClient.get(baseURL).subscribe((response: any) => {
         this.folderHandle = folderHandle;
         this.labelHandle = '';
         this.emails = response;
@@ -129,10 +129,10 @@ export class EmailService implements Resolve<any> {
    * @returns {Promise<Email[]>}
    */
   getEmailsByLabel(labelHandle) {
-    const apiUrl = 'api/emails-data?labels=' + labelHandle;
+    const baseURL = 'api/emails-data?labels=' + labelHandle;
 
     return new Promise<void>((resolve, reject) => {
-      this._httpClient.get(apiUrl).subscribe((response: any) => {
+      this._httpClient.get(baseURL).subscribe((response: any) => {
         this.labelHandle = labelHandle;
         this.folderHandle = '';
         this.emails = response;
@@ -149,9 +149,9 @@ export class EmailService implements Resolve<any> {
    * @returns {Promise<Email[]>}
    */
   getFolders() {
-    const apiUrl = 'api/email-folders';
+    const baseURL = 'api/email-folders';
     return new Promise<void>((resolve, reject) => {
-      this._httpClient.get(apiUrl).subscribe((response: any) => {
+      this._httpClient.get(baseURL).subscribe((response: any) => {
         this.folders = response;
         this.onFoldersChanged.next(this.folders);
 
@@ -225,9 +225,9 @@ export class EmailService implements Resolve<any> {
    * @returns {Promise<Email[]>}
    */
   updateDraftCount() {
-    const apiUrl = 'api/emails-data?folder=draft';
+    const baseURL = 'api/emails-data?folder=draft';
     return new Promise<void>((resolve, reject) => {
-      this._httpClient.get(apiUrl).subscribe((response: any) => {
+      this._httpClient.get(baseURL).subscribe((response: any) => {
         this.draftEmailsCount = response.length;
         this.onDraftCountChanged.next(this.draftEmailsCount);
 
@@ -242,10 +242,10 @@ export class EmailService implements Resolve<any> {
    * @returns {Promise<Email[]>}
    */
   updateUnreadCount() {
-    const apiUrl = 'api/emails-data?folder=inbox';
+    const baseURL = 'api/emails-data?folder=inbox';
 
     return new Promise<void>((resolve, reject) => {
-      this._httpClient.get(apiUrl).subscribe((response: any) => {
+      this._httpClient.get(baseURL).subscribe((response: any) => {
         const emails = response;
         const unReadEmails = emails.filter(email => email.isRead === false);
         this.unReadInboxCount = unReadEmails.length;

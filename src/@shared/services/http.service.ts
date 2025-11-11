@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { finalize, map, tap } from 'rxjs/operators';
-import { NgxSpinnerService } from "ngx-spinner";
 import { Observable } from "rxjs";
-import { environment } from 'src/environments/environment';
 import { LoadingService } from './loading.service';
+import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root'

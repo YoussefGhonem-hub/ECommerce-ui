@@ -77,7 +77,7 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/dashboard/ecommerce',
+    redirectTo: '/apps/e-commerce/shop',
     pathMatch: 'full'
   },
   {
@@ -129,4 +129,4 @@ const appRoutes: Routes = [
   entryComponents: [BasicCustomContextMenuComponent, AnimatedCustomContextMenuComponent],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

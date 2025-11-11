@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
-
+import { ProductsController } from '@shared/Controllers/ProductsController';
+import { HttpService } from '@shared/services/http.service';
 @Component({
   selector: 'app-ecommerce-details',
   templateUrl: './ecommerce-details.component.html',
@@ -17,6 +19,7 @@ export class EcommerceDetailsComponent implements OnInit {
   public product;
   public wishlist;
   public cartList;
+  productId: any;
   public relatedProducts;
 
   // Swiper
@@ -47,71 +50,35 @@ export class EcommerceDetailsComponent implements OnInit {
     }
   };
 
-  /**
-   * Constructor
-   *
-   * @param {EcommerceService} _ecommerceService
-   */
-  constructor(private _ecommerceService: EcommerceService) {}
+  constructor(
+    private _activatedRoute: ActivatedRoute,
+    private HttpService: HttpService
+  ) {
+    this._activatedRoute.params.subscribe(params => {
+      this.productId = params['id'];
+    });
 
-  // Public Methods
-  // -----------------------------------------------------------------------------------------------------
+  }
 
-  /**
-   * Toggle Wishlist
-   *
-   * @param product
-   */
   toggleWishlist(product) {
-    if (product.isInWishlist === true) {
-      this._ecommerceService.removeFromWishlist(product.id).then(res => {
-        product.isInWishlist = false;
-      });
-    } else {
-      this._ecommerceService.addToWishlist(product.id).then(res => {
-        product.isInWishlist = true;
-      });
-    }
   }
 
-  /**
-   * Add To Cart
-   *
-   * @param product
-   */
+
+  getProductId() {
+    this.HttpService.GET(ProductsController.GetProductId(this.productId)).subscribe((res: any) => {
+      this.product = res.data;
+    });
+  }
+
   addToCart(product) {
-    this._ecommerceService.addToCart(product.id).then(res => {
-      product.isInCart = true;
-    });
   }
 
-  // Lifecycle Hooks
-  // -----------------------------------------------------------------------------------------------------
-
-  /**
-   * On init
-   */
   ngOnInit(): void {
-    // Subscribe to Selected Product change
-    this._ecommerceService.onSelectedProductChange.subscribe(res => {
-      this.product = res[0];
-    });
+    this.getProductId();
+    this.contentHeaderMethod();
+  }
 
-    // Subscribe to Wishlist change
-    this._ecommerceService.onWishlistChange.subscribe(res => (this.wishlist = res));
-
-    // Subscribe to Cartlist change
-    this._ecommerceService.onCartListChange.subscribe(res => (this.cartList = res));
-
-    // Get Related Products
-    this._ecommerceService.getRelatedProducts().then(response => {
-      this.relatedProducts = response;
-    });
-
-    this.product.isInWishlist = this.wishlist.findIndex(p => p.productId === this.product.id) > -1;
-    this.product.isInCart = this.cartList.findIndex(p => p.productId === this.product.id) > -1;
-
-    // content header
+  contentHeaderMethod() {
     this.contentHeader = {
       headerTitle: 'Product Details',
       actionButton: true,

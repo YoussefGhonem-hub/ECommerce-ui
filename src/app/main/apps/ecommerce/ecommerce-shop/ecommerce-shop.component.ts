@@ -3,6 +3,9 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.service';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
+import { HttpService } from '@shared/services/http.service';
+import { ProductsController } from '@shared/Controllers/ProductsController';
+
 @Component({
   selector: 'app-ecommerce-shop',
   templateUrl: './ecommerce-shop.component.html',
@@ -28,7 +31,10 @@ export class EcommerceShopComponent implements OnInit {
    * @param {CoreSidebarService} _coreSidebarService
    * @param {EcommerceService} _ecommerceService
    */
-  constructor(private _coreSidebarService: CoreSidebarService, private _ecommerceService: EcommerceService) {}
+  constructor(
+    private _coreSidebarService: CoreSidebarService,
+    private HttpService: HttpService,
+    private _ecommerceService: EcommerceService) { }
 
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
@@ -69,19 +75,15 @@ export class EcommerceShopComponent implements OnInit {
   /**
    * On init
    */
+  getAllProducts() {
+    this.HttpService.GET(ProductsController.GetProducts).subscribe((res: any) => {
+      this.products = res.data?.items;
+    });
+  }
+
   ngOnInit(): void {
     // Subscribe to ProductList change
-
-    this._ecommerceService.onProductListChange.subscribe(res => {
-      this.products = res;
-      this.products.isInWishlist = false;
-    });
-
-    // Subscribe to Wishlist change
-    this._ecommerceService.onWishlistChange.subscribe(res => (this.wishlist = res));
-
-    // Subscribe to Cartlist change
-    this._ecommerceService.onCartListChange.subscribe(res => (this.cartList = res));
+    this.getAllProducts();
 
     // update product is in Wishlist & is in CartList : Boolean
     this.products.forEach(product => {

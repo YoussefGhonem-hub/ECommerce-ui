@@ -10,19 +10,19 @@ export class UserService {
    *
    * @param {HttpClient} _http
    */
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient) { }
 
   /**
    * Get all users
    */
   getAll() {
-    return this._http.get<User[]>(`${environment.apiUrl}/users`);
+    return this._http.get<User[]>(`${environment.baseURL}/users`);
   }
 
   /**
    * Get user by id
    */
   getById(id: number) {
-    return this._http.get<User>(`${environment.apiUrl}/users/${id}`);
+    return this._http.get<User>(`${environment.baseURL}/users/${id}`);
   }
 }
