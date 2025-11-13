@@ -68,6 +68,21 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle page change from pagination control
+   */
+  onPageChange(pageNumber: number): void {
+    console.log('[EcommerceShop] pageChange event ->', pageNumber);
+
+    // Only bail out on invalid page numbers. Don't skip when pageNumber equals current page
+    // because the pagination control may update component state before the event handler runs
+    // (or the user may want to re-trigger the fetch). Always set page and fetch when valid.
+    if (!pageNumber) return;
+
+    this.page = pageNumber;
+    this.getAllProducts(this.page, this.pageSize);
+  }
+
+  /**
    * Called from template when search input changes (debounced)
    */
   onSearchChange(value: string) {
@@ -78,25 +93,38 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
    * Get All Products with pagination and filters
    */
   getAllProducts(pageNumber: number = 1, pageSize: number = 9) {
+    // backend expects PageIndex / PageSize (BaseFilterDto)
     const params = {
-      pageNumber,
-      pageSize,
+      PageIndex: pageNumber,
+      PageSize: pageSize,
       ...this.filters
     };
 
     const queryString = this.buildQueryString(params);
     const url = `${ProductsController.GetProducts}?${queryString}`;
 
+    console.log('[EcommerceShop] fetching products ->', url);
+
     this.HttpService.GET(url).pipe(
       takeUntil(this._unsubscribeAll)
     ).subscribe((res: any) => {
-      if (res.succeeded && res.data) {
+      console.log('[EcommerceShop] products response ->', res);
+      if (res && res.succeeded && res.data) {
         this.products = res.data.items || [];
         this.totalCount = res.data.totalCount || 0;
+
+        // sync paging values from server if provided
+        if (res.data.pageNumber || res.data.pageSize) {
+          // API may return pageNumber/pageSize; map to our component state
+          this.page = res.data.pageNumber || pageNumber;
+          this.pageSize = res.data.pageSize || pageSize;
+        }
 
         // Update product wishlist and cart status
         this.updateProductStatuses();
       }
+    }, err => {
+      console.error('[EcommerceShop] products fetch error ->', err);
     });
   }
 

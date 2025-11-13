@@ -83,7 +83,7 @@
           <div class="col-sm-12">
             <div class="d-flex justify-content-center">
               <ngb-pagination [collectionSize]="totalCount" [(page)]="page" [pageSize]="pageSize" [maxSize]="5"
-                [rotate]="true" [ellipses]="false" [boundaryLinks]="true" (pageChange)="getAllProducts(page, pageSize)">
+                [rotate]="true" [ellipses]="false" [boundaryLinks]="true" (pageChange)="onPageChange($event)">
                 <!-- Custom pagination icons -->
                 <ng-template ngbPaginationPrevious><span [data-feather]="'chevron-left'" [class]="'font-weight-bolder'"
                     [size]="18"></span>
