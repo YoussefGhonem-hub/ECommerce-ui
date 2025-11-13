@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NouisliderModule } from 'ng2-nouislider';
@@ -83,6 +83,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     SwiperModule,
     FormsModule,
+    ReactiveFormsModule,
     CoreTouchspinModule,
     ContentHeaderModule,
     CoreSidebarModule,

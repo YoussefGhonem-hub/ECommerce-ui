@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.service';
 
@@ -13,37 +15,29 @@ import { ProductsController } from '@shared/Controllers/ProductsController';
   encapsulation: ViewEncapsulation.None,
   host: { class: 'ecommerce-application' }
 })
-export class EcommerceShopComponent implements OnInit {
+export class EcommerceShopComponent implements OnInit, OnDestroy {
   // public
   public contentHeader: object;
   public shopSidebarToggle = false;
   public shopSidebarReset = false;
   public gridViewRef = true;
-  public products;
+  public products: any[] = [];
   public wishlist;
   public cartList;
   public page = 1;
   public pageSize = 9;
   public searchText = '';
+  public totalCount = 0;
 
-  /**
-   *
-   * @param {CoreSidebarService} _coreSidebarService
-   * @param {EcommerceService} _ecommerceService
-   */
+  // Private
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private filters: any = {};
+
   constructor(
     private _coreSidebarService: CoreSidebarService,
-    private HttpService: HttpService,
+    private HttpService: HttpService,       
     private _ecommerceService: EcommerceService) { }
 
-  // Public Methods
-  // -----------------------------------------------------------------------------------------------------
-
-  /**
-   * Toggle Sidebar
-   *
-   * @param name
-   */
   toggleSidebar(name): void {
     this._coreSidebarService.getSidebarRegistry(name).toggleOpen();
   }
@@ -69,27 +63,72 @@ export class EcommerceShopComponent implements OnInit {
     this._ecommerceService.sortProduct(sortParam);
   }
 
+  /**
+   * Get All Products with pagination and filters
+   */
+  getAllProducts(pageNumber: number = 1, pageSize: number = 9) {
+    const params = {
+      pageNumber,
+      pageSize,
+      ...this.filters
+    };
+
+    const queryString = this.buildQueryString(params);
+    const url = `${ProductsController.GetProducts}?${queryString}`;
+
+    this.HttpService.GET(url).pipe(
+      takeUntil(this._unsubscribeAll)
+    ).subscribe((res: any) => {
+      if (res.succeeded && res.data) {
+        this.products = res.data.items || [];
+        this.totalCount = res.data.totalCount || 0;
+        
+        // Update product wishlist and cart status
+        this.updateProductStatuses();
+      }
+    });
+  }
+
+  /**
+   * Update product wishlist and cart status
+   */
+  updateProductStatuses() {
+    if (this.products && this.products.length > 0) {
+      this.products.forEach(product => {
+        product.isInWishlist = this.wishlist?.findIndex(p => p.productId === product.id) > -1;
+        product.isInCart = this.cartList?.findIndex(p => p.productId === product.id) > -1;
+      });
+    }
+  }
+
+  /**
+   * Apply filters from sidebar
+   */
+  applyFilters(filters: any) {
+    this.filters = filters;
+    this.page = 1; // Reset to first page
+    this.getAllProducts(this.page, this.pageSize);
+  }
+
+  /**
+   * Build query string from params object
+   */
+  private buildQueryString(params: any): string {
+    return Object.keys(params)
+      .filter(key => params[key] !== null && params[key] !== undefined && params[key] !== '')
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&');
+  }
+
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
 
   /**
    * On init
    */
-  getAllProducts() {
-    this.HttpService.GET(ProductsController.GetProducts).subscribe((res: any) => {
-      this.products = res.data?.items;
-    });
-  }
-
   ngOnInit(): void {
-    // Subscribe to ProductList change
-    this.getAllProducts();
-
-    // update product is in Wishlist & is in CartList : Boolean
-    this.products.forEach(product => {
-      product.isInWishlist = this.wishlist.findIndex(p => p.productId === product.id) > -1;
-      product.isInCart = this.cartList.findIndex(p => p.productId === product.id) > -1;
-    });
+    // Get initial products
+    this.getAllProducts(this.page, this.pageSize);
 
     // content header
     this.contentHeader = {
@@ -115,5 +154,13 @@ export class EcommerceShopComponent implements OnInit {
         ]
       }
     };
+  }
+
+  /**
+   * On destroy
+   */
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
   }
 }
