@@ -89,12 +89,12 @@ export class EcommerceSidebarComponent implements OnInit, OnDestroy {
    */
   applyFilters(): void {
     const formValue = this.filterForm.value;
-
+    // Map form values to backend filter contract
     const filters = {
-      search: formValue.search || null,
-      categoryId: formValue.categoryId || null,
-      minPrice: this.sliderPriceValue[0],
-      maxPrice: this.sliderPriceValue[1]
+      Search: formValue.search || null,
+      CategoryId: formValue.categoryId || null,
+      MinPrice: this.sliderPriceValue[0],
+      MaxPrice: this.sliderPriceValue[1]
     };
 
     this.filtersChanged.emit(filters);
@@ -106,7 +106,8 @@ export class EcommerceSidebarComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.filterForm.reset();
     this.sliderPriceValue = [1, this.maxPrice];
-    this.applyFilters();
+    // Emit backend-shaped empty filters
+    this.filtersChanged.emit({ Search: null, CategoryId: null, MinPrice: null, MaxPrice: null });
   }
 
   /**

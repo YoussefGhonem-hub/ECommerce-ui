@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 
 import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.service';
 
@@ -28,6 +28,8 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
   public pageSize = 9;
   public searchText = '';
   public totalCount = 0;
+  // search input subject for debouncing
+  private _searchSubject: Subject<string> = new Subject<string>();
 
   // Private
   private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -35,7 +37,7 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
 
   constructor(
     private _coreSidebarService: CoreSidebarService,
-    private HttpService: HttpService,       
+    private HttpService: HttpService,
     private _ecommerceService: EcommerceService) { }
 
   toggleSidebar(name): void {
@@ -60,7 +62,16 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
    * Sort Product
    */
   sortProduct(sortParam) {
-    this._ecommerceService.sortProduct(sortParam);
+    // Use backend sorting: set Sort filter and reload products
+    this.filters.Sort = sortParam;
+    this.getAllProducts(this.page, this.pageSize);
+  }
+
+  /**
+   * Called from template when search input changes (debounced)
+   */
+  onSearchChange(value: string) {
+    this._searchSubject.next(value);
   }
 
   /**
@@ -82,7 +93,7 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
       if (res.succeeded && res.data) {
         this.products = res.data.items || [];
         this.totalCount = res.data.totalCount || 0;
-        
+
         // Update product wishlist and cart status
         this.updateProductStatuses();
       }
@@ -127,6 +138,16 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
+    // Debounced search subscription
+    this._searchSubject.pipe(
+      debounceTime(300),
+      takeUntil(this._unsubscribeAll)
+    ).subscribe(value => {
+      this.filters.Search = value || null;
+      this.page = 1;
+      this.getAllProducts(this.page, this.pageSize);
+    });
+
     // Get initial products
     this.getAllProducts(this.page, this.pageSize);
 
