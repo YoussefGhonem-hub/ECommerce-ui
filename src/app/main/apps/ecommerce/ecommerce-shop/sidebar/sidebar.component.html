@@ -10,38 +10,26 @@
       <!-- Search Filter starts -->
       <div class="search-filter mb-2">
         <h6 class="filter-title mt-0">Search</h6>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search products..."
-          formControlName="search"
-        />
+        <input type="text" class="form-control" placeholder="Search products..." formControlName="search" />
       </div>
       <!-- Search Filter ends -->
+    </form>
 
-      <!-- Price Slider starts -->
-      <div class="price-slider">
-        <h6 class="filter-title">Price Range</h6>
-        <div class="d-flex justify-content-between mb-2">
-          <span>${{ sliderPriceValue[0] }}</span>
-          <span>${{ sliderPriceValue[1] }}</span>
-        </div>
-        <div class="price-slider">
-          <nouislider
-            [connect]="true"
-            [ngClass]="'mt-3'"
-            [behaviour]="'drag'"
-            [tooltips]="true"
-            [min]="1"
-            [max]="maxPrice"
-            [limit]="maxPrice"
-            [step]="10"
-            [(ngModel)]="sliderPriceValue"
-            (change)="onPriceSliderChange()"
-          ></nouislider>
-        </div>
+    <!-- Price Slider starts -->
+    <div class="price-slider">
+      <h6 class="filter-title">Price Range</h6>
+      <div class="d-flex justify-content-between mb-2">
+        <span>${{ sliderPriceValue[0] }}</span>
+        <span>${{ sliderPriceValue[1] }}</span>
       </div>
-      <!-- Price Range ends -->
+      <div class="price-slider">
+        <nouislider [connect]="true" [ngClass]="'mt-3'" [behaviour]="'drag'" [tooltips]="true" [min]="1"
+          [max]="maxPrice" [limit]="maxPrice" [step]="10" [(ngModel)]="sliderPriceValue"
+          (change)="onPriceSliderChange()"></nouislider>
+      </div>
+    </div>
+    <!-- Price Range ends -->
+    <form [formGroup]="filterForm">
 
       <!-- Categories Starts -->
       <div id="product-categories">
