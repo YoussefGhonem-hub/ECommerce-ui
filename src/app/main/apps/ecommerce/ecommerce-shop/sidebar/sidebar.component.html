@@ -49,16 +49,9 @@
         <div class="form-group">
           <select class="form-control" formControlName="categoryId">
             <option value="">All Categories</option>
-            <option value="appliances">Appliances</option>
-            <option value="audio">Audio</option>
-            <option value="cameras">Cameras & Camcorders</option>
-            <option value="car-electronics">Car Electronics & GPS</option>
-            <option value="cell-phones">Cell Phones</option>
-            <option value="computers">Computers & Tablets</option>
-            <option value="health">Health, Fitness & Beauty</option>
-            <option value="office">Office & School Supplies</option>
-            <option value="tv">TV & Home Theater</option>
-            <option value="video-games">Video Games</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.nameEn }}
+            </option>
           </select>
         </div>
       </div>

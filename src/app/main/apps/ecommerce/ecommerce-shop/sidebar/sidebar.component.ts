@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { HttpService } from '@shared/services/http.service';
+import { CategoryController } from '@shared/Controllers/CategoryController';
 
 @Component({
   selector: 'ecommerce-sidebar',
@@ -41,6 +42,7 @@ export class EcommerceSidebarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeForm();
     this.setupFormValueChanges();
+    this.loadCategories();
   }
 
   /**
@@ -53,6 +55,19 @@ export class EcommerceSidebarComponent implements OnInit, OnDestroy {
       minPrice: [null],
       maxPrice: [null]
     });
+  }
+
+  /**
+   * Load categories from API
+   */
+  private loadCategories(): void {
+    this.HttpService.GET(CategoryController.GetCategories)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        if (res.succeeded && res.data) {
+          this.categories = res.data;
+        }
+      });
   }
 
   /**
