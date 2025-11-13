@@ -3,18 +3,24 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { finalize, map, tap } from 'rxjs/operators';
 import { Observable } from "rxjs";
 import { LoadingService } from './loading.service';
+import { CoreLoadingScreenService } from '@core/services/loading-screen.service';
 import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
-  constructor(private http: HttpClient, private spinner: LoadingService, private loadingService: LoadingService) {
+  constructor(
+    private http: HttpClient,
+    private spinner: LoadingService,
+    private loadingService: LoadingService,
+    private coreLoadingScreenService: CoreLoadingScreenService
+  ) {
   }
   // GET request
-  GET(url: string, queryParameters?: object, showLoader: boolean = false): Observable<any> {
+  GET(url: string, queryParameters?: object, showLoader: boolean = true): Observable<any> {
     if (showLoader) {
-      this.loadingService.show();
+      this.coreLoadingScreenService.show();
     }
 
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
@@ -26,6 +32,7 @@ export class HttpService {
       map(res => res.body),
       finalize(() => {
         if (showLoader) {
+          this.coreLoadingScreenService.hide();
         }
       })
     );
@@ -34,63 +41,55 @@ export class HttpService {
 
   // POST request
   POST(url: string, body: any = {}, queryParameters?: object): Observable<any> {
-    this.spinner.show();
+    this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
     return this.http.post(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
       .pipe(
         map(res => res.body),
-        tap(res => this.spinner.hide())
+        finalize(() => this.coreLoadingScreenService.hide())
       );
   }
   POSTURL(url: string, body: any = {}, queryParameters?: object): Observable<any> {
-    this.spinner.show();
+    this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
     return this.http.post(url, body, { observe: 'response', params: httpParams })
       .pipe(
         map(res => res.body),
-        tap(res => this.spinner.hide())
+        finalize(() => this.coreLoadingScreenService.hide())
       );
   }
 
   // PUT request
   PUT(url: string, body: any = {}, queryParameters?: object): Observable<any> {
-    this.spinner.show();
+    this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
     return this.http.put(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
       .pipe(
         map(res => res.body),
-        tap(res => this.spinner.hide())
+        finalize(() => this.coreLoadingScreenService.hide())
       );
   }
 
   // PATCH request
   PATCH(url: string, body: any = {}, queryParameters?: object): Observable<any> {
-
-    this.spinner.show();
-
+    this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-
     return this.http.patch(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
       .pipe(
         map(res => res.body),
-        tap(res => this.spinner.hide())
+        finalize(() => this.coreLoadingScreenService.hide())
       );
-
   }
 
   // DELETE request
   DELETE(url: string, queryParameters?: object): Observable<any> {
-
-    this.spinner.show();
-
+    this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-
     return this.http.delete(this.getFullUrl(url), { observe: 'response', params: httpParams, body: {} })
       .pipe(
         map(res => res.body),
-        tap(res => this.spinner.hide())
+        finalize(() => this.coreLoadingScreenService.hide())
       );
-
   }
 
 
