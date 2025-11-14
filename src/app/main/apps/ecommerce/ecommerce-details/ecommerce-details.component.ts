@@ -81,7 +81,8 @@ export class EcommerceDetailsComponent implements OnInit {
   constructor(
     private _activatedRoute: ActivatedRoute,
     private HttpService: HttpService,
-    private guestUserService: GuestUserService
+    private guestUserService: GuestUserService,
+    private _ecommerceService: EcommerceService
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.productId = params['id'];
@@ -255,6 +256,12 @@ export class EcommerceDetailsComponent implements OnInit {
     this.HttpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
       if (res && res.succeeded) {
         product.isInCart = true;
+        // Refresh global cart list so other components (navbar, shop) reflect the change
+        try {
+          this._ecommerceService.getCartList();
+        } catch (e) {
+          // ignore if service isn't available at runtime
+        }
         console.log('[EcommerceDetails] added to cart ->', res);
       }
     }, err => {

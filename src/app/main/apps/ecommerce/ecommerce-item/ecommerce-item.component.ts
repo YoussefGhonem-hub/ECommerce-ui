@@ -74,6 +74,12 @@ export class EcommerceItemComponent implements OnInit {
     this.httpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
       if (res && res.succeeded) {
         product.isInCart = true;
+        // Refresh global cart list so other components reflect the change
+        try {
+          this._ecommerceService.getCartList();
+        } catch (e) {
+          // ignore errors from refresh
+        }
         console.log('[EcommerceItem] added to cart ->', res);
       }
     }, err => {

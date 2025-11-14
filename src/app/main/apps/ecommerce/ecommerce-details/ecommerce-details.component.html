@@ -182,15 +182,10 @@
                       </div>
                       <p class="card-text text-primary mb-0">${{ relatedProduct?.price }}</p>
                       <div class="mt-2">
-                        <a *ngIf="relatedProduct?.isInCart !== true" href="javascript:void(0)"
-                          class="btn btn-sm btn-primary btn-cart mr-1" (click)="addToCart(relatedProduct, true)">
-                          <i data-feather="shopping-cart" class="mr-25"></i>
-                          <span>Add</span>
-                        </a>
-                        <a *ngIf="relatedProduct?.isInCart === true" routerLink="/apps/e-commerce/checkout"
-                          class="btn btn-sm btn-primary btn-cart mr-1">
-                          <i data-feather="shopping-cart" class="mr-25"></i>
-                          <span>View</span>
+                        <a [routerLink]="['/apps/e-commerce/details', relatedProduct?.id]"
+                          class="btn btn-sm btn-primary mr-1">
+                          <i data-feather="eye" class="mr-25"></i>
+                          <span>See Details</span>
                         </a>
                         <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
                           <i class="fa"
