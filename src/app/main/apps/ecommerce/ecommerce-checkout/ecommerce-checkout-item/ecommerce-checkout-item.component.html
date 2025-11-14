@@ -9,15 +9,12 @@
       <h6 class="mb-0">
         <a [routerLink]="'/apps/e-commerce/details/' + product.id" class="text-body">{{ product.name }}</a>
       </h6>
-      <span class="item-company"
-        >By <a href="javascript:void(0)" class="company-name">{{ product.brand }}</a></span
-      >
+      <span class="item-company">By <a href="javascript:void(0)" class="company-name">{{ product.brand }}</a></span>
       <div class="item-rating">
         <div class="rating rating-sm">
           <ngb-rating [rate]="product.rating" [readonly]="true" [max]="5" class="outline-none">
-            <ng-template let-fill="fill" let-index="index"
-              ><span class="fa fa-star-o mr-25" [class.fa-star]="fill === 100"></span
-            ></ng-template>
+            <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
+                [class.fa-star]="fill === 100"></span></ng-template>
           </ngb-rating>
         </div>
       </div>
@@ -46,10 +43,8 @@
       <span>Remove</span>
     </button>
     <button type="button" class="btn btn-primary btn-cart move-cart" (click)="toggleWishlist(product)" rippleEffect>
-      <i
-        class="align-middle fa mr-25"
-        [ngClass]="product.isInWishlist === true ? 'fa-heart text-white' : 'fa-heart-o'"
-      ></i>
+      <i class="align-middle fa mr-25"
+        [ngClass]="product.isInWishlist ? ['fa-heart','text-white'] : ['fa-heart-o']"></i>
       <span class="text-truncate">Add to Wishlist</span>
     </button>
   </div>

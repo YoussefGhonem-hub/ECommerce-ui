@@ -19,7 +19,7 @@ export class EcommerceWishlistComponent implements OnInit {
    *
    * @param {EcommerceService} _ecommerceService
    */
-  constructor(private _ecommerceService: EcommerceService) {}
+  constructor(private _ecommerceService: EcommerceService) { }
 
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ export class EcommerceWishlistComponent implements OnInit {
 
     // update product is in Wishlist : Boolean
     this.products.forEach(product => {
-      product.isInWishlist = this.wishlist.findIndex(p => p.productId === product.id) > -1;
+      product.isInWishlist = product.data.items.findIndex(p => p.productId === product.id) > -1;
     });
 
     // content header

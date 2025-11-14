@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
+import { HttpService } from '@shared/services/http.service';
+import { WishlistController } from '@shared/Controllers/WishlistController';
+import { GuestUserService } from '@shared/services/guest-user.service';
 
 @Component({
   selector: 'app-ecommerce-item',
@@ -21,24 +24,32 @@ export class EcommerceItemComponent implements OnInit {
    *
    * @param {EcommerceService} _ecommerceService
    */
-  constructor(private _ecommerceService: EcommerceService) {}
+  constructor(
+    private _ecommerceService: EcommerceService,
+    private httpService: HttpService,
+    private guestUserService: GuestUserService
+  ) { }
 
-  // Public Methods
-  // -----------------------------------------------------------------------------------------------------
 
-  /**
-   * Toggle Wishlist
-   *
-   * @param product
-   */
   toggleWishlist(product) {
+    if (!product) return;
+
+    const guestId = this.guestUserService.getGuestId();
     if (product.isInWishlist === true) {
-      this._ecommerceService.removeFromWishlist(product.id).then(res => {
+      const query = { guestId };
+      this.httpService.DELETE(WishlistController.RemoveFromWishlist(product.id)).subscribe(() => {
+        // Optimistic update
         product.isInWishlist = false;
+      }, err => {
+        console.error('[EcommerceItem] remove wishlist error ->', err);
       });
     } else {
-      this._ecommerceService.addToWishlist(product.id).then(res => {
+      const body = { productId: product.id, guestId };
+      this.httpService.POST(WishlistController.AddToWishlist, body).subscribe(() => {
+        // Optimistic update
         product.isInWishlist = true;
+      }, err => {
+        console.error('[EcommerceItem] add to wishlist error ->', err);
       });
     }
   }
@@ -56,5 +67,5 @@ export class EcommerceItemComponent implements OnInit {
 
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

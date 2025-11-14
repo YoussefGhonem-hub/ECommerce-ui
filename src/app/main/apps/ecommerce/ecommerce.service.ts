@@ -11,7 +11,7 @@ export class EcommerceService implements Resolve<any> {
   // Public
   public productList: Array<any>;
   public wishlist: Array<any>;
-  public cartList: Array<any>;
+  public cartList: any[];
   public selectedProduct;
   public relatedProducts;
 

@@ -5,6 +5,8 @@ import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
+import { WishlistController } from '@shared/Controllers/WishlistController';
+import { GuestUserService } from '@shared/services/guest-user.service';
 import { HttpService } from '@shared/services/http.service';
 @Component({
   selector: 'app-ecommerce-details',
@@ -77,7 +79,8 @@ export class EcommerceDetailsComponent implements OnInit {
 
   constructor(
     private _activatedRoute: ActivatedRoute,
-    private HttpService: HttpService
+    private HttpService: HttpService,
+    private guestUserService: GuestUserService
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.productId = params['id'];
@@ -86,6 +89,29 @@ export class EcommerceDetailsComponent implements OnInit {
   }
 
   toggleWishlist(product) {
+    if (!product) return;
+
+    const guestId = this.guestUserService.getGuestId();
+
+    // If already in wishlist -> remove
+    if (product.isInWishlist === true) {
+      // Backend: DELETE api/wishlist/{productId}?guestId=...
+      const query = { guestId };
+      this.HttpService.DELETE(WishlistController.RemoveFromWishlist(product.id)).subscribe((res: any) => {
+        // On success mark as removed
+        product.isInWishlist = false;
+      }, err => {
+        console.error('[EcommerceDetails] remove wishlist error ->', err);
+      });
+    } else {
+      // Add to wishlist
+      const body = { productId: product.id, guestId };
+      this.HttpService.POST(WishlistController.AddToWishlist, body).subscribe((res: any) => {
+        product.isInWishlist = true;
+      }, err => {
+        console.error('[EcommerceDetails] add to wishlist error ->', err);
+      });
+    }
   }
 
 

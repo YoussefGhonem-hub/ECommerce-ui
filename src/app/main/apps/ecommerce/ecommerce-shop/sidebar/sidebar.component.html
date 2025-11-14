@@ -19,8 +19,8 @@
     <div class="price-slider">
       <h6 class="filter-title">Price Range</h6>
       <div class="d-flex justify-content-between mb-2">
-        <span>${{ sliderPriceValue[0] }}</span>
-        <span>${{ sliderPriceValue[1] }}</span>
+        <span>{{ sliderPriceValue[0] }}</span>
+        <span>{{ sliderPriceValue[1] }}</span>
       </div>
       <div class="price-slider">
         <nouislider [connect]="true" [ngClass]="'mt-3'" [behaviour]="'drag'" [tooltips]="true" [min]="1"

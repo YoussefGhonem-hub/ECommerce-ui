@@ -96,7 +96,7 @@
                 <a href="javascript:void(0)" (click)="toggleWishlist(product)"
                   class="btn btn-outline-secondary btn-wishlist mr-0 mr-sm-1 mb-1 mb-sm-0" rippleEffect>
                   <i class="fa mr-50"
-                    [ngClass]="product?.isInWishlist === true ? 'fa-heart text-danger' : 'fa-heart-o'"></i>
+                    [ngClass]="product?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
                   <span>Wishlist</span>
                 </a>
                 <div class="btn-group dropdown-icon-wrapper btn-share" ngbDropdown>

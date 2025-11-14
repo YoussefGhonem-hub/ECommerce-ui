@@ -112,16 +112,12 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
       if (res && res.succeeded && res.data) {
         this.products = res.data.items || [];
         this.totalCount = res.data.totalCount || 0;
-
         // sync paging values from server if provided
         if (res.data.pageNumber || res.data.pageSize) {
           // API may return pageNumber/pageSize; map to our component state
           this.page = res.data.pageNumber || pageNumber;
           this.pageSize = res.data.pageSize || pageSize;
         }
-
-        // Update product wishlist and cart status
-        this.updateProductStatuses();
       }
     }, err => {
       console.error('[EcommerceShop] products fetch error ->', err);
@@ -134,7 +130,7 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
   updateProductStatuses() {
     if (this.products && this.products.length > 0) {
       this.products.forEach(product => {
-        product.isInWishlist = this.wishlist?.findIndex(p => p.productId === product.id) > -1;
+        product.isInWishlist = this._ecommerceService.wishlist?.findIndex(p => p.productId === product.id) > -1;
         product.isInCart = this.cartList?.findIndex(p => p.productId === product.id) > -1;
       });
     }

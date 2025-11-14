@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { finalize, map, tap } from 'rxjs/operators';
 import { Observable } from "rxjs";
 import { LoadingService } from './loading.service';
 import { CoreLoadingScreenService } from '@core/services/loading-screen.service';
 import { environment } from 'environments/environment';
+import { GuestUserService } from './guest-user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class HttpService {
     private spinner: LoadingService,
     private loadingService: LoadingService,
     private coreLoadingScreenService: CoreLoadingScreenService
+    , private guestUserService: GuestUserService
   ) {
   }
   // GET request
@@ -25,9 +27,12 @@ export class HttpService {
 
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
 
+    const headers = this.buildGuestHeadersIfNeeded();
+
     return this.http.get<any>(this.getFullUrl(url), {
       observe: 'response',
-      params: httpParams
+      params: httpParams,
+      headers
     }).pipe(
       map(res => res.body),
       finalize(() => {
@@ -43,7 +48,8 @@ export class HttpService {
   POST(url: string, body: any = {}, queryParameters?: object): Observable<any> {
     this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-    return this.http.post(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
+    const headers = this.buildGuestHeadersIfNeeded();
+    return this.http.post(this.getFullUrl(url), body, { observe: 'response', params: httpParams, headers })
       .pipe(
         map(res => res.body),
         finalize(() => this.coreLoadingScreenService.hide())
@@ -52,7 +58,8 @@ export class HttpService {
   POSTURL(url: string, body: any = {}, queryParameters?: object): Observable<any> {
     this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-    return this.http.post(url, body, { observe: 'response', params: httpParams })
+    const headers = this.buildGuestHeadersIfNeeded();
+    return this.http.post(url, body, { observe: 'response', params: httpParams, headers })
       .pipe(
         map(res => res.body),
         finalize(() => this.coreLoadingScreenService.hide())
@@ -63,7 +70,8 @@ export class HttpService {
   PUT(url: string, body: any = {}, queryParameters?: object): Observable<any> {
     this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-    return this.http.put(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
+    const headers = this.buildGuestHeadersIfNeeded();
+    return this.http.put(this.getFullUrl(url), body, { observe: 'response', params: httpParams, headers })
       .pipe(
         map(res => res.body),
         finalize(() => this.coreLoadingScreenService.hide())
@@ -74,7 +82,8 @@ export class HttpService {
   PATCH(url: string, body: any = {}, queryParameters?: object): Observable<any> {
     this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-    return this.http.patch(this.getFullUrl(url), body, { observe: 'response', params: httpParams })
+    const headers = this.buildGuestHeadersIfNeeded();
+    return this.http.patch(this.getFullUrl(url), body, { observe: 'response', params: httpParams, headers })
       .pipe(
         map(res => res.body),
         finalize(() => this.coreLoadingScreenService.hide())
@@ -85,11 +94,27 @@ export class HttpService {
   DELETE(url: string, queryParameters?: object): Observable<any> {
     this.coreLoadingScreenService.show();
     const httpParams: HttpParams = this.parameterizedUrl(queryParameters);
-    return this.http.delete(this.getFullUrl(url), { observe: 'response', params: httpParams, body: {} })
+    const headers = this.buildGuestHeadersIfNeeded();
+    return this.http.delete(this.getFullUrl(url), { observe: 'response', params: httpParams, body: {}, headers })
       .pipe(
         map(res => res.body),
         finalize(() => this.coreLoadingScreenService.hide())
       );
+  }
+
+  /**
+   * If there is no logged in user, include guest id header.
+   */
+  private buildGuestHeadersIfNeeded(): HttpHeaders | undefined {
+    try {
+      const currentUser = localStorage.getItem('currentUser');
+      if (currentUser) return undefined;
+
+      const guestId = this.guestUserService.getGuestId();
+      return new HttpHeaders({ 'X-Guest-UserId': guestId });
+    } catch (e) {
+      return undefined;
+    }
   }
 
 
