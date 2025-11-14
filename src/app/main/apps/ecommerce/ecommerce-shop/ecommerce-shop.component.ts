@@ -110,7 +110,13 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
     ).subscribe((res: any) => {
       console.log('[EcommerceShop] products response ->', res);
       if (res && res.succeeded && res.data) {
-        this.products = res.data.items || [];
+        // Normalize incoming product list and ensure UI property `isInCart` exists
+        this.products = (res.data.items || []).map((p: any) => {
+          // Prefer existing camelCase property, fall back to PascalCase `IsInCart` from API
+          p.isInCart = (p.isInCart !== undefined) ? p.isInCart : (p.IsInCart !== undefined ? p.IsInCart : false);
+          p.isInWishlist = (p.isInWishlist !== undefined) ? p.isInWishlist : (p.IsInWishlist !== undefined ? p.IsInWishlist : false);
+          return p;
+        });
         this.totalCount = res.data.totalCount || 0;
         // sync paging values from server if provided
         if (res.data.pageNumber || res.data.pageSize) {

@@ -1,0 +1,23 @@
+--- a/ecommerce-details.component.ts
++++ b/ecommerce-details.component.ts
+@@ -208,11 +208,15 @@
+   addToCart(product) {
+     if (!product) return;
+ 
+-    // Build selected attributes array from selectedAttributes object
+-    const attributes = Object.entries(this.selectedAttributes).map(([name, value]) => ({
+-      attributeName: name,
+-      value: value
++    // Build selected attributes array with AttributeId and ValueId
++    const attributes = Object.entries(this.selectedAttributes).map(([name, value]) => {
++      const attrGroup = this.groupedAttributes[name] || [];
++      const attrObj = attrGroup.find(a => a.value === value);
++      return {
++        attributeId: attrObj?.attributeId || attrObj?.id,
++        valueId: attrObj?.valueId || attrObj?.id
++      };
+-    }));
++    });
+ 
+     // Build cart command payload matching backend contract
+     const body = {

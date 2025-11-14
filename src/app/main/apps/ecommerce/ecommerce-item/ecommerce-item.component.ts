@@ -3,6 +3,7 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { HttpService } from '@shared/services/http.service';
 import { WishlistController } from '@shared/Controllers/WishlistController';
+import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 
 @Component({
@@ -60,8 +61,23 @@ export class EcommerceItemComponent implements OnInit {
    * @param product
    */
   addToCart(product) {
-    this._ecommerceService.addToCart(product.id).then(res => {
-      product.isInCart = true;
+    if (!product) return;
+
+    // Item component typically doesn't collect attribute selections here.
+    // Send payload matching backend contract. Attributes = null when none selected.
+    const body = {
+      ProductId: product.id,
+      Quantity: 1,
+      Attributes: null
+    };
+
+    this.httpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
+      if (res && res.succeeded) {
+        product.isInCart = true;
+        console.log('[EcommerceItem] added to cart ->', res);
+      }
+    }, err => {
+      console.error('[EcommerceItem] add to cart error ->', err);
     });
   }
 

@@ -162,24 +162,44 @@
           <div class="swiper-responsive-breakpoints swiper-container px-4 py-2" [swiper]="swiperResponsive">
             <div class="swiper-wrapper mb-2">
               <div class="swiper-slide" *ngFor="let relatedProduct of relatedProducts">
-                <a href="javascript:void(0)">
-                  <div class="item-heading">
-                    <h5 class="text-truncate mb-0">{{ relatedproduct?.name }}</h5>
-                    <small class="text-body">by {{ relatedproduct?.brand }}</small>
-                  </div>
-                  <div class="img-container mx-auto py-75">
-                    <img [src]="relatedproduct?.image" class="img-fluid" alt="image" />
-                  </div>
-                  <div class="item-meta">
-                    <div class="rating rating-sm">
-                      <ngb-rating [rate]="relatedproduct?.rating" [readonly]="true" [max]="5" class="outline-none">
-                        <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
-                            [class.fa-star]="fill === 100"></span></ng-template>
-                      </ngb-rating>
+                <div class="card h-100">
+                  <div class="card-body text-center">
+                    <div class="item-heading">
+                      <h5 class="text-truncate mb-0">{{ relatedProduct?.nameEn || relatedProduct?.name }}</h5>
+                      <small class="text-body">by {{ relatedProduct?.brand }}</small>
                     </div>
-                    <p class="card-text text-primary mb-0">${{ relatedproduct?.price }}</p>
+                    <div class="img-container mx-auto py-75">
+                      <img [src]="relatedProduct?.mainImagePath || relatedProduct?.image || relatedProduct?.mainImage"
+                        class="img-fluid" alt="image" />
+                    </div>
+                    <div class="item-meta">
+                      <div class="rating rating-sm">
+                        <ngb-rating [rate]="relatedProduct?.averageRating || relatedProduct?.rating || 0"
+                          [readonly]="true" [max]="5" class="outline-none">
+                          <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
+                              [class.fa-star]="fill === 100"></span></ng-template>
+                        </ngb-rating>
+                      </div>
+                      <p class="card-text text-primary mb-0">${{ relatedProduct?.price }}</p>
+                      <div class="mt-2">
+                        <a *ngIf="relatedProduct?.isInCart !== true" href="javascript:void(0)"
+                          class="btn btn-sm btn-primary btn-cart mr-1" (click)="addToCart(relatedProduct, true)">
+                          <i data-feather="shopping-cart" class="mr-25"></i>
+                          <span>Add</span>
+                        </a>
+                        <a *ngIf="relatedProduct?.isInCart === true" routerLink="/apps/e-commerce/checkout"
+                          class="btn btn-sm btn-primary btn-cart mr-1">
+                          <i data-feather="shopping-cart" class="mr-25"></i>
+                          <span>View</span>
+                        </a>
+                        <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
+                          <i class="fa"
+                            [ngClass]="relatedProduct?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </a>
+                </div>
               </div>
             </div>
             <!-- Add Arrows -->

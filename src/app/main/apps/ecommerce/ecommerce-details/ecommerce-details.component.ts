@@ -6,6 +6,7 @@ import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
+import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { HttpService } from '@shared/services/http.service';
 @Component({
@@ -118,10 +119,29 @@ export class EcommerceDetailsComponent implements OnInit {
   getProductId() {
     this.HttpService.GET(ProductsController.GetProductId(this.productId)).subscribe((res: any) => {
       this.product = res.data;
+      // Normalize IsInCart / IsInWishlist coming from API (PascalCase) to camelCase used in templates
+      if (this.product) {
+        this.product.isInCart = (this.product.isInCart !== undefined) ? this.product.isInCart : (this.product.IsInCart !== undefined ? this.product.IsInCart : false);
+        this.product.isInWishlist = (this.product.isInWishlist !== undefined) ? this.product.isInWishlist : (this.product.IsInWishlist !== undefined ? this.product.IsInWishlist : false);
+      }
       // Group attributes by name
       if (this.product?.attributes && this.product.attributes.length > 0) {
         this.groupAttributesByName();
       }
+      // Related products normalization (map PascalCase names to camelCase and expected fields)
+      this.relatedProducts = (res.data?.relatedProducts || []).map((p: any) => {
+        const rp: any = { ...p };
+        rp.id = rp.id || rp.Id || rp.ID;
+        rp.nameEn = rp.nameEn || rp.NameEn || rp.name || '';
+        rp.nameAr = rp.nameAr || rp.NameAr || '';
+        rp.price = rp.price || rp.Price || 0;
+        rp.brand = rp.brand || rp.Brand || '';
+        rp.mainImagePath = rp.mainImagePath || rp.mainImagePath || rp.mainImage || rp.image || '';
+        rp.averageRating = rp.averageRating || rp.AverageRating || rp.averageRating || rp.rating || 0;
+        rp.isInCart = (rp.isInCart !== undefined) ? rp.isInCart : (rp.IsInCart !== undefined ? rp.IsInCart : false);
+        rp.isInWishlist = (rp.isInWishlist !== undefined) ? rp.isInWishlist : (rp.IsInWishlist !== undefined ? rp.IsInWishlist : false);
+        return rp;
+      });
     });
   }
 
@@ -203,7 +223,43 @@ export class EcommerceDetailsComponent implements OnInit {
     this.selectedAttributes[attributeName] = value;
   }
 
-  addToCart(product) {
+  /**
+   * Add to cart. If `quickAdd` is true (used for related products), send Attributes = null.
+   */
+  addToCart(product, quickAdd: boolean = false) {
+    if (!product) return;
+
+    let attributes = null;
+    if (!quickAdd) {
+      // Build selected attributes array from selectedAttributes object
+      const built = Object.entries(this.selectedAttributes).map(([name, value]) => {
+        const attrGroup = this.groupedAttributes[name] || [];
+        const attrObj = attrGroup.find(a => a.value === value);
+
+        return {
+          AttributeId: attrObj?.attributeId || attrObj?.id,
+          ValueId: attrObj?.valueId || attrObj?.id || null
+        };
+      });
+
+      attributes = built.length > 0 ? built : null;
+    }
+
+    // Build cart command payload matching backend contract
+    const body = {
+      ProductId: product.id,
+      Quantity: 1,
+      Attributes: attributes
+    };
+
+    this.HttpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
+      if (res && res.succeeded) {
+        product.isInCart = true;
+        console.log('[EcommerceDetails] added to cart ->', res);
+      }
+    }, err => {
+      console.error('[EcommerceDetails] add to cart error ->', err);
+    });
   }
 
   ngOnInit(): void {
