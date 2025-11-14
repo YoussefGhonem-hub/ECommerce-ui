@@ -19,7 +19,6 @@ export class EcommerceCheckoutComponent implements OnInit {
   public contentHeader: object;
   public products;
   public cartLists;
-  public wishlist;
   public cartData: any = { items: [], total: 0 }; // CartDto structure
   public cartItems: any[] = []; // CartItemDto array
   public paginatedCartItems: any[] = []; // Current page items
@@ -47,7 +46,6 @@ export class EcommerceCheckoutComponent implements OnInit {
    * @param {EcommerceService} _ecommerceService
    */
   constructor(
-    private _ecommerceService: EcommerceService,
     private httpService: HttpService,
     private guestUserService: GuestUserService
   ) { }
@@ -59,7 +57,6 @@ export class EcommerceCheckoutComponent implements OnInit {
    * Get Cart Data from backend
    */
   getCartData() {
-    const guestId = this.guestUserService.getGuestId();
 
     this.httpService.GET(`${CartController.GetCartItems}`).subscribe((res: any) => {
       if (res && res.succeeded && res.data && Array.isArray(res.data)) {
@@ -203,6 +200,14 @@ export class EcommerceCheckoutComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
+  /**
+   * Handle cart refresh event from child components
+   */
+  onCartRefresh() {
+    // Reload cart data from backend
+    this.getCartData();
+  }
+
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
 
@@ -213,27 +218,7 @@ export class EcommerceCheckoutComponent implements OnInit {
     // Fetch cart data from backend
     this.getCartData();
 
-    // Subscribe to ProductList change (keep for compatibility)
-    this._ecommerceService.onProductListChange.subscribe(res => {
-      this.products = res;
-      if (this.products) {
-        this.products.isInWishlist = false;
-      }
-    });
 
-    // Subscribe to Cartlist change (keep for compatibility)
-    this._ecommerceService.onCartListChange.subscribe(res => (this.cartLists = res));
-
-    // Subscribe to Wishlist change (keep for compatibility)
-    this._ecommerceService.onWishlistChange.subscribe(res => (this.wishlist = res));
-
-    // update product is in Wishlist & is in CartList : Boolean (keep for compatibility)
-    if (this.products && this.wishlist && this.cartLists) {
-      this.products.forEach(product => {
-        product.isInWishlist = this.wishlist.findIndex(p => p.productId === product.id) > -1;
-        product.isInCart = this.cartLists.findIndex(p => p.productId === product.id) > -1;
-      });
-    }
 
     this.checkoutStepper = new Stepper(document.querySelector('#checkoutStepper'), {
       linear: false,

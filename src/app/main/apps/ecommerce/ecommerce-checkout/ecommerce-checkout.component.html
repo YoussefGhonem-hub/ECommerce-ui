@@ -53,7 +53,8 @@
             <!-- Checkout Place Order Left starts -->
             <div class="checkout-items">
               <ng-container *ngFor="let cartItem of paginatedCartItems">
-                <app-ecommerce-checkout-item [product]="cartItem"></app-ecommerce-checkout-item>
+                <app-ecommerce-checkout-item [product]="cartItem" (cartRefresh)="onCartRefresh()">
+                </app-ecommerce-checkout-item>
               </ng-container>
 
               <!-- Empty state when no items -->
@@ -113,7 +114,7 @@
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title detail-total">Total</div>
-                        <div class="detail-amt font-weight-bolder">${{ cartData?.total || 0 }}</div>
+                        <div class="detail-amt font-weight-bolder">{{ cartData?.total || 0 }}</div>
                       </li>
                     </ul>
                     <button type="button" class="btn btn-primary btn-block btn-next place-order" (click)="nextStep()"
