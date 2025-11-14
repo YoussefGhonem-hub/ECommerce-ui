@@ -1,41 +1,52 @@
 <div class="card ecommerce-card">
   <div class="item-img">
-    <a [routerLink]="'/apps/e-commerce/details/' + product.id">
-      <img [src]="product.image" alt="img-placeholder" />
+    <a [routerLink]="'/apps/e-commerce/details/' + product.productId">
+      <img [src]="product.mainImagePath" alt="img-placeholder" />
     </a>
   </div>
   <div class="card-body">
     <div class="item-name">
       <h6 class="mb-0">
-        <a [routerLink]="'/apps/e-commerce/details/' + product.id" class="text-body">{{ product.name }}</a>
+        <a [routerLink]="'/apps/e-commerce/details/' + product.productId" class="text-body">{{ product.productName
+          }}</a>
       </h6>
       <span class="item-company">By <a href="javascript:void(0)" class="company-name">{{ product.brand }}</a></span>
       <div class="item-rating">
         <div class="rating rating-sm">
-          <ngb-rating [rate]="product.rating" [readonly]="true" [max]="5" class="outline-none">
+          <ngb-rating [rate]="product.averageRating" [readonly]="true" [max]="5" class="outline-none">
             <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
                 [class.fa-star]="fill === 100"></span></ng-template>
           </ngb-rating>
         </div>
       </div>
+      <!-- Display selected attributes if any -->
+      <div class="item-attributes mt-1" *ngIf="product.selectedAttributes && product.selectedAttributes.length > 0">
+        <small class="text-muted">
+          <span *ngFor="let attr of product.selectedAttributes; let last = last">
+            {{ attr.attributeName }}: <strong>{{ attr.value }}</strong><span *ngIf="!last">, </span>
+          </span>
+        </small>
+      </div>
     </div>
-    <span class="text-success mb-1">In Stock</span>
+    <span class="text-success mb-1" *ngIf="product.stockQuantity > 0">In Stock ({{ product.stockQuantity }})</span>
+    <span class="text-danger mb-1" *ngIf="product.stockQuantity <= 0">Out of Stock</span>
     <div class="item-quantity">
       <span class="quantity-title">Qty:</span>
       <div class="quantity-counter-wrapper">
-        <core-touchspin [numberValue]="1" [stepValue]="1" [minValue]="1" [maxValue]="10"></core-touchspin>
+        <core-touchspin [numberValue]="product.quantity" [stepValue]="1" [minValue]="1"
+          [maxValue]="product.stockQuantity || 10"></core-touchspin>
       </div>
     </div>
     <span class="delivery-date text-muted">Delivery by, Wed Apr 25</span>
-    <span class="text-success">17% off 4 offers Available</span>
+    <div class="item-subtotal mt-1">
+      <strong class="text-primary">Subtotal: ${{ product.subTotal }}</strong>
+    </div>
   </div>
   <div class="item-options text-center">
     <div class="item-wrapper">
       <div class="item-cost">
-        <h4 class="item-price">${{ product.price }}</h4>
-        <p class="card-text shipping" *ngIf="product.hasFreeShipping">
-          <span class="badge badge-pill badge-light-success">Free Shipping</span>
-        </p>
+        <h6 class="item-price">Unit: ${{ product.price }}</h6>
+        <h4 class="item-subtotal text-primary">Total: ${{ product.subTotal }}</h4>
       </div>
     </div>
     <button type="button" class="btn btn-light mt-1 remove-wishlist" (click)="removeFromCart(product)" rippleEffect>
@@ -45,7 +56,7 @@
     <button type="button" class="btn btn-primary btn-cart move-cart" (click)="toggleWishlist(product)" rippleEffect>
       <i class="align-middle fa mr-25"
         [ngClass]="product.isInWishlist ? ['fa-heart','text-white'] : ['fa-heart-o']"></i>
-      <span class="text-truncate">Add to Wishlist</span>
+      <span class="text-truncate">{{ product.isInWishlist ? 'In Wishlist' : 'Add to Wishlist' }}</span>
     </button>
   </div>
 </div>
