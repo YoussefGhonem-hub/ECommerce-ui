@@ -20,9 +20,9 @@ export class CartService {
     // Subject for cart refresh events
     private _cartRefresh = new Subject<void>();
     public cartRefresh$ = this._cartRefresh.asObservable();
-    
+
     // Subject for cart action notifications
-    private _cartNotification = new Subject<{type: 'added' | 'removed' | 'updated', productName?: string}>();
+    private _cartNotification = new Subject<{ type: 'added' | 'removed' | 'updated', productName?: string }>();
     public cartNotification$ = this._cartNotification.asObservable();
 
     constructor(private httpService: HttpService) {
@@ -94,7 +94,7 @@ export class CartService {
                 if (res && res.succeeded) {
                     console.log('[CartService] Item added to cart successfully');
                     this.refreshCart(); // Refresh cart data
-                    this._cartNotification.next({type: 'added'});
+                    this._cartNotification.next({ type: 'added' });
                     resolve(true);
                 } else {
                     console.error('[CartService] Failed to add item to cart:', res.message);

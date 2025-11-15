@@ -67,13 +67,13 @@ export class EcommerceItemComponent implements OnInit {
       .then(() => {
         product.isInCart = true;
         console.log('[EcommerceItem] Item added to cart successfully');
-        
+
         // Optional: Show success notification
         // You can add a toast notification here
       })
       .catch((error) => {
         console.error('[EcommerceItem] Failed to add item to cart:', error);
-        
+
         // Optional: Show error notification
         // You can add a toast notification here
       });
