@@ -1,13 +1,9 @@
 <li ngbDropdown class="nav-item dropdown-cart mr-25">
-  <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarCartDropdown"
-    ><span [data-feather]="'shopping-cart'" [class]="'ficon'"></span
-    ><span class="badge badge-pill badge-primary badge-up cart-item-count">{{ cartListLength }}</span></a
-  >
-  <ul
-    ngbDropdownMenu
-    aria-labelledby="navbarCartDropdown"
-    class="dropdown-menu dropdown-menu-media dropdown-menu-right"
-  >
+  <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarCartDropdown"><span [data-feather]="'shopping-cart'"
+      [class]="'ficon'"></span><span class="badge badge-pill badge-primary badge-up cart-item-count">{{ cartListLength
+      }}</span></a>
+  <ul ngbDropdownMenu aria-labelledby="navbarCartDropdown"
+    class="dropdown-menu dropdown-menu-media dropdown-menu-right">
     <!-- Cart header -->
     <li class="dropdown-menu-header">
       <div class="dropdown-header d-flex">
@@ -19,40 +15,65 @@
 
     <!-- Cart content -->
     <li class="scrollable-container media-list" [perfectScrollbar]>
-      <ng-container *ngIf="products.length">
-        <ng-container *ngFor="let product of products">
-          <div class="media align-items-center" *ngIf="product?.isInCart === true">
-            <img class="d-block rounded mr-1" [src]="product.image" alt="donuts" width="62" />
+      <ng-container *ngIf="cartItems.length > 0; else emptyCart">
+        <ng-container *ngFor="let item of cartItems">
+          <div class="media align-items-center">
+            <img class="d-block rounded mr-1" [src]="item.mainImagePath" [alt]="item.productName" width="62"
+              onerror="this.src='assets/images/placeholder-product.png'" />
             <div class="media-body">
-              <button class="btn p-0" (click)="removeFromCart(product)">
+              <button class="btn p-0" (click)="removeFromCart(item)">
                 <i class="ficon cart-item-remove" data-feather="x"></i>
               </button>
               <div class="media-heading">
                 <h6 class="cart-item-title">
-                  <a class="text-body" [routerLink]="'/apps/e-commerce/ecommerce-details/' + product.id">{{
-                    product.name
-                  }}</a>
+                  <a class="text-body" [routerLink]="'/apps/e-commerce/details/' + item.productId">{{
+                    item.productName
+                    }}</a>
                 </h6>
-                <small class="cart-item-by">{{ product.brand }}</small>
+                <small class="cart-item-by">{{ item.brand }}</small>
               </div>
               <div class="cart-item-qty">
                 <div class="input-group touchspin-cart">
-                  <core-touchspin [numberValue]="1" [stepValue]="1" [minValue]="1" [maxValue]="10"></core-touchspin>
+                  <div class="input-group-prepend">
+                    <button class="btn btn-outline-primary" type="button"
+                      (click)="updateQuantity(item, item.quantity - 1)">
+                      <i data-feather="minus" class="font-size-sm"></i>
+                    </button>
+                  </div>
+                  <input type="number" class="form-control text-center" [value]="item.quantity" readonly />
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-primary" type="button"
+                      (click)="updateQuantity(item, item.quantity + 1)">
+                      <i data-feather="plus" class="font-size-sm"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
-              <h5 class="cart-item-price">${{ product.price }}</h5>
+              <h5 class="cart-item-price">${{ item.subTotal }}</h5>
             </div>
           </div>
         </ng-container>
       </ng-container>
+
+      <!-- Empty cart message -->
+      <ng-template #emptyCart>
+        <div class="text-center py-4">
+          <i data-feather="shopping-cart" class="font-large-2 text-muted mb-2"></i>
+          <h6 class="text-muted">Your cart is empty</h6>
+          <p class="text-muted small">Start shopping to add items to your cart</p>
+          <a class="btn btn-sm btn-outline-primary" routerLink="/apps/e-commerce/shop">
+            Browse Products
+          </a>
+        </div>
+      </ng-template>
     </li>
     <!--/ Cart content -->
 
     <!-- Cart footer -->
-    <li class="dropdown-menu-footer">
+    <li class="dropdown-menu-footer" *ngIf="cartItems.length > 0">
       <div class="d-flex justify-content-between mb-1">
         <h6 class="font-weight-bolder mb-0">Total:</h6>
-        <h6 class="text-primary font-weight-bolder mb-0">$10,999.00</h6>
+        <h6 class="text-primary font-weight-bolder mb-0">${{ cartTotal }}</h6>
       </div>
       <a class="btn btn-primary btn-block" routerLink="/apps/e-commerce/checkout">Checkout</a>
     </li>
