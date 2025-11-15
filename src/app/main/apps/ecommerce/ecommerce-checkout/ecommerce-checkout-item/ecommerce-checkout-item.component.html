@@ -19,13 +19,45 @@
           </ngb-rating>
         </div>
       </div>
-      <!-- Display selected attributes if any -->
-      <div class="item-attributes mt-1" *ngIf="product.selectedAttributes && product.selectedAttributes.length > 0">
-        <small class="text-muted">
-          <span *ngFor="let attr of product.selectedAttributes; let last = last">
-            {{ attr.attributeName }}: <strong>{{ attr.value }}</strong><span *ngIf="!last">, </span>
-          </span>
-        </small>
+      <!-- Attribute selection UI -->
+      <div class="product-attributes mt-1" *ngIf="groupedAttributes | keyvalue as attributes">
+        <div class="attribute-group" *ngFor="let attrGroup of attributes">
+          <!-- Color Attribute - Special Styling with Color Swatches -->
+          <ng-container *ngIf="attrGroup.key.toLowerCase() === 'color'">
+            <div class="product-color-options">
+              <h6>{{ attrGroup.key }}</h6>
+              <ul class="list-unstyled mb-0">
+                <li class="d-inline-block" *ngFor="let attr of attrGroup.value"
+                  [class.selected]="selectedAttributes[attrGroup.key] === attr.value">
+                  <label class="color-option-wrapper" [title]="attr.value">
+                    <input type="radio" class="d-none" name="attr_{{ attrGroup.key }}_{{product.id}}"
+                      [value]="attr.value" [checked]="selectedAttributes[attrGroup.key] === attr.value"
+                      (change)="selectAttribute(attrGroup.key, attr.value)" />
+                    <div class="color-option" [style.borderColor]="colorMap[attr.value]"
+                      [class.b-active]="selectedAttributes[attrGroup.key] === attr.value">
+                      <div class="filloption" [style.backgroundColor]="colorMap[attr.value]"></div>
+                    </div>
+                  </label>
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+          <!-- Other Attributes - Button Style -->
+          <ng-container *ngIf="attrGroup.key.toLowerCase() !== 'color'">
+            <h6 class="mb-1">{{ attrGroup.key }}</h6>
+            <div class="attribute-options">
+              <div class="btn-group btn-group-toggle" role="group">
+                <label class="btn btn-sm btn-outline-primary mr-2 mb-1" *ngFor="let attr of attrGroup.value"
+                  [class.active]="selectedAttributes[attrGroup.key] === attr.value">
+                  <input type="radio" name="attr_{{ attrGroup.key }}_{{product.id}}" [value]="attr.value"
+                    [checked]="selectedAttributes[attrGroup.key] === attr.value"
+                    (change)="selectAttribute(attrGroup.key, attr.value)" />
+                  {{ attr.value }}
+                </label>
+              </div>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
     <span class="text-success mb-1" *ngIf="product.stockQuantity > 0">In Stock ({{ product.stockQuantity }})</span>

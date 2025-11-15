@@ -347,17 +347,17 @@ export class EcommerceCheckoutComponent implements OnInit {
 
     // Update checkout data
     this.checkoutData.subTotal = roundedSubTotal;
-    
+
     // Calculate total (subTotal + shipping - discount)
     const shippingTotal = this.checkoutData.shippingTotal || 0;
     const discountTotal = this.checkoutData.discountTotal || 0;
-    
+
     const calculatedTotal = roundedSubTotal + shippingTotal - discountTotal;
     // Round total as well
     this.checkoutData.total = Math.round(calculatedTotal * 100) / 100;
 
     // Update cart data total as well
-    this.cartData.total = roundedSubTotal;    console.log('[Checkout] Totals recalculated - Subtotal:', newSubTotal, 'Total:', this.checkoutData.total);
+    this.cartData.total = roundedSubTotal; console.log('[Checkout] Totals recalculated - Subtotal:', newSubTotal, 'Total:', this.checkoutData.total);
   }
 
   /**
@@ -366,7 +366,7 @@ export class EcommerceCheckoutComponent implements OnInit {
   getFormattedSubTotal(): string {
     const subTotal = this.checkoutData?.subTotal || 0;
     if (typeof subTotal !== 'number') return '0.00';
-    
+
     // Round to 2 decimal places to fix floating-point precision issues
     const rounded = Math.round(subTotal * 100) / 100;
     return rounded.toFixed(2);
@@ -378,7 +378,7 @@ export class EcommerceCheckoutComponent implements OnInit {
   getFormattedTotal(): string {
     const total = this.checkoutData?.total || 0;
     if (typeof total !== 'number') return '0.00';
-    
+
     // Round to 2 decimal places to fix floating-point precision issues
     const rounded = Math.round(total * 100) / 100;
     return rounded.toFixed(2);
@@ -617,14 +617,33 @@ export class EcommerceCheckoutComponent implements OnInit {
       shippingAddressId: this.selectedAddressId,
       couponCode: this.checkoutData.appliedCoupon?.code || null,
       shippingMethodId: null, // Add shipping method selection later if needed
-      itemSelections: this.cartItems.map(item => ({
-        cartItemId: item.id,
-        quantity: item.quantity, // Include current quantity for each item
-        attributes: (item.selectedAttributes || []).map(attr => ({
-          attributeId: attr.attributeId || attr.AttributeId,
-          valueId: attr.valueId || attr.ValueId || null
-        }))
-      }))
+      itemSelections: this.cartItems.map(item => {
+        // Only include the currently selected attribute for each attribute group
+        let attributes: any[] = [];
+        if (item.groupedAttributes && item.selectedAttributes) {
+          attributes = Object.keys(item.groupedAttributes).map(attrName => {
+            const selectedValue = item.selectedAttributes[attrName];
+            const attrObj = (item.groupedAttributes[attrName] || []).find(a => a.value === selectedValue);
+            return attrObj && attrObj.attributeId ? {
+              attributeId: attrObj.attributeId,
+              valueId: attrObj.valueId || null
+            } : null;
+          }).filter(Boolean);
+        } else if (Array.isArray(item.selectedAttributes)) {
+          // fallback for old structure
+          attributes = item.selectedAttributes
+            .filter(attr => attr && attr.attributeId)
+            .map(attr => ({
+              attributeId: attr.attributeId || attr.AttributeId,
+              valueId: attr.valueId || attr.ValueId || null
+            }));
+        }
+        return {
+          cartItemId: item.id,
+          quantity: item.quantity,
+          attributes: attributes
+        };
+      })
     };
 
     // If adding new address, include it in the command
@@ -683,7 +702,6 @@ export class EcommerceCheckoutComponent implements OnInit {
       },
       (error) => {
         console.error('[Checkout] Order submission error:', error);
-        alert('Failed to place order. Please try again.');
         this.isSubmittingOrder = false;
       }
     );
