@@ -5,6 +5,7 @@ import { HttpService } from '@shared/services/http.service';
 import { CartController } from '@shared/Controllers/CartController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { GuestUserService } from '@shared/services/guest-user.service';
+import { CartService } from '@shared/services/cart.service';
 
 @Component({
   selector: 'app-ecommerce-checkout-item',
@@ -20,7 +21,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
 
   constructor(
     private httpService: HttpService,
-    private guestUserService: GuestUserService
+    private guestUserService: GuestUserService,
+    private cartService: CartService
   ) { }
 
   /**
@@ -31,15 +33,15 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   removeFromCart(product) {
     if (!product || !product.id) return;
 
-    // Use the cart item ID (not product ID) for removal
-    this.httpService.DELETE(CartController.RemoveFromCart(product.id)).subscribe((res: any) => {
-      if (res && res.succeeded) {
+    // Use CartService to remove item and automatically update navbar cart
+    this.cartService.removeFromCart(product.id).then((success) => {
+      if (success) {
         console.log('[CheckoutItem] removed from cart ->', product.productName);
-        // Emit event to parent to refresh cart data
+        // Emit event to parent to refresh checkout cart data
         this.cartRefresh.emit();
       }
-    }, err => {
-      console.error('[CheckoutItem] remove from cart error ->', err);
+    }).catch((error) => {
+      console.error('[CheckoutItem] Failed to remove from cart:', error);
     });
   }
 

@@ -11,6 +11,7 @@ import { LookupController } from '@shared/Controllers/LookupController';
 import { AddressController } from '@shared/Controllers/AddressController';
 import { OrderController } from '@shared/Controllers/OrderController';
 import { GuestUserService } from '@shared/services/guest-user.service';
+import { CartService } from '@shared/services/cart.service';
 
 // Address related interfaces
 interface CountryLookupDto {
@@ -109,7 +110,8 @@ export class EcommerceCheckoutComponent implements OnInit {
     private httpService: HttpService,
     private guestUserService: GuestUserService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private cartService: CartService
   ) {
     this.initializeAddressForm();
   }
@@ -335,7 +337,9 @@ export class EcommerceCheckoutComponent implements OnInit {
    * Handle cart refresh event from child components
    */
   onCartRefresh() {
-    // Reload cart data from backend
+    // Use CartService to refresh cart data which will automatically update navbar
+    this.cartService.refreshCart();
+    // Also reload local cart data for checkout page
     this.getCartData();
   }
 

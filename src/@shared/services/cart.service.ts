@@ -116,6 +116,7 @@ export class CartService {
                 if (res && res.succeeded) {
                     console.log('[CartService] Item removed from cart successfully');
                     this.refreshCart(); // Refresh cart data
+                    this._cartNotification.next({ type: 'removed' });
                     resolve(true);
                 } else {
                     console.error('[CartService] Failed to remove item from cart:', res.message);
