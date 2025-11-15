@@ -338,9 +338,8 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   onCartRefresh() {
     // Use CartService to refresh cart data which will automatically update navbar
+    // CartService refresh will trigger subscription and update local cart data
     this.cartService.refreshCart();
-    // Also reload local cart data for checkout page
-    this.getCartData();
   }
 
   /**
@@ -753,8 +752,14 @@ export class EcommerceCheckoutComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
-    // Fetch cart data from backend
-    this.getCartData();
+    // Subscribe to CartService for cart data instead of direct API call
+    this.cartService.cartRefresh$.subscribe(() => {
+      // When cart refreshes, update local cart data for checkout-specific features
+      this.getCartData();
+    });
+
+    // Initial cart data load through CartService (prevents duplicate calls)
+    this.cartService.refreshCart();
 
     // Load countries and user addresses for address form
     this.loadCountries();

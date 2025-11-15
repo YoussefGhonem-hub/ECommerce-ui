@@ -37,8 +37,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
     this.cartService.removeFromCart(product.id).then((success) => {
       if (success) {
         console.log('[CheckoutItem] removed from cart ->', product.productName);
-        // Emit event to parent to refresh checkout cart data
-        this.cartRefresh.emit();
+        // CartService refresh will automatically trigger parent component updates
+        // No need to emit cartRefresh event to prevent duplicate API calls
       }
     }).catch((error) => {
       console.error('[CheckoutItem] Failed to remove from cart:', error);
@@ -58,8 +58,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
       // Remove from wishlist - pass guestId as query parameter
       this.httpService.DELETE(`${WishlistController.RemoveFromWishlist(product.productId)}`).subscribe(() => {
         console.log('[CheckoutItem] removed from wishlist ->', product.productName);
-        // Emit event to parent to refresh cart data (API response will contain updated isInWishlist)
-        this.cartRefresh.emit();
+        // Update local state only - no need to refresh cart data
+        product.isInWishlist = false;
       }, err => {
         console.error('[CheckoutItem] remove wishlist error ->', err);
       });
@@ -68,8 +68,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
       const body = { productId: product.productId, guestId };
       this.httpService.POST(WishlistController.AddToWishlist, body).subscribe(() => {
         console.log('[CheckoutItem] added to wishlist ->', product.productName);
-        // Emit event to parent to refresh cart data (API response will contain updated isInWishlist)
-        this.cartRefresh.emit();
+        // Update local state only - no need to refresh cart data
+        product.isInWishlist = true;
       }, err => {
         console.error('[CheckoutItem] add to wishlist error ->', err);
       });
