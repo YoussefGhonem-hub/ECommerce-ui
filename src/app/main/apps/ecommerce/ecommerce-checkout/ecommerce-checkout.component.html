@@ -85,36 +85,87 @@
             <div class="checkout-options">
               <div class="card">
                 <div class="card-body">
-                  <label class="section-label mb-1">Options</label>
-                  <div class="coupons input-group input-group-merge">
-                    <input type="text" class="form-control" placeholder="Coupons" aria-label="Coupons"
-                      aria-describedby="input-coupons" />
+                  <label class="section-label mb-1">Coupons</label>
+                  <div class="coupons input-group input-group-merge mb-2">
+                    <input type="text" class="form-control" placeholder="Enter coupon code" aria-label="Coupon Code"
+                      [(ngModel)]="couponCode" [disabled]="isApplyingCoupon" />
                     <div class="input-group-append">
-                      <span class="input-group-text text-primary" id="input-coupons">Apply</span>
+                      <button class="btn btn-primary" type="button" (click)="applyCoupon()"
+                        [disabled]="isApplyingCoupon || !couponCode">
+                        <span *ngIf="isApplyingCoupon" class="spinner-border spinner-border-sm mr-1"></span>
+                        {{ isApplyingCoupon ? 'Applying...' : 'Apply' }}
+                      </button>
                     </div>
                   </div>
+
+                  <!-- Available Coupons - Hidden -->
+                  <!-- <div *ngIf="availableCoupons.length > 0" class="available-coupons mb-2">
+                    <small class="text-muted mb-1 d-block">Available Coupons:</small>
+                    <div class="row">
+                      <div class="col-12" *ngFor="let coupon of availableCoupons.slice(0, 3)">
+                        <div class="card card-body p-2 mb-1 border">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <strong class="text-primary">{{ coupon.code }}</strong>
+                              <small class="d-block text-muted">{{ getCouponDescription(coupon) }}</small>
+                              <small class="text-success" *ngIf="coupon.freeShipping">+ Free Shipping</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary"
+                              (click)="couponCode = coupon.code; applyCoupon()">
+                              Apply
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+
+                  <!-- Applied Coupon Display -->
+                  <div *ngIf="checkoutData?.appliedCoupon" class="applied-coupon mb-2">
+                    <div class="card card-body p-2 border-success bg-light-success">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong class="text-success">{{ checkoutData.appliedCoupon.code }}</strong>
+                          <small class="d-block text-muted">{{ getCouponDescription(checkoutData.appliedCoupon)
+                            }}</small>
+                          <small class="text-success" *ngIf="checkoutData.appliedCoupon.freeShipping">+ Free Shipping
+                            Applied</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" (click)="removeCoupon()"
+                          [disabled]="isApplyingCoupon">
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   <hr />
                   <div class="price-details">
                     <h6 class="price-title">Price Details</h6>
                     <ul class="list-unstyled">
                       <li class="price-detail">
-                        <div class="detail-title">Total MRP</div>
-                        <div class="detail-amt">${{ cartData?.total || 0 }}</div>
+                        <div class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
+                        <div class="detail-amt">${{ checkoutData?.subTotal || 0 }}</div>
+                      </li>
+                      <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
+                        <div class="detail-title">Discount</div>
+                        <div class="detail-amt discount-amt text-success">-${{ checkoutData?.discountTotal || 0 }}</div>
                       </li>
                       <li class="price-detail">
-                        <div class="detail-title">Items ({{ cartItems?.length || 0 }})</div>
-                        <div class="detail-amt">${{ cartData?.total || 0 }}</div>
-                      </li>
-                      <li class="price-detail">
-                        <div class="detail-title">Delivery Charges</div>
-                        <div class="detail-amt discount-amt text-success">Free</div>
+                        <div class="detail-title">Shipping
+                          <span *ngIf="checkoutData?.freeShippingApplied" class="text-success">(Free)</span>
+                        </div>
+                        <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
+                          [class.text-success]="checkoutData?.freeShippingApplied">
+                          {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                        </div>
                       </li>
                     </ul>
                     <hr />
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title detail-total">Total</div>
-                        <div class="detail-amt font-weight-bolder">{{ cartData?.total || 0 }}</div>
+                        <div class="detail-amt font-weight-bolder">${{ checkoutData?.total || 0 }}</div>
                       </li>
                     </ul>
                     <button type="button" class="btn btn-primary btn-block btn-next place-order" (click)="nextStep()"
@@ -345,21 +396,28 @@
                 <div class="card-body">
                   <ul class="list-unstyled price-details">
                     <li class="price-detail">
-                      <div class="details-title">Price of {{ cartItems?.length || 0 }} items</div>
+                      <div class="details-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
                       <div class="detail-amt">
-                        <strong>${{ cartData?.total || 0 }}</strong>
+                        <strong>${{ checkoutData?.subTotal || 0 }}</strong>
                       </div>
                     </li>
+                    <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
+                      <div class="details-title">Discount Applied</div>
+                      <div class="detail-amt discount-amt text-success">-${{ checkoutData?.discountTotal }}</div>
+                    </li>
                     <li class="price-detail">
-                      <div class="details-title">Delivery Charges</div>
-                      <div class="detail-amt discount-amt text-success">Free</div>
+                      <div class="details-title">Shipping Charges</div>
+                      <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
+                        [class.text-success]="checkoutData?.freeShippingApplied">
+                        {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                      </div>
                     </li>
                   </ul>
                   <hr />
                   <ul class="list-unstyled price-details">
                     <li class="price-detail">
                       <div class="details-title">Amount Payable</div>
-                      <div class="detail-amt font-weight-bolder">${{ cartData?.total || 0 }}</div>
+                      <div class="detail-amt font-weight-bolder">${{ checkoutData?.total || 0 }}</div>
                     </li>
                   </ul>
                 </div>

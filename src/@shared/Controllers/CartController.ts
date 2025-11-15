@@ -3,4 +3,6 @@ export const CartController = {
     GetCartItems: 'api/cart',
     RemoveFromCart: (id: any) => `api/cart/${id}`,
     UpdateCartItem: (id: any) => `api/cart/${id}`,
+    ApplyCoupon: 'api/cart/apply-coupon',
+    RemoveCoupon: 'api/cart/remove-coupon',
 };
