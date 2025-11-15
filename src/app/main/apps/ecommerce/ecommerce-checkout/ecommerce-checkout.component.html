@@ -53,7 +53,8 @@
             <!-- Checkout Place Order Left starts -->
             <div class="checkout-items">
               <ng-container *ngFor="let cartItem of paginatedCartItems">
-                <app-ecommerce-checkout-item [product]="cartItem" (cartRefresh)="onCartRefresh()">
+                <app-ecommerce-checkout-item [product]="cartItem" (cartRefresh)="onCartRefresh()"
+                  (quantityUpdated)="onItemQuantityUpdate($event)">
                 </app-ecommerce-checkout-item>
               </ng-container>
 
@@ -507,7 +508,7 @@
                     <ul class="list-unstyled">
                       <li class="price-detail d-flex justify-content-between">
                         <span class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</span>
-                        <span class="detail-amt font-weight-bold">${{ checkoutData?.subTotal || 0 }}</span>
+                        <span class="detail-amt font-weight-bold">${{ getFormattedSubTotal() }}</span>
                       </li>
                       <li class="price-detail d-flex justify-content-between" *ngIf="checkoutData?.discountTotal > 0">
                         <span class="detail-title text-success">Discount</span>
@@ -528,7 +529,7 @@
                     <hr class="my-2">
                     <div class="d-flex justify-content-between">
                       <span class="detail-title h5 font-weight-bold">Total</span>
-                      <span class="detail-amt h5 font-weight-bold text-primary">${{ checkoutData?.total || 0 }}</span>
+                      <span class="detail-amt h5 font-weight-bold text-primary">${{ getFormattedTotal() }}</span>
                     </div>
                   </div>
 

@@ -318,6 +318,62 @@ export class EcommerceCheckoutComponent implements OnInit {
   }
 
   /**
+   * Handle quantity update from individual items
+   */
+  onItemQuantityUpdate(event: { item: any, newQuantity: number, newSubTotal: number }) {
+    console.log('[Checkout] Item quantity updated:', event);
+
+    // Recalculate totals based on current cart items
+    this.recalculateCheckoutTotals();
+  }
+
+  /**
+   * Recalculate checkout totals based on current cart items
+   */
+  private recalculateCheckoutTotals() {
+    if (!this.cartItems || this.cartItems.length === 0) {
+      this.checkoutData.subTotal = 0;
+      this.checkoutData.total = 0;
+      return;
+    }
+
+    // Calculate subtotal from all cart items
+    const newSubTotal = this.cartItems.reduce((total, item) => {
+      return total + (item.price * item.quantity);
+    }, 0);
+
+    // Update checkout data
+    this.checkoutData.subTotal = newSubTotal;
+
+    // Calculate total (subTotal + shipping - discount)
+    const shippingTotal = this.checkoutData.shippingTotal || 0;
+    const discountTotal = this.checkoutData.discountTotal || 0;
+
+    this.checkoutData.total = newSubTotal + shippingTotal - discountTotal;
+
+    // Update cart data total as well
+    this.cartData.total = newSubTotal;
+
+    console.log('[Checkout] Totals recalculated - Subtotal:', newSubTotal, 'Total:', this.checkoutData.total);
+  }
+
+  /**
+   * Get formatted subtotal for display
+   */
+  getFormattedSubTotal(): string {
+    const subTotal = this.checkoutData?.subTotal || 0;
+    return typeof subTotal === 'number' ? subTotal.toFixed(2) : '0.00';
+  }
+
+  /**
+   * Get formatted total for display
+   */
+  getFormattedTotal(): string {
+    const total = this.checkoutData?.total || 0;
+    return typeof total === 'number' ? total.toFixed(2) : '0.00';
+  }
+
+  /**
    * Apply coupon code locally
    */
   applyCoupon() {
@@ -732,6 +788,8 @@ export class EcommerceCheckoutComponent implements OnInit {
       .subscribe(items => {
         this.cartItems = items;
         this.updatePagination();
+        // Recalculate totals when cart items are updated
+        this.recalculateCheckoutTotals();
         console.log('[Checkout] Cart items updated from service:', items.length);
       });
 

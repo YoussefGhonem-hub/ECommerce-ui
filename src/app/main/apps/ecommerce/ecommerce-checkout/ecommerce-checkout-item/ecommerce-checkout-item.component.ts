@@ -18,6 +18,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   @Input() product;
 
   @Output() cartRefresh = new EventEmitter<void>();
+  @Output() quantityUpdated = new EventEmitter<{ item: any, newQuantity: number, newSubTotal: number }>();
 
   constructor(
     private httpService: HttpService,
@@ -55,6 +56,13 @@ export class EcommerceCheckoutItemComponent implements OnInit {
 
     // Update local product data with new quantity and calculated total
     this.updateLocalProductData(newQuantity);
+
+    // Emit the quantity change event to parent component for price details update
+    this.quantityUpdated.emit({
+      item: this.product,
+      newQuantity: newQuantity,
+      newSubTotal: this.product.subTotal
+    });
 
     console.log('[CheckoutItem] Quantity updated locally:', this.product.productName, newQuantity, 'Subtotal:', this.product.subTotal);
   }
