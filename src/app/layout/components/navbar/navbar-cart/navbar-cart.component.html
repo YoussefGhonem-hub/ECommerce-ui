@@ -57,7 +57,7 @@
     <li class="dropdown-menu-footer" *ngIf="cartItems.length > 0">
       <div class="d-flex justify-content-between mb-1">
         <h6 class="font-weight-bolder mb-0">Total:</h6>
-        <h6 class="text-primary font-weight-bolder mb-0">${{ cartTotal }}</h6>
+        <h6 class="text-primary font-weight-bolder mb-0">${{ getTotalPrice() }}</h6>
       </div>
       <a class="btn btn-primary btn-block" routerLink="/apps/e-commerce/checkout">Checkout</a>
     </li>

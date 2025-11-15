@@ -94,6 +94,13 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
   /**
    * Update item quantity
    */
+  getTotalPrice() {
+    let total = 0;
+    this.cartItems.forEach(item => {
+      total += item.price * item.quantity;
+    });
+    return total;
+  }
   updateQuantity(item: any, newQuantity: number) {
     if (newQuantity <= 0) {
       this.removeFromCart(item);
