@@ -2,6 +2,7 @@ import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { HttpService } from '@shared/services/http.service';
+import { CartService } from '@shared/services/cart.service';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
@@ -22,13 +23,13 @@ export class EcommerceItemComponent implements OnInit {
   public isInCart = false;
 
   /**
-   *
-   * @param {EcommerceService} _ecommerceService
+   * Constructor
    */
   constructor(
     private _ecommerceService: EcommerceService,
     private httpService: HttpService,
-    private guestUserService: GuestUserService
+    private guestUserService: GuestUserService,
+    private cartService: CartService
   ) { }
 
 
@@ -57,34 +58,25 @@ export class EcommerceItemComponent implements OnInit {
 
   /**
    * Add To Cart
-   *
-   * @param product
    */
   addToCart(product) {
     if (!product) return;
 
-    // Item component typically doesn't collect attribute selections here.
-    // Send payload matching backend contract. Attributes = null when none selected.
-    const body = {
-      ProductId: product.id,
-      Quantity: 1,
-      Attributes: null
-    };
-
-    this.httpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
-      if (res && res.succeeded) {
+    // Use CartService for better integration with navbar cart
+    this.cartService.addToCart(product.id, 1, [])
+      .then(() => {
         product.isInCart = true;
-        // Refresh global cart list so other components reflect the change
-        try {
-          this._ecommerceService.getCartList();
-        } catch (e) {
-          // ignore errors from refresh
-        }
-        console.log('[EcommerceItem] added to cart ->', res);
-      }
-    }, err => {
-      console.error('[EcommerceItem] add to cart error ->', err);
-    });
+        console.log('[EcommerceItem] Item added to cart successfully');
+        
+        // Optional: Show success notification
+        // You can add a toast notification here
+      })
+      .catch((error) => {
+        console.error('[EcommerceItem] Failed to add item to cart:', error);
+        
+        // Optional: Show error notification
+        // You can add a toast notification here
+      });
   }
 
   // Lifecycle Hooks

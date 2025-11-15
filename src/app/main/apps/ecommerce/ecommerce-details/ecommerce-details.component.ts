@@ -7,6 +7,7 @@ import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
+import { CartService } from '@shared/services/cart.service';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { HttpService } from '@shared/services/http.service';
 @Component({
@@ -82,12 +83,12 @@ export class EcommerceDetailsComponent implements OnInit {
     private _activatedRoute: ActivatedRoute,
     private HttpService: HttpService,
     private guestUserService: GuestUserService,
-    private _ecommerceService: EcommerceService
+    private _ecommerceService: EcommerceService,
+    private cartService: CartService
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.productId = params['id'];
     });
-
   }
 
   toggleWishlist(product) {
@@ -230,10 +231,10 @@ export class EcommerceDetailsComponent implements OnInit {
   addToCart(product, quickAdd: boolean = false) {
     if (!product) return;
 
-    let attributes = null;
+    let attributes = [];
     if (!quickAdd) {
       // Build selected attributes array from selectedAttributes object
-      const built = Object.entries(this.selectedAttributes).map(([name, value]) => {
+      attributes = Object.entries(this.selectedAttributes).map(([name, value]) => {
         const attrGroup = this.groupedAttributes[name] || [];
         const attrObj = attrGroup.find(a => a.value === value);
 
@@ -242,31 +243,23 @@ export class EcommerceDetailsComponent implements OnInit {
           ValueId: attrObj?.valueId || attrObj?.id || null
         };
       });
-
-      attributes = built.length > 0 ? built : null;
     }
 
-    // Build cart command payload matching backend contract
-    const body = {
-      ProductId: product.id,
-      Quantity: 1,
-      Attributes: attributes
-    };
-
-    this.HttpService.POST(CartController.AddToCart, body).subscribe((res: any) => {
-      if (res && res.succeeded) {
+    // Use CartService for better integration with navbar cart
+    this.cartService.addToCart(product.id, 1, attributes)
+      .then(() => {
         product.isInCart = true;
-        // Refresh global cart list so other components (navbar, shop) reflect the change
-        try {
-          this._ecommerceService.getCartList();
-        } catch (e) {
-          // ignore if service isn't available at runtime
-        }
-        console.log('[EcommerceDetails] added to cart ->', res);
-      }
-    }, err => {
-      console.error('[EcommerceDetails] add to cart error ->', err);
-    });
+        console.log('[EcommerceDetails] Item added to cart successfully');
+        
+        // Optional: Show success notification
+        // You can add a toast notification here
+      })
+      .catch((error) => {
+        console.error('[EcommerceDetails] Failed to add item to cart:', error);
+        
+        // Optional: Show error notification
+        // You can add a toast notification here
+      });
   }
 
   ngOnInit(): void {

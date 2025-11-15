@@ -20,6 +20,10 @@ export class CartService {
     // Subject for cart refresh events
     private _cartRefresh = new Subject<void>();
     public cartRefresh$ = this._cartRefresh.asObservable();
+    
+    // Subject for cart action notifications
+    private _cartNotification = new Subject<{type: 'added' | 'removed' | 'updated', productName?: string}>();
+    public cartNotification$ = this._cartNotification.asObservable();
 
     constructor(private httpService: HttpService) {
         // Load cart data on service initialization
@@ -80,9 +84,9 @@ export class CartService {
      */
     addToCart(productId: string, quantity: number, attributes: any[] = []): Promise<boolean> {
         const payload = {
-            productId: productId,
-            quantity: quantity,
-            attributes: attributes
+            ProductId: productId,
+            Quantity: quantity,
+            Attributes: attributes.length > 0 ? attributes : null
         };
 
         return new Promise((resolve, reject) => {
@@ -90,6 +94,7 @@ export class CartService {
                 if (res && res.succeeded) {
                     console.log('[CartService] Item added to cart successfully');
                     this.refreshCart(); // Refresh cart data
+                    this._cartNotification.next({type: 'added'});
                     resolve(true);
                 } else {
                     console.error('[CartService] Failed to add item to cart:', res.message);
