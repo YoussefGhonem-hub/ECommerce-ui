@@ -342,19 +342,22 @@ export class EcommerceCheckoutComponent implements OnInit {
       return total + (item.price * item.quantity);
     }, 0);
 
-    // Update checkout data
-    this.checkoutData.subTotal = newSubTotal;
+    // Round subtotal to fix floating-point precision issues
+    const roundedSubTotal = Math.round(newSubTotal * 100) / 100;
 
+    // Update checkout data
+    this.checkoutData.subTotal = roundedSubTotal;
+    
     // Calculate total (subTotal + shipping - discount)
     const shippingTotal = this.checkoutData.shippingTotal || 0;
     const discountTotal = this.checkoutData.discountTotal || 0;
-
-    this.checkoutData.total = newSubTotal + shippingTotal - discountTotal;
+    
+    const calculatedTotal = roundedSubTotal + shippingTotal - discountTotal;
+    // Round total as well
+    this.checkoutData.total = Math.round(calculatedTotal * 100) / 100;
 
     // Update cart data total as well
-    this.cartData.total = newSubTotal;
-
-    console.log('[Checkout] Totals recalculated - Subtotal:', newSubTotal, 'Total:', this.checkoutData.total);
+    this.cartData.total = roundedSubTotal;    console.log('[Checkout] Totals recalculated - Subtotal:', newSubTotal, 'Total:', this.checkoutData.total);
   }
 
   /**
@@ -362,7 +365,11 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   getFormattedSubTotal(): string {
     const subTotal = this.checkoutData?.subTotal || 0;
-    return typeof subTotal === 'number' ? subTotal.toFixed(2) : '0.00';
+    if (typeof subTotal !== 'number') return '0.00';
+    
+    // Round to 2 decimal places to fix floating-point precision issues
+    const rounded = Math.round(subTotal * 100) / 100;
+    return rounded.toFixed(2);
   }
 
   /**
@@ -370,7 +377,11 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   getFormattedTotal(): string {
     const total = this.checkoutData?.total || 0;
-    return typeof total === 'number' ? total.toFixed(2) : '0.00';
+    if (typeof total !== 'number') return '0.00';
+    
+    // Round to 2 decimal places to fix floating-point precision issues
+    const rounded = Math.round(total * 100) / 100;
+    return rounded.toFixed(2);
   }
 
   /**
@@ -608,7 +619,11 @@ export class EcommerceCheckoutComponent implements OnInit {
       shippingMethodId: null, // Add shipping method selection later if needed
       itemSelections: this.cartItems.map(item => ({
         cartItemId: item.id,
-        attributes: item.selectedAttributes || []
+        quantity: item.quantity, // Include current quantity for each item
+        attributes: (item.selectedAttributes || []).map(attr => ({
+          attributeId: attr.attributeId || attr.AttributeId,
+          valueId: attr.valueId || attr.ValueId || null
+        }))
       }))
     };
 
