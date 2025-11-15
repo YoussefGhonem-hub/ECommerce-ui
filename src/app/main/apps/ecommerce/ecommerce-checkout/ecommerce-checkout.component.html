@@ -190,7 +190,7 @@
             </div>
             <div class="card-body">
               <div class="row" *ngIf="!isLoadingAddresses; else loadingAddresses">
-                <div class="col-md-6 col-sm-12 mb-3" *ngFor="let addr of myAddresses">
+                <div class="col-md-6 col-sm-12 mb-3" *ngFor="let addr of paginatedAddresses">
                   <div class="card border customer-card" [class.border-primary]="selectedAddressId === addr.id"
                     [class.bg-light-primary]="selectedAddressId === addr.id">
                     <div class="card-body p-3">
@@ -233,6 +233,23 @@
                   <p class="mt-2 mb-0 text-muted">Loading your addresses...</p>
                 </div>
               </ng-template>
+
+              <!-- Address Pagination Controls -->
+              <div *ngIf="totalAddressPages > 1" class="d-flex justify-content-center mt-3">
+                <ngb-pagination [(page)]="currentAddressPage" [pageSize]="addressItemsPerPage"
+                  [collectionSize]="myAddresses.length" [maxSize]="5" [rotate]="true" [boundaryLinks]="true"
+                  (pageChange)="goToAddressPage($event)">
+                </ngb-pagination>
+              </div>
+
+              <!-- Address Pagination Info -->
+              <div *ngIf="myAddresses.length > 0" class="text-center mt-2">
+                <small class="text-muted">
+                  Showing {{ (currentAddressPage - 1) * addressItemsPerPage + 1 }} -
+                  {{ Math.min(currentAddressPage * addressItemsPerPage, myAddresses.length) }}
+                  of {{ myAddresses.length }} addresses
+                </small>
+              </div>
 
               <div class="text-center mt-3">
                 <button type="button" class="btn btn-outline-secondary" (click)="toggleNewAddressForm()">

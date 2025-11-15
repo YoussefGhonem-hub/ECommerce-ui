@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import Stepper from 'bs-stepper';
 
@@ -82,6 +83,10 @@ export class EcommerceCheckoutComponent implements OnInit {
   public countries: CountryLookupDto[] = [];
   public cities: CityLookupDto[] = [];
   public myAddresses: MyAddressDto[] = [];
+  public paginatedAddresses: MyAddressDto[] = []; // Current page addresses
+  public currentAddressPage: number = 1;
+  public addressItemsPerPage: number = 2; // Display 2 items per page
+  public totalAddressPages: number = 0;
   public selectedAddressId: string | null = null;
   public isAddingNewAddress: boolean = false;
   public isLoadingAddresses: boolean = false;
@@ -103,7 +108,8 @@ export class EcommerceCheckoutComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private guestUserService: GuestUserService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.initializeAddressForm();
   }
@@ -268,6 +274,63 @@ export class EcommerceCheckoutComponent implements OnInit {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
+  // Address Pagination Methods
+  // -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Update address pagination when addresses change
+   */
+  updateAddressPagination() {
+    this.totalAddressPages = Math.ceil(this.myAddresses.length / this.addressItemsPerPage);
+    this.updatePaginatedAddresses();
+  }
+
+  /**
+   * Update addresses for current page
+   */
+  updatePaginatedAddresses() {
+    const startIndex = (this.currentAddressPage - 1) * this.addressItemsPerPage;
+    const endIndex = startIndex + this.addressItemsPerPage;
+    this.paginatedAddresses = this.myAddresses.slice(startIndex, endIndex);
+  }
+
+  /**
+   * Go to specific address page
+   */
+  goToAddressPage(page: number) {
+    if (page >= 1 && page <= this.totalAddressPages) {
+      this.currentAddressPage = page;
+      this.updatePaginatedAddresses();
+    }
+  }
+
+  /**
+   * Go to next address page
+   */
+  nextAddressPage() {
+    if (this.currentAddressPage < this.totalAddressPages) {
+      this.currentAddressPage++;
+      this.updatePaginatedAddresses();
+    }
+  }
+
+  /**
+   * Go to previous address page
+   */
+  previousAddressPage() {
+    if (this.currentAddressPage > 1) {
+      this.currentAddressPage--;
+      this.updatePaginatedAddresses();
+    }
+  }
+
+  /**
+   * Get array of address page numbers for pagination
+   */
+  getAddressPageNumbers(): number[] {
+    return Array.from({ length: this.totalAddressPages }, (_, i) => i + 1);
+  }
+
   /**
    * Handle cart refresh event from child components
    */
@@ -419,6 +482,8 @@ export class EcommerceCheckoutComponent implements OnInit {
       if (res && res.succeeded) {
         this.myAddresses = res.data || [];
         console.log('[Checkout] User addresses loaded:', this.myAddresses.length);
+        // Update address pagination after loading
+        this.updateAddressPagination();
       }
       this.isLoadingAddresses = false;
     }, err => {
@@ -454,6 +519,15 @@ export class EcommerceCheckoutComponent implements OnInit {
     this.selectedAddressId = addressId;
     this.isAddingNewAddress = false;
     console.log('[Checkout] Address selected:', addressId);
+
+    // If the selected address is not on current page, find and navigate to the correct page
+    const selectedIndex = this.myAddresses.findIndex(addr => addr.id === addressId);
+    if (selectedIndex !== -1) {
+      const pageNumber = Math.ceil((selectedIndex + 1) / this.addressItemsPerPage);
+      if (pageNumber !== this.currentAddressPage) {
+        this.goToAddressPage(pageNumber);
+      }
+    }
   }
 
   /**
@@ -549,22 +623,18 @@ export class EcommerceCheckoutComponent implements OnInit {
       (res: any) => {
         if (res && res.succeeded) {
           console.log('[Checkout] Order placed successfully:', res.data);
-
-          // Show success message or redirect
-          alert('Order placed successfully! Order ID: ' + res.data);
-
-          // Optionally redirect to order confirmation page
-          // this.router.navigate(['/order-confirmation', res.data]);
+          // Redirect to product list/shop page
+          this.router.navigate(['/apps/e-commerce/shop']);
 
         } else {
           console.error('[Checkout] Order submission failed:', res.message);
-          alert('Failed to place order: ' + (res.message || 'Unknown error'));
         }
 
         this.isSubmittingOrder = false;
       },
       (error) => {
         console.error('[Checkout] Order submission error:', error);
+        alert('Failed to place order. Please try again.');
         this.isSubmittingOrder = false;
       }
     );
