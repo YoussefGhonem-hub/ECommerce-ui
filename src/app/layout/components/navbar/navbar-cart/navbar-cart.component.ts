@@ -146,8 +146,8 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
         this.cartTotal = total;
       });
 
-    // Initial cart load
-    this.cartService.refreshCart();
+    // CartService already loads cart data in constructor, no need for additional call here
+    // this.cartService.refreshCart(); // Removed to prevent duplicate API calls
   }
 
   /**

@@ -25,6 +25,8 @@ export class CartService {
     private _cartNotification = new Subject<{ type: 'added' | 'removed' | 'updated', productName?: string }>();
     public cartNotification$ = this._cartNotification.asObservable();
 
+    private _isInitialized = false;
+
     constructor(private httpService: HttpService) {
         // Load cart data on service initialization
         this.refreshCart();
@@ -34,6 +36,7 @@ export class CartService {
      * Refresh cart data from API
      */
     refreshCart(): void {
+        console.log('[CartService] Refreshing cart data...');
         this.httpService.GET(`${CartController.GetCartItems}`).subscribe((res: any) => {
             if (res && res.succeeded && res.data) {
                 const cartData = res.data.cart || { items: [], total: 0 };
@@ -58,10 +61,11 @@ export class CartService {
                 this._cartCount.next(normalizedItems.length);
                 this._cartTotal.next(res.data.total || cartData.total || 0);
 
-                // Emit refresh event
+                // Mark as initialized and emit refresh event
+                this._isInitialized = true;
                 this._cartRefresh.next();
 
-                console.log('[CartService] Cart refreshed:', normalizedItems.length, 'items');
+                console.log('[CartService] Cart refreshed successfully:', normalizedItems.length, 'items');
             } else {
                 // Empty cart state
                 this._cartItems.next([]);
@@ -161,5 +165,12 @@ export class CartService {
      */
     getCurrentCartCount(): number {
         return this._cartCount.value;
+    }
+
+    /**
+     * Check if cart service is initialized
+     */
+    isInitialized(): boolean {
+        return this._isInitialized;
     }
 }

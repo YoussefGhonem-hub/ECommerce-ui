@@ -148,53 +148,28 @@ export class EcommerceCheckoutComponent implements OnInit {
   // -----------------------------------------------------------------------------------------------------
 
   /**
-   * Get Cart Data from backend
+   * Get additional checkout data (coupons, etc.) from backend
+   * Cart data is now handled by CartService
    */
-  getCartData() {
+  getCheckoutData() {
     this.httpService.GET(`${CartController.GetCartItems}`).subscribe((res: any) => {
       if (res && res.succeeded && res.data) {
-        // Store the full checkout data
+        // Store the full checkout data (excluding cart items which come from CartService)
         this.checkoutData = res.data;
-
-        // Extract cart data from the new structure
-        this.cartData = res.data.cart || { items: [], total: 0 };
 
         // Extract available coupons
         this.availableCoupons = res.data.coupons || [];
 
-        // Normalize CartItemDto properties to camelCase for UI consistency
-        this.cartItems = (this.cartData.items || []).map((item: any) => {
-          const normalizedItem = { ...item };
-          normalizedItem.id = item.id || item.Id;
-          normalizedItem.productId = item.productId || item.ProductId;
-          normalizedItem.productName = item.productName || item.ProductName;
-          normalizedItem.brand = item.brand || item.Brand;
-          normalizedItem.categoryNameEn = item.categoryNameEn || item.CategoryNameEn;
-          normalizedItem.categoryNameAr = item.categoryNameAr || item.CategoryNameAr;
-          normalizedItem.mainImagePath = item.mainImagePath || item.MainImagePath;
-          normalizedItem.averageRating = item.averageRating || item.AverageRating || 0;
-          normalizedItem.isInWishlist = (item.isInWishlist !== undefined) ? item.isInWishlist : (item.IsInWishlist !== undefined ? item.IsInWishlist : false);
-          normalizedItem.isInCart = (item.isInCart !== undefined) ? item.isInCart : (item.IsInCart !== undefined ? item.IsInCart : true);
-          normalizedItem.price = item.price || item.Price || 0;
-          normalizedItem.stockQuantity = item.stockQuantity || item.StockQuantity || 0;
-          normalizedItem.quantity = item.quantity || item.Quantity || 0;
-          normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
-          normalizedItem.selectedAttributes = item.selectedAttributes || item.SelectedAttributes || [];
-          return normalizedItem;
+        console.log('[Checkout] Additional checkout data loaded:', {
+          coupons: this.availableCoupons.length
         });
-
-        // Update pagination after loading cart items
-        this.updatePagination();
       } else {
         // Initialize empty state
         this.checkoutData = {};
-        this.cartData = { items: [], total: 0 };
-        this.cartItems = [];
         this.availableCoupons = [];
-        this.updatePagination();
       }
     }, err => {
-      console.error('[EcommerceCheckout] cart fetch error ->', err);
+      console.error('[EcommerceCheckout] checkout data fetch error ->', err);
     });
   }
 
@@ -753,13 +728,25 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   ngOnInit(): void {
     // Subscribe to CartService for cart data instead of direct API call
-    this.cartService.cartRefresh$.subscribe(() => {
-      // When cart refreshes, update local cart data for checkout-specific features
-      this.getCartData();
-    });
+    this.cartService.cartItems$
+      .subscribe(items => {
+        this.cartItems = items;
+        this.updatePagination();
+        console.log('[Checkout] Cart items updated from service:', items.length);
+      });
 
-    // Initial cart data load through CartService (prevents duplicate calls)
-    this.cartService.refreshCart();
+    this.cartService.cartTotal$
+      .subscribe(total => {
+        this.cartData.total = total;
+      });
+
+    // Only refresh cart if it's empty (avoid duplicate calls on route navigation)
+    if (this.cartService.getCurrentCartItems().length === 0) {
+      this.cartService.refreshCart();
+    }
+
+    // Load additional checkout data (coupons, etc.)
+    this.getCheckoutData();
 
     // Load countries and user addresses for address form
     this.loadCountries();

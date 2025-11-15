@@ -61,7 +61,13 @@ export class EcommerceService implements Resolve<any> {
     this.idHandel = route.params.id;
 
     return new Promise<void>((resolve, reject) => {
-      Promise.all([this.getProducts(), this.getWishlist(), this.getCartList(), this.getSelectedProduct()]).then(() => {
+      // For checkout route, skip getCartList as CartService handles cart data
+      const isCheckoutRoute = state.url.includes('/checkout');
+      const promises = isCheckoutRoute
+        ? [this.getProducts(), this.getWishlist(), this.getSelectedProduct()]
+        : [this.getProducts(), this.getWishlist(), this.getCartList(), this.getSelectedProduct()];
+
+      Promise.all(promises).then(() => {
         resolve();
       }, reject);
     });
@@ -197,22 +203,7 @@ export class EcommerceService implements Resolve<any> {
    *
    * @param id
    */
-  addToCart(id) {
-    return new Promise<void>((resolve, reject) => {
-      const maxValueId = Math.max(...this.cartList.map(cart => cart.id), 0) + 1;
-      const cartRef = { id: maxValueId, productId: id, qty: 1 };
-      var cartId: any = '';
 
-      // If cart is not Empty
-      if (maxValueId !== 1) {
-        cartId = maxValueId;
-      }
-      this._httpClient.post('api/ecommerce-userCart/' + cartId, { ...cartRef }).subscribe(response => {
-        this.getCartList();
-        resolve();
-      }, reject);
-    });
-  }
 
   /**
    * Remove From Cart
