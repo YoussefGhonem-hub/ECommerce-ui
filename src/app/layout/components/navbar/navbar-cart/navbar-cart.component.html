@@ -32,23 +32,7 @@
                 </h6>
                 <small class="cart-item-by">{{ item.brand }}</small>
               </div>
-              <div class="cart-item-qty">
-                <div class="input-group touchspin-cart">
-                  <div class="input-group-prepend">
-                    <button class="btn btn-outline-primary" type="button"
-                      (click)="updateQuantity(item, item.quantity - 1)">
-                      <i data-feather="minus" class="font-size-sm"></i>
-                    </button>
-                  </div>
-                  <input type="number" class="form-control text-center" [value]="item.quantity" readonly />
-                  <div class="input-group-append">
-                    <button class="btn btn-outline-primary" type="button"
-                      (click)="updateQuantity(item, item.quantity + 1)">
-                      <i data-feather="plus" class="font-size-sm"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
+
               <h5 class="cart-item-price">${{ item.subTotal }}</h5>
             </div>
           </div>
