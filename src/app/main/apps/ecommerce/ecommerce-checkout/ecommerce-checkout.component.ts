@@ -1,11 +1,55 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import Stepper from 'bs-stepper';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { HttpService } from '@shared/services/http.service';
 import { CartController } from '@shared/Controllers/CartController';
+import { LookupController } from '@shared/Controllers/LookupController';
+import { AddressController } from '@shared/Controllers/AddressController';
+import { OrderController } from '@shared/Controllers/OrderController';
 import { GuestUserService } from '@shared/services/guest-user.service';
+
+// Address related interfaces
+interface CountryLookupDto {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+}
+
+interface CityLookupDto {
+  id: string;
+  countryId: string;
+  nameEn: string;
+  nameAr: string;
+}
+
+interface MyAddressDto {
+  id: string;
+  userId?: string;
+  fullName?: string;
+  countryId: string;
+  countryNameEn: string;
+  countryNameAr: string;
+  cityId: string;
+  cityNameEn: string;
+  cityNameAr: string;
+  street: string;
+  mobileNumber?: string;
+  houseNo?: string;
+  isDefault: boolean;
+}
+
+interface UserAddressDto {
+  countryId: string;
+  cityId: string;
+  street: string;
+  fullName: string;
+  mobileNumber: string;
+  houseNo?: string;
+  isDefault: boolean;
+}
 
 @Component({
   selector: 'app-ecommerce-checkout',
@@ -34,15 +78,19 @@ export class EcommerceCheckoutComponent implements OnInit {
   public appliedCoupons: any[] = [];
   public isApplyingCoupon: boolean = false;
 
-  public address = {
-    fullNameVar: '',
-    numberVar: '',
-    flatVar: '',
-    landmarkVar: '',
-    cityVar: '',
-    pincodeVar: '',
-    stateVar: ''
-  };
+  // Address functionality
+  public countries: CountryLookupDto[] = [];
+  public cities: CityLookupDto[] = [];
+  public myAddresses: MyAddressDto[] = [];
+  public selectedAddressId: string | null = null;
+  public isAddingNewAddress: boolean = false;
+  public isLoadingAddresses: boolean = false;
+  public isLoadingCountries: boolean = false;
+  public isLoadingCities: boolean = false;
+  public isSubmittingOrder: boolean = false;
+
+  // Reactive form for address
+  public addressForm: FormGroup;
 
   // Private
   private checkoutStepper: Stepper;
@@ -54,8 +102,39 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   constructor(
     private httpService: HttpService,
-    private guestUserService: GuestUserService
-  ) { }
+    private guestUserService: GuestUserService,
+    private formBuilder: FormBuilder
+  ) {
+    this.initializeAddressForm();
+  }
+
+  /**
+   * Initialize the reactive address form
+   */
+  private initializeAddressForm(): void {
+    this.addressForm = this.formBuilder.group({
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
+      mobileNumber: ['', [Validators.required, Validators.pattern('^[+]?[0-9\\s\\-\\(\\)]+$')]],
+      countryId: ['', Validators.required],
+      cityId: ['', Validators.required],
+      street: ['', [Validators.required, Validators.minLength(5)]],
+      houseNo: ['']
+    });
+  }
+
+  /**
+   * Reset address form
+   */
+  resetAddressForm(): void {
+    this.addressForm.reset();
+  }
+
+  /**
+   * Get form control for easy access in template
+   */
+  getFormControl(controlName: string) {
+    return this.addressForm.get(controlName);
+  }
 
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
@@ -289,6 +368,208 @@ export class EcommerceCheckoutComponent implements OnInit {
     return 'Discount';
   }
 
+  // Address Management Methods
+  // -----------------------------------------------------------------------------------------------------
+
+  /**
+   * Load countries from API
+   */
+  loadCountries() {
+    this.isLoadingCountries = true;
+    this.httpService.GET(LookupController.GetCountries).subscribe((res: any) => {
+      if (res && res.succeeded) {
+        this.countries = res.data || [];
+        console.log('[Checkout] Countries loaded:', this.countries.length);
+      }
+      this.isLoadingCountries = false;
+    }, err => {
+      console.error('[Checkout] Error loading countries:', err);
+      this.isLoadingCountries = false;
+    });
+  }
+
+  /**
+   * Load cities by country ID
+   */
+  loadCities(countryId: string) {
+    if (!countryId) {
+      this.cities = [];
+      return;
+    }
+
+    this.isLoadingCities = true;
+    this.httpService.GET(LookupController.GetCitiesByCountryId(countryId)).subscribe((res: any) => {
+      if (res && res.succeeded) {
+        this.cities = res.data || [];
+        console.log('[Checkout] Cities loaded for country:', countryId, this.cities.length);
+      }
+      this.isLoadingCities = false;
+    }, err => {
+      console.error('[Checkout] Error loading cities:', err);
+      this.isLoadingCities = false;
+    });
+  }
+
+  /**
+   * Load user's saved addresses
+   */
+  loadMyAddresses() {
+    this.isLoadingAddresses = true;
+    this.httpService.GET(AddressController.GetMyAddresses).subscribe((res: any) => {
+      if (res && res.succeeded) {
+        this.myAddresses = res.data || [];
+        console.log('[Checkout] User addresses loaded:', this.myAddresses.length);
+      }
+      this.isLoadingAddresses = false;
+    }, err => {
+      console.error('[Checkout] Error loading addresses:', err);
+      this.isLoadingAddresses = false;
+    });
+  }
+
+  /**
+   * Handle country selection change
+   */
+  onCountryChange(countryId: string) {
+    this.addressForm.patchValue({
+      countryId: countryId,
+      cityId: '' // Reset city selection
+    });
+    this.loadCities(countryId);
+  }
+
+  /**
+   * Handle city selection change
+   */
+  onCityChange(cityId: string) {
+    this.addressForm.patchValue({
+      cityId: cityId
+    });
+  }
+
+  /**
+   * Select an existing address
+   */
+  selectAddress(addressId: string) {
+    this.selectedAddressId = addressId;
+    this.isAddingNewAddress = false;
+    console.log('[Checkout] Address selected:', addressId);
+  }
+
+  /**
+   * Toggle new address form
+   */
+  toggleNewAddressForm() {
+    this.isAddingNewAddress = !this.isAddingNewAddress;
+    if (this.isAddingNewAddress) {
+      this.selectedAddressId = null;
+      this.resetAddressForm();
+    }
+  }
+
+  /**
+   * Validate and proceed to next step with address
+   */
+  validateAddressAndProceed() {
+    if (this.selectedAddressId) {
+      // User selected existing address
+      console.log('[Checkout] Proceeding with selected address:', this.selectedAddressId);
+      this.nextStep();
+    } else if (this.isAddingNewAddress && this.addressForm.valid) {
+      // User is adding new address and form is valid
+      console.log('[Checkout] Proceeding with new address:', this.addressForm.value);
+      this.nextStep();
+    } else if (this.addressForm.valid) {
+      // Form is valid, proceed
+      console.log('[Checkout] Address form valid, proceeding');
+      this.nextStep();
+    } else {
+      console.log('[Checkout] Address validation failed');
+      // Mark form as submitted to show validation errors
+      this.addressForm.markAllAsTouched();
+    }
+  }
+
+  /**
+   * Get checkout command for API
+   */
+  getCheckoutCommand() {
+    const command: any = {
+      shippingAddressId: this.selectedAddressId,
+      couponCode: this.checkoutData.appliedCoupon?.code || null,
+      shippingMethodId: null, // Add shipping method selection later if needed
+      itemSelections: this.cartItems.map(item => ({
+        cartItemId: item.id,
+        attributes: item.selectedAttributes || []
+      }))
+    };
+
+    // If adding new address, include it in the command
+    if (this.isAddingNewAddress && !this.selectedAddressId && this.addressForm.valid) {
+      const formValue = this.addressForm.value;
+      command.newAddress = {
+        countryId: formValue.countryId,
+        cityId: formValue.cityId,
+        street: formValue.street,
+        fullName: formValue.fullName,
+        mobileNumber: formValue.mobileNumber,
+        houseNo: formValue.houseNo || null,
+        isDefault: false
+      };
+    }
+
+    return command;
+  }
+
+  /**
+   * Get selected address details
+   */
+  getSelectedAddress(): MyAddressDto | null {
+    if (this.selectedAddressId) {
+      return this.myAddresses.find(addr => addr.id === this.selectedAddressId) || null;
+    }
+    return null;
+  }
+
+  /**
+   * Submit checkout order
+   */
+  submitCheckout() {
+    if (this.isSubmittingOrder) {
+      return;
+    }
+
+    const checkoutCommand = this.getCheckoutCommand();
+
+    console.log('[Checkout] Submitting order:', checkoutCommand);
+
+    this.isSubmittingOrder = true;
+
+    this.httpService.POST(OrderController.Checkout, checkoutCommand).subscribe(
+      (res: any) => {
+        if (res && res.succeeded) {
+          console.log('[Checkout] Order placed successfully:', res.data);
+
+          // Show success message or redirect
+          alert('Order placed successfully! Order ID: ' + res.data);
+
+          // Optionally redirect to order confirmation page
+          // this.router.navigate(['/order-confirmation', res.data]);
+
+        } else {
+          console.error('[Checkout] Order submission failed:', res.message);
+          alert('Failed to place order: ' + (res.message || 'Unknown error'));
+        }
+
+        this.isSubmittingOrder = false;
+      },
+      (error) => {
+        console.error('[Checkout] Order submission error:', error);
+        this.isSubmittingOrder = false;
+      }
+    );
+  }
+
   /**
    * Calculate totals with applied coupon
    */
@@ -401,7 +682,9 @@ export class EcommerceCheckoutComponent implements OnInit {
     // Fetch cart data from backend
     this.getCartData();
 
-
+    // Load countries and user addresses for address form
+    this.loadCountries();
+    this.loadMyAddresses();
 
     this.checkoutStepper = new Stepper(document.querySelector('#checkoutStepper'), {
       linear: false,

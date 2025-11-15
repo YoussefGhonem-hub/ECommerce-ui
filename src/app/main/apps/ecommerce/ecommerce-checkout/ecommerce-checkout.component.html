@@ -32,14 +32,14 @@
         <div class="line">
           <i data-feather="chevron-right" class="font-medium-2"></i>
         </div>
-        <div class="step" data-target="#step-payment">
+        <div class="step" data-target="#step-summary">
           <button type="button" class="step-trigger">
             <span class="bs-stepper-box">
-              <i data-feather="credit-card" class="font-medium-3"></i>
+              <i data-feather="check-circle" class="font-medium-3"></i>
             </span>
             <span class="bs-stepper-label">
-              <span class="bs-stepper-title">Payment</span>
-              <span class="bs-stepper-subtitle">Select Payment Method</span>
+              <span class="bs-stepper-title">Summary</span>
+              <span class="bs-stepper-subtitle">Review & Checkout</span>
             </span>
           </button>
         </div>
@@ -182,251 +182,369 @@
         </div>
         <!-- Checkout Customer Address Starts -->
         <div id="step-address" class="content">
-          <form id="checkout-address" class="list-view product-checkout" (ngSubmit)="(addressForm.form.valid)"
-            #addressForm="ngForm">
-            <!-- Checkout Customer Address Left starts -->
-            <div class="card">
-              <div class="card-header flex-column align-items-start">
-                <h4 class="card-title">Add New Address</h4>
-                <p class="card-text text-muted mt-25">
-                  Be sure to check "Deliver to this address" when you have finished
-                </p>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-name">Full Name:</label>
-                      <input type="text" id="checkout-name" class="form-control"
-                        [class.error]="addressForm.submitted && fullNameRef.invalid" name="fullname"
-                        placeholder="John Doe" [(ngModel)]="address.fullNameVar" #fullNameRef="ngModel" required />
-                      <span *ngIf="addressForm.submitted && fullNameRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="fullNameRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-number">Mobile Number:</label>
-                      <input type="number" id="checkout-number" class="form-control"
-                        [class.error]="addressForm.submitted && numberRef.invalid" name="mnumber"
-                        placeholder="0123456789" [(ngModel)]="address.numberVar" #numberRef="ngModel" required />
-                      <span *ngIf="addressForm.submitted && numberRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="numberRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-apt-number">Flat, House No:</label>
-                      <input type="number" id="checkout-apt-number" class="form-control"
-                        [class.error]="addressForm.submitted && flatRef.invalid" name="apt-number"
-                        placeholder="9447 Glen Eagles Drive" [(ngModel)]="address.flatVar" #flatRef="ngModel"
-                        required />
-                      <span *ngIf="addressForm.submitted && flatRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="flatRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-landmark">Landmark e.g. near apollo hospital:</label>
-                      <input type="text" id="checkout-landmark" class="form-control"
-                        [class.error]="addressForm.submitted && landmarkRef.invalid" name="landmark"
-                        placeholder="Near Apollo Hospital" [(ngModel)]="address.landmarkVar" #landmarkRef="ngModel"
-                        required />
-                      <span *ngIf="addressForm.submitted && landmarkRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="landmarkRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-city">Town/City:</label>
-                      <input type="text" id="checkout-city" class="form-control"
-                        [class.error]="addressForm.submitted && cityRef.invalid" name="city" placeholder="Tokyo"
-                        [(ngModel)]="address.cityVar" #cityRef="ngModel" required />
-                      <span *ngIf="addressForm.submitted && cityRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="cityRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-pincode">Pincode:</label>
-                      <input type="number" id="checkout-pincode" class="form-control"
-                        [class.error]="addressForm.submitted && pincodeRef.invalid" name="pincode" placeholder="201301"
-                        [(ngModel)]="address.pincodeVar" #pincodeRef="ngModel" required />
-                      <span *ngIf="addressForm.submitted && pincodeRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="pincodeRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="checkout-state">State:</label>
-                      <input type="text" id="checkout-state" class="form-control"
-                        [class.error]="addressForm.submitted && stateRef.invalid" name="state" placeholder="California"
-                        [(ngModel)]="address.stateVar" #stateRef="ngModel" required />
-                      <span *ngIf="addressForm.submitted && stateRef.invalid" class="invalid-form">
-                        <small class="form-text text-danger" *ngIf="stateRef.errors.required">This field is
-                          required!</small>
-                      </span>
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group mb-2">
-                      <label for="add-type">Address Type:</label>
-                      <select class="form-control" id="add-type">
-                        <option>Home</option>
-                        <option>Work</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-next delivery-address"
-                      (click)="validateNextStep(addressForm)" rippleEffect>
-                      Save And Deliver Here
-                    </button>
-                  </div>
-                </div>
-              </div>
+          <!-- Existing Addresses Section -->
+          <div class="card" *ngIf="myAddresses.length > 0">
+            <div class="card-header">
+              <h4 class="card-title">Choose Existing Address</h4>
+              <p class="card-text text-muted mt-25">Select from your saved addresses</p>
             </div>
-            <!-- Checkout Customer Address Left ends -->
-
-            <!-- Checkout Customer Address Right starts -->
-            <div class="customer-card">
-              <div class="card">
-                <div class="card-header">
-                  <h4 class="card-title">John Doe</h4>
-                </div>
-                <div class="card-body actions">
-                  <p class="card-text mb-0">9447 Glen Eagles Drive</p>
-                  <p class="card-text">Lewis Center, OH 43035</p>
-                  <p class="card-text">UTC-5: Eastern Standard Time (EST)</p>
-                  <p class="card-text">202-555-0140</p>
-                  <button type="button" class="btn btn-primary btn-block btn-next delivery-address mt-2"
-                    (click)="nextStep()" rippleEffect>
-                    Deliver To This Address
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- Checkout Customer Address Right ends -->
-          </form>
-        </div>
-        <!-- Checkout Customer Address Ends -->
-
-        <!-- Checkout Payment Starts -->
-        <div id="step-payment" class="content">
-          <form id="checkout-payment" class="list-view product-checkout" onsubmit="return false;">
-            <div class="payment-type">
-              <div class="card">
-                <div class="card-header flex-column align-items-start">
-                  <h4 class="card-title">Payment options</h4>
-                  <p class="card-text text-muted mt-25">Be sure to click on correct payment option</p>
-                </div>
-                <div class="card-body">
-                  <h6 class="card-holder-name my-75">John Doe</h6>
-                  <div class="custom-control custom-radio">
-                    <input type="radio" id="customColorRadio1" name="paymentOptions" class="custom-control-input"
-                      checked />
-                    <label class="custom-control-label" for="customColorRadio1">
-                      US Unlocked Debit Card 12XX XXXX XXXX 0000
-                    </label>
-                  </div>
-                  <div class="customer-cvv mt-1">
-                    <div class="form-inline">
-                      <label class="mb-50" for="card-holder-cvv">Enter CVV:</label>
-                      <input type="password" class="form-control ml-sm-75 ml-0 mb-50 input-cvv" name="input-cvv"
-                        id="card-holder-cvv" />
-                      <button type="button" class="btn btn-primary btn-cvv ml-0 ml-sm-1 mb-50" rippleEffect>
-                        Continue
+            <div class="card-body">
+              <div class="row" *ngIf="!isLoadingAddresses; else loadingAddresses">
+                <div class="col-md-6 col-sm-12 mb-3" *ngFor="let addr of myAddresses">
+                  <div class="card border customer-card" [class.border-primary]="selectedAddressId === addr.id"
+                    [class.bg-light-primary]="selectedAddressId === addr.id">
+                    <div class="card-body p-3">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="flex-grow-1">
+                          <h6 class="card-title mb-1">
+                            <i data-feather="user" class="mr-50 font-medium-4"></i>
+                            {{ addr.fullName }}
+                          </h6>
+                          <p class="card-text small mb-1">
+                            <i data-feather="map-pin" class="mr-25"></i>
+                            {{ addr.street }}<br>
+                            <span *ngIf="addr.houseNo" class="ml-25">{{ addr.houseNo }}, </span>
+                            <span class="ml-25">{{ addr.cityNameEn }}, {{ addr.countryNameEn }}</span>
+                          </p>
+                          <p class="card-text small mb-2">
+                            <i data-feather="phone" class="mr-25"></i>
+                            {{ addr.mobileNumber }}
+                          </p>
+                          <span class="badge badge-light-success" *ngIf="addr.isDefault">
+                            <i data-feather="check" class="mr-25"></i>Default
+                          </span>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-sm w-100" [class.btn-primary]="selectedAddressId === addr.id"
+                        [class.btn-outline-primary]="selectedAddressId !== addr.id" (click)="selectAddress(addr.id)">
+                        <i data-feather="check-circle" class="mr-50" *ngIf="selectedAddressId === addr.id"></i>
+                        <i data-feather="home" class="mr-50" *ngIf="selectedAddressId !== addr.id"></i>
+                        {{ selectedAddressId === addr.id ? 'Selected Address' : 'Deliver To This Address' }}
                       </button>
                     </div>
                   </div>
-                  <hr class="my-2" />
-                  <ul class="other-payment-options list-unstyled">
-                    <li class="py-50">
-                      <div class="custom-control custom-radio">
-                        <input type="radio" id="customColorRadio2" name="paymentOptions" class="custom-control-input" />
-                        <label class="custom-control-label" for="customColorRadio2"> Credit / Debit / ATM Card </label>
+                </div>
+              </div>
+              <ng-template #loadingAddresses>
+                <div class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="sr-only">Loading addresses...</span>
+                  </div>
+                  <p class="mt-2 mb-0 text-muted">Loading your addresses...</p>
+                </div>
+              </ng-template>
+
+              <div class="text-center mt-3">
+                <button type="button" class="btn btn-outline-secondary" (click)="toggleNewAddressForm()">
+                  <i data-feather="plus" class="mr-50"></i>
+                  {{ isAddingNewAddress ? 'Cancel New Address' : 'Add New Address' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Address Form -->
+          <div class="card" *ngIf="isAddingNewAddress || myAddresses.length === 0">
+            <div class="card-header flex-column align-items-start">
+              <h4 class="card-title">
+                <i data-feather="plus-circle" class="mr-50"></i>
+                {{ myAddresses.length === 0 ? 'Add Your First Address' : 'Add New Address' }}
+              </h4>
+              <p class="card-text text-muted mt-25">
+                Fill in the details below and click "Deliver to this address" to proceed
+              </p>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="addressForm" (ngSubmit)="validateAddressAndProceed()">
+                <div class="row">
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="user"></i></span>
+                        </div>
+                        <input type="text" id="checkout-name" class="form-control"
+                          [class.is-invalid]="getFormControl('fullName')?.invalid && getFormControl('fullName')?.touched"
+                          formControlName="fullName" placeholder="John Doe" />
                       </div>
-                    </li>
-                    <li class="py-50">
-                      <div class="custom-control custom-radio">
-                        <input type="radio" id="customColorRadio3" name="paymentOptions" class="custom-control-input" />
-                        <label class="custom-control-label" for="customColorRadio3"> Net Banking </label>
+                      <div *ngIf="getFormControl('fullName')?.invalid && getFormControl('fullName')?.touched"
+                        class="invalid-feedback d-block">
+                        <small *ngIf="getFormControl('fullName')?.errors?.['required']">Full name is required</small>
+                        <small *ngIf="getFormControl('fullName')?.errors?.['minlength']">Full name must be at least 2
+                          characters</small>
                       </div>
-                    </li>
-                    <li class="py-50">
-                      <div class="custom-control custom-radio">
-                        <input type="radio" id="customColorRadio4" name="paymentOptions" class="custom-control-input" />
-                        <label class="custom-control-label" for="customColorRadio4"> EMI (Easy Installment) </label>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-number" class="form-label">Mobile Number <span
+                          class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="phone"></i></span>
+                        </div>
+                        <input type="text" id="checkout-number" class="form-control"
+                          [class.is-invalid]="getFormControl('mobileNumber')?.invalid && getFormControl('mobileNumber')?.touched"
+                          formControlName="mobileNumber" placeholder="+1234567890" />
                       </div>
-                    </li>
-                    <li class="py-50">
-                      <div class="custom-control custom-radio">
-                        <input type="radio" id="customColorRadio5" name="paymentOptions" class="custom-control-input" />
-                        <label class="custom-control-label" for="customColorRadio5"> Cash On Delivery </label>
+                      <div *ngIf="getFormControl('mobileNumber')?.invalid && getFormControl('mobileNumber')?.touched"
+                        class="invalid-feedback d-block">
+                        <small *ngIf="getFormControl('mobileNumber')?.errors?.['required']">Mobile number is
+                          required</small>
+                        <small *ngIf="getFormControl('mobileNumber')?.errors?.['pattern']">Please enter a valid mobile
+                          number</small>
                       </div>
-                    </li>
-                  </ul>
-                  <hr class="my-2" />
-                  <div class="gift-card mb-25">
-                    <p class="card-text">
-                      <i data-feather="plus-circle" class="mr-50 font-medium-5"></i>
-                      <span class="align-middle">Add Gift Card</span>
-                    </p>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-country" class="form-label">Country <span
+                          class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="globe"></i></span>
+                        </div>
+                        <select id="checkout-country" class="form-control"
+                          [class.is-invalid]="getFormControl('countryId')?.invalid && getFormControl('countryId')?.touched"
+                          formControlName="countryId" (change)="onCountryChange($event.target.value)"
+                          [disabled]="isLoadingCountries">
+                          <option value="" disabled>{{ isLoadingCountries ? 'Loading...' : 'Select Country' }}</option>
+                          <option [value]="country.id" *ngFor="let country of countries">{{ country.nameEn }}</option>
+                        </select>
+                      </div>
+                      <div *ngIf="getFormControl('countryId')?.invalid && getFormControl('countryId')?.touched"
+                        class="invalid-feedback d-block">
+                        <small *ngIf="getFormControl('countryId')?.errors?.['required']">Country is required</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-city" class="form-label">City <span class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="map-pin"></i></span>
+                        </div>
+                        <select id="checkout-city" class="form-control"
+                          [class.is-invalid]="getFormControl('cityId')?.invalid && getFormControl('cityId')?.touched"
+                          formControlName="cityId" (change)="onCityChange($event.target.value)"
+                          [disabled]="isLoadingCities || !getFormControl('countryId')?.value">
+                          <option value="" disabled>
+                            {{ isLoadingCities ? 'Loading...' : (getFormControl('countryId')?.value ? 'Select City' :
+                            'Select Country First') }}
+                          </option>
+                          <option [value]="city.id" *ngFor="let city of cities">{{ city.nameEn }}</option>
+                        </select>
+                      </div>
+                      <div *ngIf="getFormControl('cityId')?.invalid && getFormControl('cityId')?.touched"
+                        class="invalid-feedback d-block">
+                        <small *ngIf="getFormControl('cityId')?.errors?.['required']">City is required</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-street" class="form-label">Street Address <span
+                          class="text-danger">*</span></label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="map"></i></span>
+                        </div>
+                        <input type="text" id="checkout-street" class="form-control"
+                          [class.is-invalid]="getFormControl('street')?.invalid && getFormControl('street')?.touched"
+                          formControlName="street" placeholder="123 Main Street" />
+                      </div>
+                      <div *ngIf="getFormControl('street')?.invalid && getFormControl('street')?.touched"
+                        class="invalid-feedback d-block">
+                        <small *ngIf="getFormControl('street')?.errors?.['required']">Street address is required</small>
+                        <small *ngIf="getFormControl('street')?.errors?.['minlength']">Street address must be at least 5
+                          characters</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group mb-2">
+                      <label for="checkout-house" class="form-label">House/Flat Number (Optional)</label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i data-feather="home"></i></span>
+                        </div>
+                        <input type="text" id="checkout-house" class="form-control" formControlName="houseNo"
+                          placeholder="Apt 4B, Floor 2" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-block" [disabled]="addressForm.invalid">
+                      <i data-feather="map-pin" class="mr-50"></i>
+                      Deliver To This Address
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Continue Button for Selected Address -->
+          <div class="row mt-3" *ngIf="selectedAddressId && !isAddingNewAddress">
+            <div class="col-12">
+              <button type="button" class="btn btn-primary btn-block btn-lg" (click)="nextStep()">
+                <i data-feather="arrow-right" class="mr-50"></i>
+                Continue to Summary
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Checkout Customer Address Ends -->
+
+        <!-- Checkout Summary Starts -->
+        <div id="step-summary" class="content">
+          <div class="row">
+            <div class="col-xl-8 col-md-7 col-12">
+              <!-- Order Summary Card -->
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title">
+                    <i data-feather="shopping-bag" class="mr-50"></i>
+                    Order Summary
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <!-- Cart Items Summary -->
+                  <div class="order-items mb-3">
+                    <h6 class="mb-2">Items ({{ cartItems?.length || 0 }})</h6>
+                    <div class="item-summary" *ngFor="let item of cartItems">
+                      <div class="d-flex align-items-center mb-2 p-2 border rounded">
+                        <img [src]="item.mainImagePath" class="img-fluid rounded mr-2"
+                          style="width: 50px; height: 50px; object-fit: cover" [alt]="item.productName">
+                        <div class="flex-grow-1">
+                          <h6 class="mb-0">{{ item.productName }}</h6>
+                          <small class="text-muted">{{ item.brand }}</small>
+                          <div class="mt-1">
+                            <span class="badge badge-light-primary">Qty: {{ item.quantity }}</span>
+                            <span class="badge badge-light-success ml-1">${{ item.subTotal }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Delivery Address -->
+                  <div class="delivery-address mb-3" *ngIf="getSelectedAddress()">
+                    <h6 class="mb-2">
+                      <i data-feather="map-pin" class="mr-50"></i>
+                      Delivery Address
+                    </h6>
+                    <div class="card border border-primary bg-light-primary p-3">
+                      <h6 class="card-title mb-1">{{ getSelectedAddress()?.fullName }}</h6>
+                      <p class="card-text small mb-1">
+                        {{ getSelectedAddress()?.street }}<br>
+                        <span *ngIf="getSelectedAddress()?.houseNo">{{ getSelectedAddress()?.houseNo }}, </span>
+                        {{ getSelectedAddress()?.cityNameEn }}, {{ getSelectedAddress()?.countryNameEn }}
+                      </p>
+                      <p class="card-text small mb-0">
+                        <i data-feather="phone" class="mr-25"></i>
+                        {{ getSelectedAddress()?.mobileNumber }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Applied Coupon -->
+                  <div class="applied-coupon-summary" *ngIf="checkoutData?.appliedCoupon">
+                    <h6 class="mb-2">
+                      <i data-feather="tag" class="mr-50"></i>
+                      Applied Coupon
+                    </h6>
+                    <div class="card border border-success bg-light-success p-3">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong class="text-success">{{ checkoutData.appliedCoupon.code }}</strong>
+                          <small class="d-block text-muted">{{ getCouponDescription(checkoutData.appliedCoupon)
+                            }}</small>
+                        </div>
+                        <span class="badge badge-success">
+                          <i data-feather="check" class="mr-25"></i>
+                          Applied
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="amount-payable checkout-options">
+
+            <div class="col-xl-4 col-md-5 col-12">
+              <!-- Price Details & Checkout -->
               <div class="card">
                 <div class="card-header">
-                  <h4 class="card-title">Price Details</h4>
+                  <h4 class="card-title">
+                    <i data-feather="dollar-sign" class="mr-50"></i>
+                    Price Details
+                  </h4>
                 </div>
                 <div class="card-body">
-                  <ul class="list-unstyled price-details">
-                    <li class="price-detail">
-                      <div class="details-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
-                      <div class="detail-amt">
-                        <strong>{{ checkoutData?.subTotal || 0 }}</strong>
-                      </div>
-                    </li>
-                    <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
-                      <div class="details-title">Discount Applied</div>
-                      <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal }}</div>
-                    </li>
-                    <li class="price-detail">
-                      <div class="details-title">Shipping Charges</div>
-                      <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
-                        [class.text-success]="checkoutData?.freeShippingApplied">
-                        {{ checkoutData?.freeShippingApplied ? 'Free' : '' + (checkoutData?.shippingTotal || 0) }}
-                      </div>
-                    </li>
-                  </ul>
-                  <hr />
-                  <ul class="list-unstyled price-details">
-                    <li class="price-detail">
-                      <div class="details-title">Amount Payable</div>
-                      <div class="detail-amt font-weight-bolder">{{ checkoutData?.total || 0 }}</div>
-                    </li>
-                  </ul>
+                  <div class="price-details">
+                    <ul class="list-unstyled">
+                      <li class="price-detail d-flex justify-content-between">
+                        <span class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</span>
+                        <span class="detail-amt font-weight-bold">${{ checkoutData?.subTotal || 0 }}</span>
+                      </li>
+                      <li class="price-detail d-flex justify-content-between" *ngIf="checkoutData?.discountTotal > 0">
+                        <span class="detail-title text-success">Discount</span>
+                        <span class="detail-amt text-success font-weight-bold">-${{ checkoutData?.discountTotal || 0
+                          }}</span>
+                      </li>
+                      <li class="price-detail d-flex justify-content-between">
+                        <span class="detail-title">
+                          Shipping
+                          <span *ngIf="checkoutData?.freeShippingApplied" class="text-success">(Free)</span>
+                        </span>
+                        <span class="detail-amt font-weight-bold"
+                          [class.text-success]="checkoutData?.freeShippingApplied">
+                          {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                        </span>
+                      </li>
+                    </ul>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between">
+                      <span class="detail-title h5 font-weight-bold">Total</span>
+                      <span class="detail-amt h5 font-weight-bold text-primary">${{ checkoutData?.total || 0 }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Checkout Button -->
+                  <div class="checkout-action mt-4">
+                    <button type="button" class="btn btn-primary btn-block btn-lg" (click)="submitCheckout()"
+                      [disabled]="isSubmittingOrder">
+                      <span *ngIf="isSubmittingOrder" class="spinner-border spinner-border-sm mr-2"></span>
+                      <i *ngIf="!isSubmittingOrder" data-feather="credit-card" class="mr-50"></i>
+                      {{ isSubmittingOrder ? 'Processing...' : 'Place Order' }}
+                    </button>
+
+                    <button type="button" class="btn btn-outline-secondary btn-block mt-2" (click)="previousStep()"
+                      [disabled]="isSubmittingOrder">
+                      <i data-feather="arrow-left" class="mr-50"></i>
+                      Back to Address
+                    </button>
+                  </div>
+
+                  <!-- Order Notes -->
+                  <div class="order-notes mt-3">
+                    <small class="text-muted">
+                      <i data-feather="info" class="mr-25"></i>
+                      By placing this order, you agree to our terms and conditions.
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         </div>
+
         <!-- Checkout Payment Ends -->
       </div>
     </div>
   </div>
-</div>
