@@ -214,27 +214,64 @@ export class EcommerceCheckoutComponent implements OnInit {
     );
 
     if (selectedCoupon) {
-      // Apply the coupon locally
+      console.log('[EcommerceCheckout] Applying coupon locally:', selectedCoupon.code);
+
+      // Store original values before applying coupon
+      if (!this.checkoutData.originalSubTotal) {
+        this.checkoutData.originalSubTotal = this.checkoutData.subTotal || this.cartData.total || 0;
+        this.checkoutData.originalShippingTotal = this.checkoutData.shippingTotal || 10;
+        this.checkoutData.originalDiscountTotal = this.checkoutData.discountTotal || 0;
+        this.checkoutData.originalTotal = this.checkoutData.total || ((this.checkoutData.subTotal || 0) + (this.checkoutData.shippingTotal || 0));
+        this.checkoutData.originalFreeShippingApplied = this.checkoutData.freeShippingApplied || false;
+      }
+
+      // Apply the coupon
       this.checkoutData.appliedCoupon = selectedCoupon;
       this.calculateTotalsWithCoupon(selectedCoupon);
+
       this.couponCode = ''; // Clear input after successful application
-      console.log('[EcommerceCheckout] coupon applied locally:', selectedCoupon);
+      console.log('[EcommerceCheckout] Coupon applied locally with stored originals');
     } else {
       console.warn('[EcommerceCheckout] coupon not found:', trimmedCode);
       // You could add a toast notification here for invalid coupon
     }
 
     this.isApplyingCoupon = false;
-  }
-
-  /**
-   * Remove applied coupon locally
+  }  /**
+   * Remove applied coupon and restore original values
    */
   removeCoupon() {
     if (this.checkoutData.appliedCoupon) {
+      console.log('[EcommerceCheckout] Removing coupon and restoring original values:', this.checkoutData.appliedCoupon.code);
+
+      // Restore original values if they were stored
+      if (this.checkoutData.originalSubTotal !== undefined) {
+        this.checkoutData.subTotal = this.checkoutData.originalSubTotal;
+        this.checkoutData.shippingTotal = this.checkoutData.originalShippingTotal;
+        this.checkoutData.discountTotal = this.checkoutData.originalDiscountTotal;
+        this.checkoutData.total = this.checkoutData.originalTotal;
+        this.checkoutData.freeShippingApplied = this.checkoutData.originalFreeShippingApplied;
+
+        // Clear stored original values
+        delete this.checkoutData.originalSubTotal;
+        delete this.checkoutData.originalShippingTotal;
+        delete this.checkoutData.originalDiscountTotal;
+        delete this.checkoutData.originalTotal;
+        delete this.checkoutData.originalFreeShippingApplied;
+
+        console.log('[EcommerceCheckout] Original values restored:', {
+          subTotal: this.checkoutData.subTotal,
+          shippingTotal: this.checkoutData.shippingTotal,
+          discountTotal: this.checkoutData.discountTotal,
+          total: this.checkoutData.total,
+          freeShipping: this.checkoutData.freeShippingApplied
+        });
+      }
+
+      // Clear applied coupon
       this.checkoutData.appliedCoupon = null;
-      this.calculateTotalsWithoutCoupon();
-      console.log('[EcommerceCheckout] coupon removed locally');
+
+      console.log('[EcommerceCheckout] Coupon removed, original values restored');
     }
   }
 
@@ -260,32 +297,57 @@ export class EcommerceCheckoutComponent implements OnInit {
       return;
     }
 
+    // Use the cart data total as the base subtotal
     const originalSubTotal = this.cartData.total || 0;
     let discountAmount = 0;
     let freeShippingApplied = false;
-    const originalShipping = this.checkoutData.shippingTotal || 10; // Default shipping cost
 
-    // Calculate discount based on coupon type
-    if (coupon.percentage) {
-      discountAmount = (originalSubTotal * coupon.percentage) / 100;
-    } else if (coupon.fixedAmount) {
-      discountAmount = Math.min(coupon.fixedAmount, originalSubTotal);
+    // Store original values if not already stored - use backend data if available
+    if (!this.checkoutData.originalSubTotal) {
+      this.checkoutData.originalSubTotal = originalSubTotal;
+      // Use shipping from backend data or default to 10
+      this.checkoutData.originalShippingTotal = this.checkoutData.shippingTotal || 10;
+      // Store the original total from backend
+      this.checkoutData.originalTotal = this.checkoutData.total || (originalSubTotal + (this.checkoutData.shippingTotal || 10));
+    }
+
+    const originalShipping = this.checkoutData.originalShippingTotal;
+
+    // Calculate discount based on coupon type with proper validation
+    if (coupon.percentage && coupon.percentage > 0) {
+      // Percentage discount: ensure it's between 0-100%
+      const validPercentage = Math.min(Math.max(coupon.percentage, 0), 100);
+      discountAmount = Number(((originalSubTotal * validPercentage) / 100).toFixed(2));
+    } else if (coupon.fixedAmount && coupon.fixedAmount > 0) {
+      // Fixed amount discount: cannot exceed subtotal
+      discountAmount = Number(Math.min(coupon.fixedAmount, originalSubTotal).toFixed(2));
     }
 
     // Check for free shipping
-    if (coupon.freeShipping) {
+    if (coupon.freeShipping === true) {
       freeShippingApplied = true;
     }
 
-    // Update checkout data
+    // Update checkout data with calculated values
     this.checkoutData.subTotal = originalSubTotal;
     this.checkoutData.discountTotal = discountAmount;
     this.checkoutData.freeShippingApplied = freeShippingApplied;
     this.checkoutData.shippingTotal = freeShippingApplied ? 0 : originalShipping;
-    this.checkoutData.total = originalSubTotal - discountAmount + this.checkoutData.shippingTotal;
-  }
+    this.checkoutData.total = Number((originalSubTotal - discountAmount + this.checkoutData.shippingTotal).toFixed(2));
 
-  /**
+    console.log('[Coupon Applied]', {
+      coupon: coupon.code,
+      originalSubTotal,
+      discountAmount,
+      freeShipping: freeShippingApplied,
+      finalTotal: this.checkoutData.total,
+      originalValues: {
+        subTotal: this.checkoutData.originalSubTotal,
+        shipping: this.checkoutData.originalShippingTotal,
+        total: this.checkoutData.originalTotal
+      }
+    });
+  }  /**
    * Calculate totals without coupon (reset to original)
    */
   calculateTotalsWithoutCoupon() {
@@ -293,18 +355,43 @@ export class EcommerceCheckoutComponent implements OnInit {
       return;
     }
 
-    const originalSubTotal = this.cartData.total || 0;
-    const originalShipping = 10; // Default shipping cost
+    // Get the stored original values or fallback to current cart data
+    const originalSubTotal = this.checkoutData.originalSubTotal || this.cartData.total || 0;
+    const originalShipping = this.checkoutData.originalShippingTotal || 10;
+    const originalTotal = this.checkoutData.originalTotal || (originalSubTotal + originalShipping);
 
-    // Reset to original values
+    console.log('[Coupon Removal] Before reset:', {
+      currentSubTotal: this.checkoutData.subTotal,
+      currentDiscount: this.checkoutData.discountTotal,
+      currentShipping: this.checkoutData.shippingTotal,
+      currentTotal: this.checkoutData.total,
+      storedOriginals: {
+        subTotal: this.checkoutData.originalSubTotal,
+        shipping: this.checkoutData.originalShippingTotal,
+        total: this.checkoutData.originalTotal
+      }
+    });
+
+    // Reset to exact original values
     this.checkoutData.subTotal = originalSubTotal;
     this.checkoutData.discountTotal = 0;
     this.checkoutData.freeShippingApplied = false;
     this.checkoutData.shippingTotal = originalShipping;
-    this.checkoutData.total = originalSubTotal + originalShipping;
-  }
+    // Calculate total properly: subtotal + shipping (no discount)
+    this.checkoutData.total = Number((originalSubTotal + originalShipping).toFixed(2));
 
-  // Lifecycle Hooks
+    // Clear stored original values
+    delete this.checkoutData.originalSubTotal;
+    delete this.checkoutData.originalShippingTotal;
+    delete this.checkoutData.originalTotal;
+
+    console.log('[Coupon Removed] After reset:', {
+      restoredSubTotal: this.checkoutData.subTotal,
+      restoredShipping: this.checkoutData.shippingTotal,
+      restoredTotal: this.checkoutData.total,
+      calculation: `${originalSubTotal} + ${originalShipping} = ${this.checkoutData.total}`
+    });
+  }  // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
 
   /**

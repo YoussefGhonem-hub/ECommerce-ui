@@ -66,7 +66,7 @@
               <!-- Pagination Controls -->
               <div *ngIf="totalPages > 1" class="d-flex justify-content-center mt-3">
                 <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="cartItems.length"
-                  [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="goToPage($event)">
+                  [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="goToPage(event)">
                 </ngb-pagination>
               </div>
 
@@ -145,11 +145,11 @@
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
-                        <div class="detail-amt">${{ checkoutData?.subTotal || 0 }}</div>
+                        <div class="detail-amt">{{ checkoutData?.subTotal || 0 }}</div>
                       </li>
                       <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
                         <div class="detail-title">Discount</div>
-                        <div class="detail-amt discount-amt text-success">-${{ checkoutData?.discountTotal || 0 }}</div>
+                        <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal || 0 }}</div>
                       </li>
                       <li class="price-detail">
                         <div class="detail-title">Shipping
@@ -157,7 +157,7 @@
                         </div>
                         <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
                           [class.text-success]="checkoutData?.freeShippingApplied">
-                          {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                          {{ checkoutData?.freeShippingApplied ? 'Free' : '' + (checkoutData?.shippingTotal || 0) }}
                         </div>
                       </li>
                     </ul>
@@ -165,7 +165,7 @@
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title detail-total">Total</div>
-                        <div class="detail-amt font-weight-bolder">${{ checkoutData?.total || 0 }}</div>
+                        <div class="detail-amt font-weight-bolder">{{ checkoutData?.total || 0 }}</div>
                       </li>
                     </ul>
                     <button type="button" class="btn btn-primary btn-block btn-next place-order" (click)="nextStep()"
@@ -398,18 +398,18 @@
                     <li class="price-detail">
                       <div class="details-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
                       <div class="detail-amt">
-                        <strong>${{ checkoutData?.subTotal || 0 }}</strong>
+                        <strong>{{ checkoutData?.subTotal || 0 }}</strong>
                       </div>
                     </li>
                     <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
                       <div class="details-title">Discount Applied</div>
-                      <div class="detail-amt discount-amt text-success">-${{ checkoutData?.discountTotal }}</div>
+                      <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal }}</div>
                     </li>
                     <li class="price-detail">
                       <div class="details-title">Shipping Charges</div>
                       <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
                         [class.text-success]="checkoutData?.freeShippingApplied">
-                        {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                        {{ checkoutData?.freeShippingApplied ? 'Free' : '' + (checkoutData?.shippingTotal || 0) }}
                       </div>
                     </li>
                   </ul>
@@ -417,7 +417,7 @@
                   <ul class="list-unstyled price-details">
                     <li class="price-detail">
                       <div class="details-title">Amount Payable</div>
-                      <div class="detail-amt font-weight-bolder">${{ checkoutData?.total || 0 }}</div>
+                      <div class="detail-amt font-weight-bolder">{{ checkoutData?.total || 0 }}</div>
                     </li>
                   </ul>
                 </div>
