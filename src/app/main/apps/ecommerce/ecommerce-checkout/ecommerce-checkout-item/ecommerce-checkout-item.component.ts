@@ -26,6 +26,75 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   ) { }
 
   /**
+   * Handle quantity change from touchspin component
+   * @param newQuantity - The new quantity value
+   */
+  onQuantityChange(newQuantity: number) {
+    console.log('[CheckoutItem] Quantity change triggered:', newQuantity);
+    if (!this.product) return;
+
+    // Ensure newQuantity is a valid number
+    if (typeof newQuantity !== 'number' || isNaN(newQuantity)) {
+      console.warn('[CheckoutItem] Invalid quantity value:', newQuantity);
+      return;
+    }
+
+    if (newQuantity === this.product.quantity) return;
+
+    // Validate quantity bounds
+    const minQty = 1;
+    const maxQty = this.product.stockQuantity || 10;
+
+    if (newQuantity < minQty) {
+      newQuantity = minQty;
+    }
+    if (newQuantity > maxQty) {
+      newQuantity = maxQty;
+      console.warn('[CheckoutItem] Quantity limited to stock:', maxQty);
+    }
+
+    // Update local product data with new quantity and calculated total
+    this.updateLocalProductData(newQuantity);
+
+    console.log('[CheckoutItem] Quantity updated locally:', this.product.productName, newQuantity, 'Subtotal:', this.product.subTotal);
+  }
+
+  /**
+   * Update local product data for immediate UI feedback
+   * @param quantity - The new quantity
+   */
+  private updateLocalProductData(quantity: number) {
+    if (!this.product) return;
+
+    this.product.quantity = quantity;
+    // Update subtotal as number, not string, for proper calculations
+    this.product.subTotal = this.product.price * quantity;
+  }
+
+
+
+  /**
+   * Get formatted subtotal for display
+   */
+  getFormattedSubTotal(): string {
+    if (!this.product || !this.product.price || !this.product.quantity) {
+      return '0.00';
+    }
+    const subtotal = this.product.price * this.product.quantity;
+    return subtotal.toFixed(2);
+  }
+
+  /**
+   * Get formatted unit price for display
+   */
+  getFormattedPrice(): string {
+    if (!this.product || !this.product.price) {
+      return '0.00';
+    }
+    return this.product.price.toFixed(2);
+  }
+
+  /**
    * Remove From Cart
    *
    * @param product

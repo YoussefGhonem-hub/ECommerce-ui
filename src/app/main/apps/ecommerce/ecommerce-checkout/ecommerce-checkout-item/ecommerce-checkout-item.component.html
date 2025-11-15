@@ -34,19 +34,22 @@
       <span class="quantity-title">Qty:</span>
       <div class="quantity-counter-wrapper">
         <core-touchspin [numberValue]="product.quantity" [stepValue]="1" [minValue]="1"
-          [maxValue]="product.stockQuantity || 10"></core-touchspin>
+          [maxValue]="product.stockQuantity || 10" (onChange)="onQuantityChange($event)">
+        </core-touchspin>
       </div>
     </div>
     <span class="delivery-date text-muted">Delivery by, Wed Apr 25</span>
     <div class="item-subtotal mt-1">
-      <strong class="text-primary">Subtotal: ${{ product.subTotal }}</strong>
+      <strong class="text-primary">Subtotal: ${{ getFormattedSubTotal() }}</strong>
     </div>
   </div>
   <div class="item-options text-center">
     <div class="item-wrapper">
       <div class="item-cost">
-        <h6 class="item-price">Unit: ${{ product.price }}</h6>
-        <h4 class="item-subtotal text-primary">Total: ${{ product.subTotal }}</h4>
+        <h6 class="item-price">Unit: ${{ getFormattedPrice() }}</h6>
+        <h4 class="item-subtotal text-primary">
+          Total: ${{ getFormattedSubTotal() }}
+        </h4>
       </div>
     </div>
     <button type="button" class="btn btn-light mt-1 remove-wishlist" (click)="removeFromCart(product)" rippleEffect>
