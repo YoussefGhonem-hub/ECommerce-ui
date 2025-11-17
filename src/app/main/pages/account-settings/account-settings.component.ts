@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FlatpickrOptions } from 'ng2-flatpickr';
-
 import { AccountSettingsService } from 'app/main/pages/account-settings/account-settings.service';
 @Component({
   selector: 'app-account-settings',
@@ -15,6 +14,8 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   // public
   public contentHeader: object;
   public data: any;
+  public generalForm: FormGroup;
+  public avatarFile: File | null = null;
   public birthDateOptions: FlatpickrOptions = {
     altInput: true
   };
@@ -31,8 +32,13 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
    *
    * @param {AccountSettingsService} _accountSettingsService
    */
-  constructor(private _accountSettingsService: AccountSettingsService) {
+  constructor(private _accountSettingsService: AccountSettingsService, private fb: FormBuilder) {
     this._unsubscribeAll = new Subject();
+    this.generalForm = this.fb.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      avatar: [null]
+    });
   }
 
   // Public Methods
@@ -66,14 +72,27 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
    */
   uploadImage(event: any) {
     if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      this.avatarFile = file;
       let reader = new FileReader();
-
-      reader.onload = (event: any) => {
-        this.avatarImage = event.target.result;
+      reader.onload = (e: any) => {
+        this.avatarImage = e.target.result;
       };
-
-      reader.readAsDataURL(event.target.files[0]);
+      reader.readAsDataURL(file);
     }
+  }
+
+  onGeneralSubmit() {
+    if (this.generalForm.invalid) return;
+    const { fullName, email } = this.generalForm.value;
+    this._accountSettingsService.updateAccountSettings({
+      fullName,
+      email,
+      avatar: this.avatarFile
+    }).then(() => {
+      // Optionally show a success message or refresh profile
+      this._accountSettingsService.getDataTableRows();
+    });
   }
 
   // Lifecycle Hooks
@@ -85,9 +104,14 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._accountSettingsService.onSettingsChanged.pipe(takeUntil(this._unsubscribeAll)).subscribe(response => {
       this.data = response;
-      this.avatarImage = this.data.accountSetting.general.avatar;
+      if (this.data && this.data.accountSetting && this.data.accountSetting.general) {
+        this.generalForm.patchValue({
+          fullName: this.data.accountSetting.general.fullName || '',
+          email: this.data.accountSetting.general.email || ''
+        });
+        this.avatarImage = this.data.accountSetting.general.avatar;
+      }
     });
-
     // content header
     this.contentHeader = {
       headerTitle: 'Account Settings',

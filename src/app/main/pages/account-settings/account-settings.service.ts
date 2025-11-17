@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpService } from '@shared/services/http.service';
+import { AccountController } from '@shared/Controllers/AccountController';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 
@@ -14,7 +15,7 @@ export class AccountSettingsService implements Resolve<any> {
    *
    * @param {HttpClient} _httpClient
    */
-  constructor(private _httpClient: HttpClient) {
+  constructor(private httpService: HttpService) {
     // Set the defaults
     this.onSettingsChanged = new BehaviorSubject({});
   }
@@ -37,12 +38,41 @@ export class AccountSettingsService implements Resolve<any> {
   /**
    * Get rows
    */
-  getDataTableRows(): Promise<any[]> {
+  getDataTableRows(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/account-settings-data').subscribe((response: any) => {
-        this.rows = response;
+      this.httpService.GET(AccountController.GetProfile).subscribe((response: any) => {
+        // Map API response to expected structure for the general tab
+        if (response && response.succeeded && response.data) {
+          this.rows = {
+            accountSetting: {
+              general: {
+                id: response.data.id,
+                fullName: response.data.fullName,
+                email: response.data.email,
+                avatar: response.data.avatarUrl
+              }
+            }
+          };
+        } else {
+          this.rows = {};
+        }
         this.onSettingsChanged.next(this.rows);
         resolve(this.rows);
+      }, reject);
+    });
+  }
+
+  updateAccountSettings(data: { fullName: string; email: string; avatar?: File | null }): Promise<any> {
+    // Use FormData for avatar upload
+    const formData = new FormData();
+    formData.append('FullName', data.fullName);
+    formData.append('Email', data.email);
+    if (data.avatar) {
+      formData.append('Avatar', data.avatar);
+    }
+    return new Promise((resolve, reject) => {
+      this.httpService.POST(AccountController.UpdateAccountSettings, formData).subscribe((response: any) => {
+        resolve(response);
       }, reject);
     });
   }
