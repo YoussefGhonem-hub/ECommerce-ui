@@ -20,6 +20,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   public data: any;
   public generalForm: FormGroup;
   public avatarFile: File | null = null;
+  public passwordForm: FormGroup;
   public birthDateOptions: FlatpickrOptions = {
     altInput: true
   };
@@ -43,8 +44,24 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       avatar: [null]
     });
-  }
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    });
 
+  }
+  onPasswordSubmit() {
+    if (this.passwordForm.invalid) return;
+    const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
+    this._accountSettingsService.changePassword({
+      currentPassword,
+      newPassword,
+      confirmPassword
+    }).then(() => {
+      this.passwordForm.reset();
+    });
+  }
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
   resetAvatarImage() {

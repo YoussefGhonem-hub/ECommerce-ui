@@ -34,7 +34,17 @@ export class AccountSettingsService implements Resolve<any> {
       }, reject);
     });
   }
-
+  changePassword(data: { currentPassword: string; newPassword: string; confirmPassword: string }): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.httpService.POST(AccountController.ChangePassword, {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+        confirmPassword: data.confirmPassword
+      }).subscribe((response: any) => {
+        resolve(response);
+      }, reject);
+    });
+  }
   /**
    * Get rows
    */

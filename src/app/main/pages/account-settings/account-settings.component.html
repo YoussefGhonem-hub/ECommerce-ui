@@ -90,14 +90,15 @@
                 <div class="card">
                   <div class="card-body">
                     <!-- form -->
-                    <form class="validate-form">
+                    <form class="validate-form" [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()">
                       <div class="row">
                         <div class="col-12 col-sm-6">
                           <div class="form-group">
                             <label for="account-old-password">Old Password</label>
                             <div class="input-group form-password-toggle input-group-merge">
                               <input [type]="passwordTextTypeOld ? 'text' : 'password'" class="form-control"
-                                id="account-old-password" name="password" placeholder="Old Password" />
+                                id="account-old-password" formControlName="currentPassword"
+                                placeholder="Old Password" />
                               <div class="input-group-append">
                                 <span class="input-group-text cursor-pointer"><i class="feather font-small-4" [ngClass]="{
                                       'icon-eye-off': passwordTextTypeOld,
@@ -114,7 +115,7 @@
                             <label for="account-new-password">New Password</label>
                             <div class="input-group form-password-toggle input-group-merge">
                               <input [type]="passwordTextTypeNew ? 'text' : 'password'" id="account-new-password"
-                                name="new-password" class="form-control" placeholder="New Password" />
+                                formControlName="newPassword" class="form-control" placeholder="New Password" />
                               <div class="input-group-append">
                                 <span class="input-group-text cursor-pointer"><i class="feather font-small-4" [ngClass]="{
                                       'icon-eye-off': passwordTextTypeNew,
@@ -129,7 +130,7 @@
                             <label for="account-retype-new-password">Retype New Password</label>
                             <div class="input-group form-password-toggle input-group-merge">
                               <input [type]="passwordTextTypeRetype ? 'text' : 'password'" class="form-control"
-                                id="account-retype-new-password" name="confirm-new-password"
+                                id="account-retype-new-password" formControlName="confirmPassword"
                                 placeholder="New Password" />
                               <div class="input-group-append">
                                 <span class="input-group-text cursor-pointer"><i class="feather font-small-4" [ngClass]="{
@@ -141,8 +142,10 @@
                           </div>
                         </div>
                         <div class="col-12">
-                          <button type="submit" class="btn btn-primary mr-1 mt-1" rippleEffect>Save changes</button>
-                          <button type="reset" class="btn btn-outline-secondary mt-1" rippleEffect>Cancel</button>
+                          <button type="submit" class="btn btn-primary mr-1 mt-1" rippleEffect
+                            [disabled]="passwordForm.invalid">Save changes</button>
+                          <button type="reset" class="btn btn-outline-secondary mt-1" rippleEffect
+                            (click)="passwordForm.reset()">Cancel</button>
                         </div>
                       </div>
                     </form>
