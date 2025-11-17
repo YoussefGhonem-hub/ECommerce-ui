@@ -39,8 +39,7 @@ const appRoutes: Routes = [
   },
   {
     path: 'apps',
-    loadChildren: () => import('./main/apps/apps.module').then(m => m.AppsModule),
-    canActivate: [AuthGuard]
+    loadChildren: () => import('./main/apps/apps.module').then(m => m.AppsModule)
   },
   {
     path: 'pages',

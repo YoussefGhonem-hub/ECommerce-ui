@@ -30,6 +30,10 @@ const routes: Routes = [
     component: AuthLoginV2Component
   },
   {
+    path: 'authentication/login',
+    component: AuthLoginV2Component
+  },
+  {
     path: 'authentication/register-v1',
     component: AuthRegisterV1Component
   },
@@ -68,4 +72,4 @@ const routes: Routes = [
   ],
   imports: [CommonModule, RouterModule.forChild(routes), NgbModule, FormsModule, ReactiveFormsModule, CoreCommonModule]
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }

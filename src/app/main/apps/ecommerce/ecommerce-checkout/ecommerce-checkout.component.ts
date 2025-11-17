@@ -12,6 +12,7 @@ import { AddressController } from '@shared/Controllers/AddressController';
 import { OrderController } from '@shared/Controllers/OrderController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { CartService } from '@shared/services/cart.service';
+import { AuthenticationService } from 'app/auth/service/authentication.service';
 
 // Address related interfaces
 interface CountryLookupDto {
@@ -111,7 +112,8 @@ export class EcommerceCheckoutComponent implements OnInit {
     private guestUserService: GuestUserService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private cartService: CartService
+    private cartService: CartService,
+    private authService: AuthenticationService
   ) {
     this.initializeAddressForm();
   }
@@ -621,22 +623,30 @@ export class EcommerceCheckoutComponent implements OnInit {
         // Only include the currently selected attribute for each attribute group
         let attributes: any[] = [];
         if (item.groupedAttributes && item.selectedAttributes) {
-          attributes = Object.keys(item.groupedAttributes).map(attrName => {
+          // Build a map to ensure only one valueId per attributeId
+          const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
+          Object.keys(item.groupedAttributes).forEach(attrName => {
             const selectedValue = item.selectedAttributes[attrName];
             const attrObj = (item.groupedAttributes[attrName] || []).find(a => a.value === selectedValue);
-            return attrObj && attrObj.attributeId ? {
-              attributeId: attrObj.attributeId,
-              valueId: attrObj.valueId || null
-            } : null;
-          }).filter(Boolean);
+            if (attrObj && attrObj.attributeId) {
+              attrMap[attrObj.attributeId] = {
+                attributeId: attrObj.attributeId,
+                valueId: attrObj.valueId || null
+              };
+            }
+          });
+          attributes = Object.values(attrMap);
         } else if (Array.isArray(item.selectedAttributes)) {
           // fallback for old structure
-          attributes = item.selectedAttributes
+          const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
+          item.selectedAttributes
             .filter(attr => attr && attr.attributeId)
-            .map(attr => ({
-              attributeId: attr.attributeId || attr.AttributeId,
-              valueId: attr.valueId || attr.ValueId || null
-            }));
+            .forEach(attr => {
+              const attributeId = attr.attributeId || attr.AttributeId;
+              const valueId = attr.valueId || attr.ValueId || null;
+              attrMap[attributeId] = { attributeId, valueId };
+            });
+          attributes = Object.values(attrMap);
         }
         return {
           cartItemId: item.id,
@@ -678,6 +688,13 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   submitCheckout() {
     if (this.isSubmittingOrder) {
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!this.authService.currentUserValue) {
+      // Not logged in, redirect to login/register and return to checkout after
+      this.router.navigate(['/pages/authentication/login-v1'], { queryParams: { returnUrl: '/apps/e-commerce/checkout' } });
       return;
     }
 

@@ -5,6 +5,7 @@ import { takeUntil, first } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { AuthenticationService } from 'app/auth/service';
+import { ToastrService } from 'ngx-toastr';
 import { CoreConfigService } from '@core/services/config.service';
 
 @Component({
@@ -21,6 +22,10 @@ export class AuthLoginV2Component implements OnInit {
   public submitted = false;
   public returnUrl: string;
   public error = '';
+  public registerMode = false;
+  public registerForm: FormGroup;
+  public registerSubmitted = false;
+  public registerLoading = false;
   public passwordTextType: boolean;
 
   // Private
@@ -36,7 +41,8 @@ export class AuthLoginV2Component implements OnInit {
     private _formBuilder: FormBuilder,
     private _route: ActivatedRoute,
     private _router: Router,
-    private _authenticationService: AuthenticationService
+    private _authenticationService: AuthenticationService,
+    private _toastr: ToastrService
   ) {
     // redirect to home if already logged in
     if (this._authenticationService.currentUserValue) {
@@ -75,26 +81,74 @@ export class AuthLoginV2Component implements OnInit {
     this.passwordTextType = !this.passwordTextType;
   }
 
+  /**
+   * Switch to register mode
+   */
+  switchToRegister() {
+    this.registerMode = true;
+    this.error = '';
+  }
+
+  /**
+   * Switch to login mode
+   */
+  switchToLogin() {
+    this.registerMode = false;
+    this.error = '';
+  }
+
   onSubmit() {
     this.submitted = true;
-
-    // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
-
-    // Login
     this.loading = true;
     this._authenticationService
       .login(this.f.email.value, this.f.password.value)
       .pipe(first())
       .subscribe(
-        data => {
-          this._router.navigate([this.returnUrl]);
+        res => {
+          if (res && res.succeeded) {
+            this._router.navigate([this.returnUrl]);
+          } else {
+            this.error = (res && res.errors && res.errors.length) ? res.errors[0] : 'Login failed';
+            this.loading = false;
+          }
         },
         error => {
           this.error = error;
           this.loading = false;
+        }
+      );
+  }
+
+  onRegisterSubmit() {
+    this.registerSubmitted = true;
+    if (this.registerForm.invalid) {
+      return;
+    }
+    this.registerLoading = true;
+    this._authenticationService
+      .register(
+        this.registerForm.controls.fullName.value,
+        this.registerForm.controls.email.value,
+        this.registerForm.controls.phoneNumber.value,
+        this.registerForm.controls.password.value
+      )
+      .pipe(first())
+      .subscribe(
+        res => {
+          if (res && res.succeeded) {
+            this._toastr.success('Registration successful! Please login.');
+            this.switchToLogin();
+          } else {
+            this.error = (res && res.errors && res.errors.length) ? res.errors[0] : 'Registration failed';
+          }
+          this.registerLoading = false;
+        },
+        error => {
+          this.error = error;
+          this.registerLoading = false;
         }
       );
   }
@@ -107,14 +161,16 @@ export class AuthLoginV2Component implements OnInit {
    */
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
-      email: ['admin@demo.com', [Validators.required, Validators.email]],
-      password: ['admin', Validators.required]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
-
-    // get return url from route parameters or default to '/'
+    this.registerForm = this._formBuilder.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', Validators.required],
+      password: ['', Validators.required]
+    });
     this.returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/';
-
-    // Subscribe to config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
       this.coreConfig = config;
     });

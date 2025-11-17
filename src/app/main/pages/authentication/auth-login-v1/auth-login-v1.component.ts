@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
 import { CoreConfigService } from '@core/services/config.service';
+import { AuthenticationService } from 'app/auth/service/authentication.service';
 
 @Component({
   selector: 'app-auth-login-v1',
@@ -18,6 +18,10 @@ export class AuthLoginV1Component implements OnInit {
   public loginForm: FormGroup;
   public submitted = false;
   public passwordTextType: boolean;
+  public loading = false;
+  public error: string = '';
+  public rememberMe: boolean = false;
+  private returnUrl: string;
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -28,7 +32,13 @@ export class AuthLoginV1Component implements OnInit {
    * @param {CoreConfigService} _coreConfigService
    * @param {FormBuilder} _formBuilder
    */
-  constructor(private _coreConfigService: CoreConfigService, private _formBuilder: FormBuilder) {
+  constructor(
+    private _coreConfigService: CoreConfigService,
+    private _formBuilder: FormBuilder,
+    private authService: AuthenticationService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     this._unsubscribeAll = new Subject();
 
     // Configure the layout
@@ -66,11 +76,30 @@ export class AuthLoginV1Component implements OnInit {
    */
   onSubmit() {
     this.submitted = true;
+    this.error = '';
 
-    // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
+
+    this.loading = true;
+    const userNameOrEmail = this.loginForm.value.email;
+    const password = this.loginForm.value.password;
+    const rememberMe = this.rememberMe;
+
+    this.authService.login(userNameOrEmail, password, rememberMe).subscribe({
+      next: (user) => {
+        // Redirect to returnUrl or home
+        this.router.navigate([this.returnUrl || '/']);
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Login failed. Please try again.';
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 
   // Lifecycle Hooks
@@ -81,9 +110,12 @@ export class AuthLoginV1Component implements OnInit {
    */
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', Validators.required]
     });
+
+    // Get returnUrl from route params or default to '/'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     // Subscribe to config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
