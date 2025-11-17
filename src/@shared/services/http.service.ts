@@ -13,8 +13,6 @@ import { GuestUserService } from './guest-user.service';
 export class HttpService {
   constructor(
     private http: HttpClient,
-    private spinner: LoadingService,
-    private loadingService: LoadingService,
     private coreLoadingScreenService: CoreLoadingScreenService
     , private guestUserService: GuestUserService
   ) {

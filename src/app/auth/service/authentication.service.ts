@@ -73,13 +73,7 @@ export class AuthenticationService {
               token: response.data.token
             };
             localStorage.setItem('currentUser', JSON.stringify(user));
-            setTimeout(() => {
-              this._toastrService.success(
-                'You have successfully logged in.',
-                'Welcome!',
-                { toastClass: 'toast ngx-toastr', closeButton: true }
-              );
-            }, 1000);
+            // Toastr handled globally by interceptor
             this.currentUserSubject.next(user);
           }
           return response;
