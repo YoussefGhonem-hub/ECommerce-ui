@@ -11,6 +11,8 @@ import { Ng2FlatpickrModule } from 'ng2-flatpickr';
 import { AccountSettingsComponent } from 'app/main/pages/account-settings/account-settings.component';
 import { AccountSettingsService } from 'app/main/pages/account-settings/account-settings.service';
 
+import { SharedDirectivesModule } from 'app/shared/shared-directives.module';
+
 const routes: Routes = [
   {
     path: 'account-settings',
@@ -25,15 +27,17 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [AccountSettingsComponent],
+
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
     NgbModule,
     CoreCommonModule,
     ContentHeaderModule,
-    Ng2FlatpickrModule
+    Ng2FlatpickrModule,
+    SharedDirectivesModule
   ],
 
   providers: [AccountSettingsService]
 })
-export class AccountSettingsModule {}
+export class AccountSettingsModule { }

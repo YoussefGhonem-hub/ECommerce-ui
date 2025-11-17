@@ -1,3 +1,7 @@
+/**
+ * Reset Avatar Image
+ */
+
 import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -43,7 +47,10 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
 
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
-
+  resetAvatarImage() {
+    this.avatarImage = '';
+    this.avatarFile = null;
+  }
   /**
    * Toggle Password Text Type Old
    */

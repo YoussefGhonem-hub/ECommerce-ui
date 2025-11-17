@@ -20,7 +20,8 @@
                     <!-- header media -->
                     <div class="media">
                       <a href="javascript:void(0);" class="mr-25">
-                        <img [src]="avatarImage" class="rounded mr-50" alt="profile image" height="76" width="80" />
+                        <img appDefaultImage [src]="avatarImage" class="rounded mr-50" alt="profile image" height="76"
+                          width="80" />
                       </a>
                       <!-- upload and reset button -->
                       <div class="media-body mt-75 ml-1">
@@ -30,7 +31,8 @@
                         </button>
                         <input type="file" #file id="account-upload" hidden accept="image/*"
                           (change)="uploadImage($event)" />
-                        <button class="btn btn-sm btn-outline-secondary mb-75" rippleEffect>Reset</button>
+                        <button class="btn btn-sm btn-outline-secondary mb-75" rippleEffect (click)="resetAvatarImage()"
+                          type="button">Reset</button>
                         <p>Allowed JPG, GIF or PNG. Max size of 800kB</p>
                       </div>
                       <!--/ upload and reset button -->
