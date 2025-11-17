@@ -21,6 +21,7 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
   public generalForm: FormGroup;
   public avatarFile: File | null = null;
   public passwordForm: FormGroup;
+  public socialForm: FormGroup;
   public birthDateOptions: FlatpickrOptions = {
     altInput: true
   };
@@ -48,6 +49,20 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
       currentPassword: ['', Validators.required],
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
+    });
+
+    this.socialForm = this.fb.group({
+      facebookUrl: [''],
+      googleUrl: [''],
+      xUrl: [''],
+      instagramUrl: [''],
+      linkedInUrl: [''],
+      gitHubUrl: [''],
+      youTubeUrl: [''],
+      tikTokUrl: [''],
+      websiteUrl: [''],
+      telegramUrl: [''],
+      whatsAppUrl: ['']
     });
 
   }
@@ -143,6 +158,24 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         this.avatarImage = this.data.accountSetting.general.avatar;
       }
     });
+    // Load social profiles
+    this._accountSettingsService.getSocialProfiles().then((profile) => {
+      if (profile && profile.data) {
+        this.socialForm.patchValue({
+          facebookUrl: profile.data.facebookUrl || '',
+          googleUrl: profile.data.googleUrl || '',
+          xUrl: profile.data.xUrl || '',
+          instagramUrl: profile.data.instagramUrl || '',
+          linkedInUrl: profile.data.linkedInUrl || '',
+          gitHubUrl: profile.data.gitHubUrl || '',
+          youTubeUrl: profile.data.youTubeUrl || '',
+          tikTokUrl: profile.data.tikTokUrl || '',
+          websiteUrl: profile.data.websiteUrl || '',
+          telegramUrl: profile.data.telegramUrl || '',
+          whatsAppUrl: profile.data.whatsAppUrl || ''
+        });
+      }
+    });
     // content header
     this.contentHeader = {
       headerTitle: 'Account Settings',
@@ -167,6 +200,12 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
         ]
       }
     };
+  }
+  onSocialSubmit() {
+    if (this.socialForm.invalid) return;
+    this._accountSettingsService.updateSocialProfiles(this.socialForm.value).then(() => {
+      // Optionally show a success message or refresh data
+    });
   }
 
   /**

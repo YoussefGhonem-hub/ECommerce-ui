@@ -7,6 +7,30 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class AccountSettingsService implements Resolve<any> {
+
+  getSocialProfiles(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.httpService.GET(AccountController.GetMySocialProfiles).subscribe((response: any) => {
+        resolve(response);
+      }, reject);
+    });
+  }
+
+  updateSocialProfiles(data: {
+    facebookUrl?: string;
+    instagramUrl?: string;
+    youTubeUrl?: string;
+    tikTokUrl?: string;
+    websiteUrl?: string;
+    telegramUrl?: string;
+    whatsAppUrl?: string;
+  }): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.httpService.POST(AccountController.UpdateMySocialProfiles, data).subscribe((response: any) => {
+        resolve(response);
+      }, reject);
+    });
+  }
   rows: any;
   onSettingsChanged: BehaviorSubject<any>;
 
