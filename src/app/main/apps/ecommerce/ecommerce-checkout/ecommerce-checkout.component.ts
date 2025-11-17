@@ -708,13 +708,13 @@ export class EcommerceCheckoutComponent implements OnInit {
       (res: any) => {
         if (res && res.succeeded) {
           console.log('[Checkout] Order placed successfully:', res.data);
+          // Clear the cart in the navbar
+          this.cartService.refreshCart();
           // Redirect to product list/shop page
           this.router.navigate(['/apps/e-commerce/shop']);
-
         } else {
           console.error('[Checkout] Order submission failed:', res.message);
         }
-
         this.isSubmittingOrder = false;
       },
       (error) => {
