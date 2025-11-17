@@ -1,0 +1,114 @@
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">My Orders</h4>
+    </div>
+    <div class="card-body">
+        <div *ngIf="loading" class="text-center my-2">
+            <span class="spinner-border spinner-border-sm"></span> Loading orders...
+        </div>
+        <div *ngIf="!loading && orders.length === 0" class="text-center my-2">
+            <span>No orders found.</span>
+        </div>
+        <div *ngIf="!loading && orders.length > 0">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Items</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let order of orders">
+                        <tr>
+                            <td>{{ order.orderNumber }}</td>
+                            <td>{{ order.createdDate | date:'short' }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>{{ order.total | currency }}</td>
+                            <td>{{ order.items?.length }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-link" (click)="toggleDetails(order.id)">
+                                    {{ expandedOrderId === order.id ? 'Hide' : 'Details' }}
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="expandedOrderId === order.id">
+                            <td colspan="6">
+                                <div class="p-2 bg-light border rounded">
+                                    <h6>Order Details</h6>
+                                    <div><b>Order Number:</b> {{ order.orderNumber }}</div>
+                                    <div><b>Status:</b> {{ order.status }}</div>
+                                    <div><b>Payment Status:</b> {{ order.paymentStatus }}</div>
+                                    <div><b>SubTotal:</b> {{ order.subTotal | currency }}</div>
+                                    <div><b>Discount:</b> {{ order.discountTotal | currency }}</div>
+                                    <div><b>Tax:</b> {{ order.taxTotal | currency }}</div>
+                                    <div><b>Shipping:</b> {{ order.shippingTotal | currency }}</div>
+                                    <div><b>Total:</b> {{ order.total | currency }}</div>
+                                    <div><b>Shipping Method:</b> {{ order.shippingMethodName }} ({{
+                                        order.shippingEstimatedTime }})</div>
+                                    <div><b>Coupon Code:</b> {{ order.couponCode || '-' }}</div>
+                                    <div><b>Tracking Number:</b> {{ order.trackingNumber || '-' }}</div>
+                                    <div><b>Notes:</b> {{ order.notes || '-' }}</div>
+                                    <div><b>Created:</b> {{ order.createdDate | date:'full' }}</div>
+                                    <div *ngIf="order.shippingAddress">
+                                        <b>Shipping Address:</b>
+                                        <div class="ml-2">
+                                            <div>{{ order.shippingAddress.fullName }}</div>
+                                            <div>{{ order.shippingAddress.street }}, {{ order.shippingAddress.houseNo }}
+                                            </div>
+                                            <div>{{ order.shippingAddress.cityNameEn }}, {{
+                                                order.shippingAddress.countryNameEn }}</div>
+                                            <div>{{ order.shippingAddress.mobileNumber }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <b>Items:</b>
+                                        <table class="table table-sm table-bordered mt-1">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Qty</th>
+                                                    <th>Unit Price</th>
+                                                    <th>Discount</th>
+                                                    <th>Tax</th>
+                                                    <th>Line Total</th>
+                                                    <th>Attributes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let item of order.items">
+                                                    <td>{{ item.productName }}</td>
+                                                    <td>{{ item.quantity }}</td>
+                                                    <td>{{ item.unitPrice | currency }}</td>
+                                                    <td>{{ item.discount | currency }}</td>
+                                                    <td>{{ item.tax | currency }}</td>
+                                                    <td>{{ item.lineTotal | currency }}</td>
+                                                    <td>
+                                                        <div *ngFor="let attr of item.attributes">
+                                                            <span><b>{{ attr.attributeName }}:</b> {{ attr.value
+                                                                }}</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="totalCount > pageSize">
+                <button class="btn btn-outline-primary btn-sm" [disabled]="pageNumber === 1"
+                    (click)="loadOrders(pageNumber - 1)">Previous</button>
+                <span>Page {{ pageNumber }} of {{ totalCount / pageSize | ceil }}</span>
+                <button class="btn btn-outline-primary btn-sm" [disabled]="pageNumber * pageSize >= totalCount"
+                    (click)="loadOrders(pageNumber + 1)">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
