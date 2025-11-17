@@ -7,6 +7,8 @@ import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 import { AuthenticationService } from 'app/auth/service';
+import { HttpService } from '@shared/services/http.service';
+import { AccountController } from '@shared/Controllers/AccountController';
 import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.service';
 import { CoreConfigService } from '@core/services/config.service';
 import { CoreMediaService } from '@core/services/media.service';
@@ -81,7 +83,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private _coreMediaService: CoreMediaService,
     private _coreSidebarService: CoreSidebarService,
     private _mediaObserver: MediaObserver,
-    public _translateService: TranslateService
+    public _translateService: TranslateService,
+    private httpService: HttpService
   ) {
     this._authenticationService.currentUser.subscribe(x => (this.currentUser = x));
 
@@ -176,8 +179,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
+
     // get the currentUser details from localStorage
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    // Always refresh avatar from API
+    this.httpService.GET(AccountController.GetProfile).subscribe((response: any) => {
+      if (response && response.succeeded && response.data && response.data.avatarUrl) {
+        if (this.currentUser) {
+          this.currentUser.avatar = response.data.avatarUrl;
+        }
+      }
+    });
 
     // Subscribe to the config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {

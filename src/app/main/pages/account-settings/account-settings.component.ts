@@ -96,8 +96,15 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
       fullName,
       email,
       avatar: this.avatarFile
-    }).then(() => {
-      // Optionally show a success message or refresh profile
+    }).then((response) => {
+      // Update avatar in localStorage and Navbar
+      if (response && response.succeeded && response.data && response.data.avatarUrl) {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user) {
+          user.avatar = response.data.avatarUrl;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+      }
       this._accountSettingsService.getDataTableRows();
     });
   }
