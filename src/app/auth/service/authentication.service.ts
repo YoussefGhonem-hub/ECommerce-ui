@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from '@shared/services/http.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 import { AuthController } from '@shared/Controllers/AuthController';
 import { User, Role } from 'app/auth/models';
@@ -60,8 +60,8 @@ export class AuthenticationService {
       })
       .pipe(
         map(response => {
-          if (response && response.succeeded && response.data && response.data.token) {
-            // Map API response to User model
+          if (response && response.succeeded && response.data && response.data.accessToken) {
+            // Store tokens and expiry
             const user = {
               id: response.data.userId, // userId from API
               email: response.data.email,
@@ -70,17 +70,45 @@ export class AuthenticationService {
               lastName: '', // Not returned by API
               avatar: '', // Not returned by API
               role: null, // Not returned by API
-              token: response.data.token
+              token: response.data.accessToken
             };
             localStorage.setItem('currentUser', JSON.stringify(user));
-            // Toastr handled globally by interceptor
+            localStorage.setItem('accessToken', response.data.accessToken);
+            localStorage.setItem('accessTokenExpiresAtUtc', response.data.accessTokenExpiresAtUtc);
+            localStorage.setItem('refreshToken', response.data.refreshToken);
+            localStorage.setItem('refreshTokenExpiresAtUtc', response.data.refreshTokenExpiresAtUtc);
             this.currentUserSubject.next(user);
           }
           return response;
         })
       );
   }
-
+  refreshToken() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return throwError('No refresh token');
+    return this.http.POST(AuthController.Refresh, { refreshToken }).pipe(
+      map((response: any) => {
+        if (response && response.succeeded && response.data && response.data.accessToken) {
+          localStorage.setItem('accessToken', response.data.accessToken);
+          localStorage.setItem('accessTokenExpiresAtUtc', response.data.accessTokenExpiresAtUtc);
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+          localStorage.setItem('refreshTokenExpiresAtUtc', response.data.refreshTokenExpiresAtUtc);
+          // Optionally update user token
+          const user = JSON.parse(localStorage.getItem('currentUser'));
+          if (user) {
+            user.token = response.data.accessToken;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            this.currentUserSubject.next(user);
+          }
+        }
+        return response;
+      }),
+      catchError(err => {
+        this.logout();
+        return throwError(err);
+      })
+    );
+  }
   /**
    * User registration (backend expects RegisterRequest)
    * @param fullName
@@ -102,9 +130,21 @@ export class AuthenticationService {
    * User logout
    *
    */
-  logout() {
+  logout(reason?: string) {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (accessToken && refreshToken) {
+      // Send revoke request (fire and forget)
+      this.http.POST(AuthController.Revoke, { refreshToken, reason }, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      }).subscribe(() => { });
+    }
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('accessTokenExpiresAtUtc');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refreshTokenExpiresAtUtc');
     // notify
     this.currentUserSubject.next(null);
   }
