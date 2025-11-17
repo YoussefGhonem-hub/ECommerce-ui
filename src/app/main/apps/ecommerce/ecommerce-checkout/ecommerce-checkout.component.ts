@@ -622,11 +622,11 @@ export class EcommerceCheckoutComponent implements OnInit {
       itemSelections: this.cartItems.map(item => {
         // Only include the currently selected attribute for each attribute group
         let attributes: any[] = [];
-        if (item.groupedAttributes && item.selectedAttributes) {
+        if (item.groupedAttributes && item.productAttributes) {
           // Build a map to ensure only one valueId per attributeId
           const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
           Object.keys(item.groupedAttributes).forEach(attrName => {
-            const selectedValue = item.selectedAttributes[attrName];
+            const selectedValue = item.productAttributes[attrName];
             const attrObj = (item.groupedAttributes[attrName] || []).find(a => a.value === selectedValue);
             if (attrObj && attrObj.attributeId) {
               attrMap[attrObj.attributeId] = {
@@ -636,10 +636,10 @@ export class EcommerceCheckoutComponent implements OnInit {
             }
           });
           attributes = Object.values(attrMap);
-        } else if (Array.isArray(item.selectedAttributes)) {
+        } else if (Array.isArray(item.productAttributes)) {
           // fallback for old structure
           const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
-          item.selectedAttributes
+          item.productAttributes
             .filter(attr => attr && attr.attributeId)
             .forEach(attr => {
               const attributeId = attr.attributeId || attr.AttributeId;

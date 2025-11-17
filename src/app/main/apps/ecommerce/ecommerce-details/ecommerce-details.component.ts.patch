@@ -4,12 +4,12 @@
    addToCart(product) {
      if (!product) return;
  
--    // Build selected attributes array from selectedAttributes object
--    const attributes = Object.entries(this.selectedAttributes).map(([name, value]) => ({
+-    // Build selected attributes array from productAttributes object
+-    const attributes = Object.entries(this.productAttributes).map(([name, value]) => ({
 -      attributeName: name,
 -      value: value
 +    // Build selected attributes array with AttributeId and ValueId
-+    const attributes = Object.entries(this.selectedAttributes).map(([name, value]) => {
++    const attributes = Object.entries(this.productAttributes).map(([name, value]) => {
 +      const attrGroup = this.groupedAttributes[name] || [];
 +      const attrObj = attrGroup.find(a => a.value === value);
 +      return {

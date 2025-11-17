@@ -52,7 +52,7 @@ export class CartService {
                     normalizedItem.price = item.price || item.Price || 0;
                     normalizedItem.quantity = item.quantity || item.Quantity || 0;
                     normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
-                    normalizedItem.selectedAttributes = item.selectedAttributes || item.SelectedAttributes || [];
+                    normalizedItem.productAttributes = item.productAttributes || item.productAttributes || [];
                     return normalizedItem;
                 });
 

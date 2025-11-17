@@ -26,7 +26,7 @@ export class EcommerceDetailsComponent implements OnInit {
   productId: any;
   public relatedProducts;
   public groupedAttributes: { [key: string]: any[] } = {}; // Grouped attributes by name
-  public selectedAttributes: { [key: string]: string } = {}; // Track selected values
+  public productAttributes: { [key: string]: string } = {}; // Track selected values
   public colorMap: { [key: string]: string } = {}; // Map color names to hex values or CSS classes
 
   // Color mapping for common color names
@@ -152,7 +152,7 @@ export class EcommerceDetailsComponent implements OnInit {
    */
   groupAttributesByName(): void {
     this.groupedAttributes = {};
-    this.selectedAttributes = {};
+    this.productAttributes = {};
     this.colorMap = {};
 
     if (!this.product.attributes || this.product.attributes.length === 0) {
@@ -168,8 +168,8 @@ export class EcommerceDetailsComponent implements OnInit {
       this.groupedAttributes[attrName].push(attr);
 
       // Set first value as default selected
-      if (!this.selectedAttributes[attrName]) {
-        this.selectedAttributes[attrName] = attr.value;
+      if (!this.productAttributes[attrName]) {
+        this.productAttributes[attrName] = attr.value;
       }
 
       // Build color map for Color attribute
@@ -222,7 +222,7 @@ export class EcommerceDetailsComponent implements OnInit {
    * Handle attribute selection
    */
   selectAttribute(attributeName: string, value: string): void {
-    this.selectedAttributes[attributeName] = value;
+    this.productAttributes[attributeName] = value;
   }
 
   /**
@@ -233,8 +233,8 @@ export class EcommerceDetailsComponent implements OnInit {
 
     let attributes = [];
     if (!quickAdd) {
-      // Build selected attributes array from selectedAttributes object
-      attributes = Object.entries(this.selectedAttributes).map(([name, value]) => {
+      // Build selected attributes array from productAttributes object
+      attributes = Object.entries(this.productAttributes).map(([name, value]) => {
         const attrGroup = this.groupedAttributes[name] || [];
         const attrObj = attrGroup.find(a => a.value === value);
 

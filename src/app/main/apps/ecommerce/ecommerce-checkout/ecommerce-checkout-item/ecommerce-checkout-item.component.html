@@ -28,13 +28,13 @@
               <h6>{{ attrGroup.key }}</h6>
               <ul class="list-unstyled mb-0">
                 <li class="d-inline-block" *ngFor="let attr of attrGroup.value"
-                  [class.selected]="selectedAttributes[attrGroup.key] === attr.value">
+                  [class.selected]="productAttributes[attrGroup.key] === attr.value">
                   <label class="color-option-wrapper" [title]="attr.value">
                     <input type="radio" class="d-none" name="attr_{{ attrGroup.key }}_{{product.id}}"
-                      [value]="attr.value" [checked]="selectedAttributes[attrGroup.key] === attr.value"
+                      [value]="attr.value" [checked]="productAttributes[attrGroup.key] === attr.value"
                       (change)="selectAttribute(attrGroup.key, attr.value)" />
                     <div class="color-option" [style.borderColor]="colorMap[attr.value]"
-                      [class.b-active]="selectedAttributes[attrGroup.key] === attr.value">
+                      [class.b-active]="productAttributes[attrGroup.key] === attr.value">
                       <div class="filloption" [style.backgroundColor]="colorMap[attr.value]"></div>
                     </div>
                   </label>
@@ -48,9 +48,9 @@
             <div class="attribute-options">
               <div class="btn-group btn-group-toggle" role="group">
                 <label class="btn btn-sm btn-outline-primary mr-2 mb-1" *ngFor="let attr of attrGroup.value"
-                  [class.active]="selectedAttributes[attrGroup.key] === attr.value">
+                  [class.active]="productAttributes[attrGroup.key] === attr.value">
                   <input type="radio" name="attr_{{ attrGroup.key }}_{{product.id}}" [value]="attr.value"
-                    [checked]="selectedAttributes[attrGroup.key] === attr.value"
+                    [checked]="productAttributes[attrGroup.key] === attr.value"
                     (change)="selectAttribute(attrGroup.key, attr.value)" />
                   {{ attr.value }}
                 </label>

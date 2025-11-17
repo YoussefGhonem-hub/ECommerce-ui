@@ -110,7 +110,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
     const updatePayload = {
       productId: item.productId,
       quantity: newQuantity,
-      attributes: item.selectedAttributes || []
+      attributes: item.productAttributes || []
     };
 
     this.httpService.POST(CartController.AddToCart, updatePayload).subscribe((res: any) => {

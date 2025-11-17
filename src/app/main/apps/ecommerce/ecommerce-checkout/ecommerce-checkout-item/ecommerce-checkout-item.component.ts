@@ -22,7 +22,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   @Output() quantityUpdated = new EventEmitter<{ item: any, newQuantity: number, newSubTotal: number }>();
 
   public groupedAttributes: { [key: string]: any[] } = {};
-  public selectedAttributes: { [key: string]: string } = {};
+  public productAttributes: { [key: string]: string } = {};
   public colorMap: { [key: string]: string } = {};
   private readonly COLOR_PALETTE: { [key: string]: string } = {
     'Red': '#dc3545',
@@ -59,32 +59,32 @@ export class EcommerceCheckoutItemComponent implements OnInit {
 
   private initAttributes() {
     debugger
-    if (!this.product || !this.product.selectedAttributes) {
+    if (!this.product || !this.product.productAttributes) {
       this.groupedAttributes = {};
-      this.selectedAttributes = {};
+      this.productAttributes = {};
       this.colorMap = {};
       return;
     }
     // Group by attributeName
     this.groupedAttributes = {};
-    this.selectedAttributes = {};
+    this.productAttributes = {};
     this.colorMap = {};
-    this.product.selectedAttributes?.forEach((attr: any) => {
+    this.product.productAttributes?.forEach((attr: any) => {
       debugger
       const attrName = attr.attributeName;
       if (!this.groupedAttributes[attrName]) {
         this.groupedAttributes[attrName] = [];
       }
       this.groupedAttributes[attrName].push(attr);
-      // Set selected from product.selectedAttributes if available, else default to first
-      if (this.product.selectedAttributes) {
-        const selected = this.product.selectedAttributes.find((a: any) => a.attributeName === attrName);
+      // Set selected from product.productAttributes if available, else default to first
+      if (this.product.productAttributes) {
+        const selected = this.product.productAttributes.find((a: any) => a.attributeName === attrName);
         if (selected) {
-          this.selectedAttributes[attrName] = selected.value;
+          this.productAttributes[attrName] = selected.value;
         }
       }
-      if (!this.selectedAttributes[attrName]) {
-        this.selectedAttributes[attrName] = attr.value;
+      if (!this.productAttributes[attrName]) {
+        this.productAttributes[attrName] = attr.value;
       }
       // Build color map for Color attribute
       if (attrName.toLowerCase() === 'color') {
@@ -120,21 +120,21 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   }
 
   selectAttribute(attributeName: string, value: string): void {
-    this.selectedAttributes[attributeName] = value;
-    // Update product.selectedAttributes for checkout submission
-    if (!this.product.selectedAttributes) {
-      this.product.selectedAttributes = [];
+    this.productAttributes[attributeName] = value;
+    // Update product.productAttributes for checkout submission
+    if (!this.product.productAttributes) {
+      this.product.productAttributes = [];
     }
     // Find the attribute object for the selected value
     const attrGroup = this.groupedAttributes[attributeName] || [];
     const attrObj = attrGroup.find(a => a.value === value);
     if (!attrObj) return;
 
-    // Remove any existing selectedAttributes with the same attributeId
-    this.product.selectedAttributes = this.product.selectedAttributes.filter((a: any) => a.attributeId !== attrObj.attributeId);
+    // Remove any existing productAttributes with the same attributeId
+    this.product.productAttributes = this.product.productAttributes.filter((a: any) => a.attributeId !== attrObj.attributeId);
 
     // Add the new selected attribute
-    this.product.selectedAttributes.push({
+    this.product.productAttributes.push({
       attributeId: attrObj.attributeId || attrObj.id,
       attributeName: attributeName,
       valueId: attrObj.valueId || attrObj.id || null,
