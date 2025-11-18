@@ -18,7 +18,7 @@ export const snippetCodeTranslucent: snippetCode = {
 <ngb-toast [autohide]="false">
   <ng-template ngbToastHeader>
     <img
-      src="assets/images/logo/logo.png"
+      src="assets/images/logo/mylogo.png"
       height="18"
       width="25"
       class="mr-2"
