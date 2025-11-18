@@ -1,11 +1,12 @@
+
 import { Injectable } from '@angular/core';
 import { HttpService } from '@shared/services/http.service';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-
 import { AuthController } from '@shared/Controllers/AuthController';
 import { User, Role } from 'app/auth/models';
 import { ToastrService } from 'ngx-toastr';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -20,9 +21,59 @@ export class AuthenticationService {
    * @param {HttpClient} _http
    * @param {ToastrService} _toastrService
    */
-  constructor(private http: HttpService, private _toastrService: ToastrService) {
+  constructor(
+    private http: HttpService,
+    private _toastrService: ToastrService,
+    private permissionsService: NgxPermissionsService
+  ) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
+    this.setPermissionsFromToken();
+  }
+
+  /**
+   * Decode JWT and set permissions
+   */
+  private setPermissionsFromToken() {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      const payload = this.decodeJwt(token);
+      if (payload && payload.roles) {
+        // Check if the roles field is a string that needs to be parsed into an array
+        let roles = payload.roles;
+        if (typeof roles === 'string') {
+          try {
+            roles = JSON.parse(roles); // Parse the string to an array
+          } catch (e) {
+            console.error('Error parsing roles:', e);
+            roles = []; // Fallback to empty array if parsing fails
+          }
+        }
+        // Now, roles should always be an array
+        this.permissionsService.loadPermissions(roles);
+      } else {
+        this.permissionsService.flushPermissions();
+      }
+    } else {
+      this.permissionsService.flushPermissions();
+    }
+  }
+
+
+  /**
+   * Decode JWT payload
+   */
+  private decodeJwt(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
   }
 
   // getter: currentUserValue
@@ -78,6 +129,7 @@ export class AuthenticationService {
             localStorage.setItem('refreshToken', response.data.refreshToken);
             localStorage.setItem('refreshTokenExpiresAtUtc', response.data.refreshTokenExpiresAtUtc);
             this.currentUserSubject.next(user);
+            this.setPermissionsFromToken();
           }
           return response;
         })
@@ -99,6 +151,7 @@ export class AuthenticationService {
             user.token = response.data.accessToken;
             localStorage.setItem('currentUser', JSON.stringify(user));
             this.currentUserSubject.next(user);
+            this.setPermissionsFromToken();
           }
         }
         return response;
@@ -147,5 +200,6 @@ export class AuthenticationService {
     localStorage.removeItem('refreshTokenExpiresAtUtc');
     // notify
     this.currentUserSubject.next(null);
+    this.permissionsService.flushPermissions();
   }
 }

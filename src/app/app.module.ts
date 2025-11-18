@@ -15,8 +15,10 @@ import { ContextMenuModule } from '@ctrl/ngx-rightclick';
 
 import { CoreModule } from '@core/core.module';
 import { CoreCommonModule } from '@core/common.module';
+
 import { CoreSidebarModule, CoreThemeCustomizerModule } from '@core/components';
 import { CardSnippetModule } from '@core/components/card-snippet/card-snippet.module';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { coreConfig } from 'app/app-config';
 import { AuthGuard } from 'app/auth/helpers/auth.guards';
@@ -117,7 +119,8 @@ const appRoutes: Routes = [
     CoreThemeCustomizerModule,
     CardSnippetModule,
     LayoutModule,
-    ContentHeaderModule
+    ContentHeaderModule,
+    NgxPermissionsModule.forRoot()
   ],
 
   providers: [
