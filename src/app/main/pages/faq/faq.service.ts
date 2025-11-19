@@ -1,7 +1,8 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-
+import { FaqsController } from '@shared/Controllers/FaqsController';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
@@ -39,7 +40,7 @@ export class FAQService implements Resolve<any> {
    */
   getDataTableRows(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/faq-data').subscribe((response: any) => {
+      this._httpClient.get(FaqsController.GetFaqs).subscribe((response: any) => {
         this.rows = response;
         this.onFaqsChanged.next(this.rows);
         resolve(this.rows);

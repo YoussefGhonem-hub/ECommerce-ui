@@ -4,6 +4,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { FAQService } from 'app/main/pages/faq/faq.service';
+// Removed HttpClient import, using HttpService only
+import { FaqsController } from '@shared/Controllers/FaqsController';
+import { HttpService } from '@shared/services/http.service';
 
 @Component({
   selector: 'app-faq',
@@ -11,7 +14,7 @@ import { FAQService } from 'app/main/pages/faq/faq.service';
   styleUrls: ['./faq.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class FaqComponent implements OnInit, OnDestroy {
+export class FaqComponent implements OnInit {
   // public
   public contentHeader: object;
   public data: any;
@@ -25,7 +28,7 @@ export class FaqComponent implements OnInit, OnDestroy {
    *
    * @param {FAQService} _faqService
    */
-  constructor(private _faqService: FAQService) {
+  constructor(private _faqService: FAQService, private http: HttpService) {
     this._unsubscribeAll = new Subject();
   }
 
@@ -36,8 +39,18 @@ export class FaqComponent implements OnInit, OnDestroy {
    * On Changes
    */
   ngOnInit(): void {
-    this._faqService.onFaqsChanged.pipe(takeUntil(this._unsubscribeAll)).subscribe(response => {
-      this.data = response;
+    // Fetch FAQ data from API using FaqsController
+    this.http.GET(FaqsController.GetFaqs).subscribe((response: any) => {
+      // Handle API response with 'data' property
+      const faqs = ((response && response.data) || [])
+        .filter(faq => faq.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map(faq => ({
+          id: faq.id,
+          question: faq.questionEn,
+          answer: faq.answerEn
+        }));
+      this.data = faqs;
     });
 
     // content header
@@ -65,9 +78,5 @@ export class FaqComponent implements OnInit, OnDestroy {
       }
     };
   }
-  ngOnDestroy(): void {
-    // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next();
-    this._unsubscribeAll.complete();
-  }
+
 }
