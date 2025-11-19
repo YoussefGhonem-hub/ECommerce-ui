@@ -3,10 +3,9 @@ import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { FAQService } from 'app/main/pages/faq/faq.service';
-// Removed HttpClient import, using HttpService only
-import { FaqsController } from '@shared/Controllers/FaqsController';
 import { HttpService } from '@shared/services/http.service';
+import { FaqsController } from '@shared/Controllers/FaqsController';
+
 
 @Component({
   selector: 'app-faq',
@@ -14,7 +13,7 @@ import { HttpService } from '@shared/services/http.service';
   styleUrls: ['./faq.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class FaqComponent implements OnInit {
+export class FaqComponent implements OnInit, OnDestroy {
   // public
   public contentHeader: object;
   public data: any;
@@ -22,13 +21,7 @@ export class FaqComponent implements OnInit {
 
   // private
   private _unsubscribeAll: Subject<any>;
-
-  /**
-   * Constructor
-   *
-   * @param {FAQService} _faqService
-   */
-  constructor(private _faqService: FAQService, private http: HttpService) {
+  constructor(private httpService: HttpService) {
     this._unsubscribeAll = new Subject();
   }
 
@@ -39,19 +32,6 @@ export class FaqComponent implements OnInit {
    * On Changes
    */
   ngOnInit(): void {
-    // Fetch FAQ data from API using FaqsController
-    this.http.GET(FaqsController.GetFaqs).subscribe((response: any) => {
-      // Handle API response with 'data' property
-      const faqs = ((response && response.data) || [])
-        .filter(faq => faq.isActive)
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .map(faq => ({
-          id: faq.id,
-          question: faq.questionEn,
-          answer: faq.answerEn
-        }));
-      this.data = faqs;
-    });
 
     // content header
     this.contentHeader = {
@@ -77,6 +57,48 @@ export class FaqComponent implements OnInit {
         ]
       }
     };
+
+    this.httpService.GET(FaqsController.GetFaqs)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((res: any) => {
+        // Transform API response to match the template's data structure
+        this.data = this.transformFaqs(res.data);
+      });
   }
 
+  private transformFaqs(categories: any[]): any {
+    // Map each category to a property using its English name (lowercased, no spaces)
+    const iconMap: { [key: string]: string } = {
+      delivery: 'shopping-bag',
+      'cancellation & return my orders': 'x-circle',
+      'product & services': 'package',
+      payment: 'credit-card',
+      // Add more mappings as needed
+    };
+    const result: any = {};
+    categories.forEach(cat => {
+      // Create a key from the category name (camelCase, or you can use another convention)
+      const key = cat.categoryNameEn
+        .replace(/[^a-zA-Z0-9]+/g, ' ')
+        .trim()
+        .replace(/ +/g, ' ')
+        .replace(/ (.)/g, (m, c) => c.toUpperCase())
+        .replace(/^./, m => m.toLowerCase());
+      result[key] = {
+        icon: iconMap[cat.categoryNameEn.toLowerCase()] || 'help-circle',
+        title: cat.categoryNameEn,
+        subtitle: '',
+        qandA: (cat.faqs || []).map(faq => ({
+          question: faq.questionEn,
+          ans: faq.answerEn
+        }))
+      };
+    });
+    return result;
+  }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next();
+    this._unsubscribeAll.complete();
+  }
 }

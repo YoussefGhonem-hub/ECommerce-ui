@@ -9,16 +9,13 @@ import { CoreCommonModule } from '@core/common.module';
 import { ContentHeaderModule } from 'app/layout/components/content-header/content-header.module';
 
 import { FaqComponent } from 'app/main/pages/faq/faq.component';
-import { FAQService } from 'app/main/pages/faq/faq.service';
 
 const routes: Routes = [
   {
     path: 'faq',
     component: FaqComponent,
     canActivate: [AuthGuard],
-    resolve: {
-      faqData: FAQService
-    },
+
     data: { animation: 'faq' }
   }
 ];
@@ -27,6 +24,6 @@ const routes: Routes = [
   declarations: [FaqComponent],
   imports: [CommonModule, RouterModule.forChild(routes), NgbModule, CoreCommonModule, ContentHeaderModule],
 
-  providers: [FAQService]
+  providers: []
 })
-export class FaqModule {}
+export class FaqModule { }

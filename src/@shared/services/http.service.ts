@@ -119,7 +119,9 @@ export class HttpService {
   //#region Helper Methods
 
   private getFullUrl(uri: string): string {
-    return `${environment.baseURL}/${uri}`;
+    // Remove leading slash from uri if present to avoid double slashes
+    const cleanUri = uri.startsWith('/') ? uri.substring(1) : uri;
+    return `${environment.baseURL}/${cleanUri}`;
   }
 
 
