@@ -50,6 +50,10 @@
                     <i data-feather="list" class="font-medium-3"></i>
                   </label>
                 </div>
+                <!-- Admin Only: Create Product Button -->
+                <button *ngIf="isAdmin" class="btn btn-success ml-2" (click)="goToCreateProduct()">
+                  <i class="fa fa-plus mr-1"></i> Create Product
+                </button>
               </div>
             </div>
           </div>

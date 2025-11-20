@@ -7,6 +7,8 @@ import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.s
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { HttpService } from '@shared/services/http.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
+import { AuthenticationService } from 'app/auth/service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ecommerce-shop',
@@ -38,7 +40,18 @@ export class EcommerceShopComponent implements OnInit, OnDestroy {
   constructor(
     private _coreSidebarService: CoreSidebarService,
     private HttpService: HttpService,
-    private _ecommerceService: EcommerceService) { }
+    private _ecommerceService: EcommerceService,
+    public _authenticationService: AuthenticationService,
+    private _router: Router
+  ) { }
+
+  get isAdmin(): boolean {
+    return this._authenticationService.currentUserValue?.role === 'Admin';
+  }
+
+  goToCreateProduct() {
+    this._router.navigate(['/apps/e-commerce/create-product']);
+  }
 
   toggleSidebar(name): void {
     this._coreSidebarService.getSidebarRegistry(name).toggleOpen();

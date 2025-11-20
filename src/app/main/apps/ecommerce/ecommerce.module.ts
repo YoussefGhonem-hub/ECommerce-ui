@@ -22,6 +22,7 @@ import { EcommerceWishlistComponent } from 'app/main/apps/ecommerce/ecommerce-wi
 import { EcommerceCheckoutComponent } from 'app/main/apps/ecommerce/ecommerce-checkout/ecommerce-checkout.component';
 import { EcommerceCheckoutItemComponent } from 'app/main/apps/ecommerce/ecommerce-checkout/ecommerce-checkout-item/ecommerce-checkout-item.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { CreateProductComponent } from './create-product/create-product.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -30,6 +31,11 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 
 // routing
 const routes: Routes = [
+    {
+      path: 'create-product',
+      component: CreateProductComponent,
+      data: { animation: 'CreateProductComponent' }
+    },
   {
     path: 'shop',
     component: EcommerceShopComponent,
@@ -77,7 +83,8 @@ const routes: Routes = [
     EcommerceWishlistComponent,
     EcommerceCheckoutComponent,
     EcommerceItemComponent,
-    EcommerceCheckoutItemComponent
+    EcommerceCheckoutItemComponent,
+    CreateProductComponent
   ],
   imports: [
     CommonModule,

@@ -26,7 +26,8 @@ export const locale = {
           SHOP: 'Magasin',
           DETAIL: 'Des détails',
           WISHLIST: 'Liste de souhaits',
-          CHECKOUT: 'Vérifier'
+          CHECKOUT: 'Vérifier',
+          MANAGE_PRODUCTS: 'Gérer les produits'
         },
         USER: {
           COLLAPSIBLE: 'Utilisateur',

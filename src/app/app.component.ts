@@ -14,6 +14,7 @@ import { CoreLoadingScreenService } from '@core/services/loading-screen.service'
 import { CoreTranslationService } from '@core/services/translation.service';
 
 import { menu } from 'app/menu/menu';
+import { AuthenticationService } from 'app/auth/service';
 import { locale as menuEnglish } from 'app/menu/i18n/en';
 import { locale as menuFrench } from 'app/menu/i18n/fr';
 import { locale as menuGerman } from 'app/menu/i18n/de';
@@ -57,7 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private _coreLoadingScreenService: CoreLoadingScreenService,
     private _coreMenuService: CoreMenuService,
     private _coreTranslationService: CoreTranslationService,
-    private _translateService: TranslateService
+    private _translateService: TranslateService,
+    private _authenticationService: AuthenticationService
   ) {
     // Get the application main menu
     this.menu = menu;
@@ -93,59 +95,32 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Subscribe to config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
+      // Dynamically hide menu if user is not logged in, but avoid infinite loop
+      const user = this._authenticationService.currentUserValue;
+      const shouldBeHidden = !user;
+      if (config?.layout?.menu?.hidden !== shouldBeHidden) {
+        this._coreConfigService.setConfig({ layout: { menu: { hidden: shouldBeHidden } } });
+        // Do not update this.coreConfig or run the rest of the logic until config is stable
+        return;
+      }
       this.coreConfig = config;
 
       // Set application default language.
-
-      // Change application language? Read the ngxTranslate Fix
-
-      // ? Use app-config.ts file to set default language
       const appLanguage = this.coreConfig.app.appLanguage || 'en';
       this._translateService.use(appLanguage);
-
-      // ? OR
-      // ? User the current browser lang if available, if undefined use 'en'
-      // const browserLang = this._translateService.getBrowserLang();
-      // this._translateService.use(browserLang.match(/en|fr|de|pt/) ? browserLang : 'en');
-
-      /**
-       * ! Fix : ngxTranslate
-       * ----------------------------------------------------------------------------------------------------
-       */
-
-      /**
-       *
-       * Using different language than the default ('en') one i.e French?
-       * In this case, you may find the issue where application is not properly translated when your app is initialized.
-       *
-       * It's due to ngxTranslate module and below is a fix for that.
-       * Eventually we will move to the multi language implementation over to the Angular's core language service.
-       *
-       **/
-
-      // Set the default language to 'en' and then back to 'fr'.
 
       setTimeout(() => {
         this._translateService.setDefaultLang('en');
         this._translateService.setDefaultLang(appLanguage);
       });
 
-      /**
-       * !Fix: ngxTranslate
-       * ----------------------------------------------------------------------------------------------------
-       */
-
       // Layout
-      //--------
-
-      // Remove default classes first
       this._elementRef.nativeElement.classList.remove(
         'vertical-layout',
         'vertical-menu-modern',
         'horizontal-layout',
         'horizontal-menu'
       );
-      // Add class based on config options
       if (this.coreConfig.layout.type === 'vertical') {
         this._elementRef.nativeElement.classList.add('vertical-layout', 'vertical-menu-modern');
       } else if (this.coreConfig.layout.type === 'horizontal') {
@@ -153,17 +128,12 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       // Navbar
-      //--------
-
-      // Remove default classes first
       this._elementRef.nativeElement.classList.remove(
         'navbar-floating',
         'navbar-static',
         'navbar-sticky',
         'navbar-hidden'
       );
-
-      // Add class based on config options
       if (this.coreConfig.layout.navbar.type === 'navbar-static-top') {
         this._elementRef.nativeElement.classList.add('navbar-static');
       } else if (this.coreConfig.layout.navbar.type === 'fixed-top') {
@@ -175,12 +145,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       // Footer
-      //--------
-
-      // Remove default classes first
       this._elementRef.nativeElement.classList.remove('footer-fixed', 'footer-static', 'footer-hidden');
-
-      // Add class based on config options
       if (this.coreConfig.layout.footer.type === 'footer-sticky') {
         this._elementRef.nativeElement.classList.add('footer-fixed');
       } else if (this.coreConfig.layout.footer.type === 'footer-static') {
@@ -196,7 +161,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.coreConfig.layout.footer.hidden
       ) {
         this._elementRef.nativeElement.classList.add('blank-page');
-        // ! Fix: Transition issue while coming from blank page
         this._renderer.setAttribute(
           this._elementRef.nativeElement.getElementsByClassName('app-content')[0],
           'style',
@@ -204,7 +168,6 @@ export class AppComponent implements OnInit, OnDestroy {
         );
       } else {
         this._elementRef.nativeElement.classList.remove('blank-page');
-        // ! Fix: Transition issue while coming from blank page
         setTimeout(() => {
           this._renderer.setAttribute(
             this._elementRef.nativeElement.getElementsByClassName('app-content')[0],
@@ -212,30 +175,25 @@ export class AppComponent implements OnInit, OnDestroy {
             'transition:300ms ease all'
           );
         }, 0);
-        // If navbar hidden
         if (this.coreConfig.layout.navbar.hidden) {
           this._elementRef.nativeElement.classList.add('navbar-hidden');
         }
-        // Menu (Vertical menu hidden)
         if (this.coreConfig.layout.menu.hidden) {
           this._renderer.setAttribute(this._elementRef.nativeElement, 'data-col', '1-column');
         } else {
           this._renderer.removeAttribute(this._elementRef.nativeElement, 'data-col');
         }
-        // Footer
         if (this.coreConfig.layout.footer.hidden) {
           this._elementRef.nativeElement.classList.add('footer-hidden');
         }
       }
 
-      // Skin Class (Adding to body as it requires highest priority)
       if (this.coreConfig.layout.skin !== '' && this.coreConfig.layout.skin !== undefined) {
         this.document.body.classList.remove('default-layout', 'bordered-layout', 'dark-layout', 'semi-dark-layout');
         this.document.body.classList.add(this.coreConfig.layout.skin + '-layout');
       }
     });
 
-    // Set the application page title
     this._title.setTitle(this.coreConfig.app.appTitle);
   }
 
