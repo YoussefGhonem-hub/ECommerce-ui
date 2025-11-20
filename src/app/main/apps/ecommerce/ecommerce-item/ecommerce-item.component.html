@@ -1,5 +1,5 @@
 <!-- Ecommerce Item -->
-<div class="item-img text-center">
+<div class="item-img text-center" *ngxPermissionsOnly="['Customer']">
   <a [routerLink]="'/apps/e-commerce/details/' + product.id">
     <img class="img-fluid card-img-top" [src]="product.mainImagePath" alt="img-placeholder" />
   </a>
