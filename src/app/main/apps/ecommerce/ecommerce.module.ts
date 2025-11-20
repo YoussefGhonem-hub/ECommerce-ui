@@ -31,11 +31,11 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 
 // routing
 const routes: Routes = [
-    {
-      path: 'create-product',
-      component: CreateProductComponent,
-      data: { animation: 'CreateProductComponent' }
-    },
+  {
+    path: 'create-product',
+    component: CreateProductComponent,
+    data: { animation: 'CreateProductComponent' }
+  },
   {
     path: 'shop',
     component: EcommerceShopComponent,
