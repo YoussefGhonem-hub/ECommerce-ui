@@ -109,7 +109,14 @@ export class AuthLoginV2Component implements OnInit {
       .subscribe(
         res => {
           if (res && res.succeeded) {
-            this._router.navigate([this.returnUrl]);
+            // Check user role and redirect accordingly
+            const user = this._authenticationService.currentUserValue;
+            debugger
+            if (user && user.role === 'Admin') {
+              this._router.navigate(['/dashboard/ecommerce']);
+            } else {
+              this._router.navigate([this.returnUrl]);
+            }
           } else {
             this.error = (res && res.errors && res.errors.length) ? res.errors[0] : 'Login failed';
             this.loading = false;

@@ -4,7 +4,7 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/c
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { AuthenticationService } from 'app/auth/service';
+// import { AuthenticationService } from 'app/auth/service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -12,7 +12,7 @@ export class ErrorInterceptor implements HttpInterceptor {
    * @param {Router} _router
    * @param {AuthenticationService} _authenticationService
    */
-  constructor(private _router: Router, private _authenticationService: AuthenticationService) {}
+  constructor(private _router: Router) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
@@ -22,7 +22,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           this._router.navigate(['/pages/miscellaneous/not-authorized']);
 
           // ? Can also logout and reload if needed
-          // this._authenticationService.logout();
+          // logout removed
           // location.reload(true);
         }
         // throwError

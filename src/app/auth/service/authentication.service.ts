@@ -112,6 +112,47 @@ export class AuthenticationService {
       .pipe(
         map(response => {
           if (response && response.succeeded && response.data && response.data.accessToken) {
+            // Decode JWT to extract role
+            let role = null;
+            try {
+              const base64Url = response.data.accessToken.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+              }).join(''));
+              const payload = JSON.parse(jsonPayload);
+              if (payload && payload.roles) {
+                let extractedRole = null;
+                if (Array.isArray(payload.roles)) {
+                  extractedRole = payload.roles[0];
+                } else if (typeof payload.roles === 'string') {
+                  try {
+                    const rolesArr = JSON.parse(payload.roles);
+                    if (Array.isArray(rolesArr)) {
+                      extractedRole = rolesArr[0];
+                    } else {
+                      extractedRole = payload.roles;
+                    }
+                  } catch {
+                    extractedRole = payload.roles;
+                  }
+                }
+                // Normalize to Role enum
+                if (extractedRole && typeof extractedRole === 'string') {
+                  if (extractedRole.toLowerCase() === 'admin') {
+                    role = Role.Admin;
+                  } else if (extractedRole.toLowerCase() === 'client') {
+                    role = Role.Client;
+                  } else if (extractedRole.toLowerCase() === 'user') {
+                    role = Role.User;
+                  } else {
+                    role = extractedRole;
+                  }
+                }
+              }
+            } catch (e) {
+              role = null;
+            }
             // Store tokens and expiry
             const user = {
               id: response.data.userId, // userId from API
@@ -120,7 +161,7 @@ export class AuthenticationService {
               firstName: '', // Not returned by API
               lastName: '', // Not returned by API
               avatar: '', // Not returned by API
-              role: null, // Not returned by API
+              role: role, // Extracted from JWT
               token: response.data.accessToken
             };
             localStorage.setItem('currentUser', JSON.stringify(user));
