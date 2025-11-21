@@ -1,7 +1,8 @@
+
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
+import { Observable, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { AuthenticationService } from 'app/auth/service';
 
@@ -22,14 +23,34 @@ export class JwtInterceptor implements HttpInterceptor {
     const currentUser = this._authenticationService.currentUserValue;
     const isLoggedIn = currentUser && currentUser.token;
     const isbaseURL = request.url.startsWith(environment.baseURL);
-    if (isLoggedIn && isbaseURL) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${currentUser.token}`
-        }
-      });
+    const isRefreshRequest = request.url.includes('/auth/refresh') || request.url.includes('/Auth/Refresh');
+    if (isLoggedIn && isbaseURL && !isRefreshRequest) {
+      // Check token expiry
+      const expiresAtUtc = localStorage.getItem('accessTokenExpiresAtUtc');
+      if (expiresAtUtc && Date.parse(expiresAtUtc) < Date.now()) {
+        // Token expired, refresh synchronously
+        return from(this._authenticationService.refreshToken().toPromise()).pipe(
+          switchMap((res: any) => {
+            const refreshedUser = this._authenticationService.currentUserValue;
+            const refreshedToken = refreshedUser && refreshedUser.token;
+            if (refreshedToken) {
+              request = request.clone({
+                setHeaders: {
+                  Authorization: `Bearer ${refreshedToken}`
+                }
+              });
+            }
+            return next.handle(request);
+          })
+        );
+      } else {
+        request = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${currentUser.token}`
+          }
+        });
+      }
     }
-
     return next.handle(request);
   }
 }

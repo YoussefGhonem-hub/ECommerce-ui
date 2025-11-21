@@ -177,10 +177,12 @@ export class AuthenticationService {
       );
   }
   refreshToken() {
+    debugger
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) return throwError('No refresh token');
     return this.http.POST(AuthController.Refresh, { refreshToken }).pipe(
       map((response: any) => {
+        debugger
         if (response && response.succeeded && response.data && response.data.accessToken) {
           localStorage.setItem('accessToken', response.data.accessToken);
           localStorage.setItem('accessTokenExpiresAtUtc', response.data.accessTokenExpiresAtUtc);
