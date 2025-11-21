@@ -1,7 +1,7 @@
 <!-- Ecommerce Item -->
 <div class="item-img text-center">
   <a [routerLink]="'/apps/e-commerce/details/' + product.id">
-    <img class="img-fluid card-img-top" [src]="product.mainImagePath" alt="img-placeholder" />
+    <img class="img-fluid card-img-top" [src]="getProductImageUrl(product.mainImagePath)" alt="img-placeholder" />
   </a>
 </div>
 <div class="card-body">

@@ -105,8 +105,10 @@
                 </table>
             </div>
         </div>
-        <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Create
-            Product</button>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Create
+                Product</button>
+        </div>
         <div *ngIf="error" class="alert alert-danger mt-2">{{error}}</div>
         <div *ngIf="success" class="alert alert-success mt-2">Product created successfully!</div>
     </form>

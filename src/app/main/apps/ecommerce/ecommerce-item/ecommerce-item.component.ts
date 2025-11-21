@@ -6,6 +6,7 @@ import { CartService } from '@shared/services/cart.service';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-ecommerce-item',
@@ -15,6 +16,13 @@ import { GuestUserService } from '@shared/services/guest-user.service';
   host: { class: 'ecommerce-application' }
 })
 export class EcommerceItemComponent implements OnInit {
+  getProductImageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('productimages')) {
+      return environment.baseURL + '/' + path;
+    }
+    return path;
+  }
   // Input Decorotor
   @Input() product;
   @Input() isWishlistOpen = false;
