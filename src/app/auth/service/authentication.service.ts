@@ -229,12 +229,12 @@ export class AuthenticationService {
   logout(reason?: string) {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
-    if (accessToken && refreshToken) {
-      // Send revoke request (fire and forget)
-      this.http.POST(AuthController.Revoke, { refreshToken, reason }, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      }).subscribe(() => { });
-    }
+    // if (accessToken && refreshToken) {
+    //   // Send revoke request (fire and forget)
+    //   this.http.POST(AuthController.Revoke, { refreshToken, reason }, {
+    //     headers: { Authorization: `Bearer ${accessToken}` }
+    //   }).subscribe(() => { });
+    // }
     // remove user from local storage to log user out
     localStorage.removeItem('currentUser');
     localStorage.removeItem('accessToken');
