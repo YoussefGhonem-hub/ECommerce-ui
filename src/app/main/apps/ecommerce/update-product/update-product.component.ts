@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +12,14 @@ import { ProductsController } from '@shared/Controllers/ProductsController';
     styleUrls: ['./update-product.component.scss']
 })
 export class UpdateProductComponent implements OnInit {
+
+    getImageUrl(path: string): string {
+        if (!path) return '';
+        if (path.startsWith('productimages')) {
+            return environment.baseURL + '/' + path;
+        }
+        return path;
+    }
     productForm: FormGroup;
     categories: any[] = [];
     productId: string;
