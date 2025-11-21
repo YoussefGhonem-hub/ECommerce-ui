@@ -17,24 +17,15 @@
         <div class="card-body">
           <div class="row">
             <div class="col-md-12 col-lg-6">
-              <div
-                ng2FileDrop
-                [ngClass]="{ 'file-drop-over': hasBaseDropZoneOver }"
-                (fileOver)="fileOverBase($event)"
-                [uploader]="uploader"
-                class="py-5 mb-3 text-center font-medium-5 text-uppercase file-drop-zone"
-              >
+              <div ng2FileDrop [ngClass]="{ 'file-drop-over': hasBaseDropZoneOver }" (fileOver)="fileOverBase($event)"
+                [uploader]="uploader" class="py-5 mb-3 text-center font-medium-5 text-uppercase file-drop-zone">
                 Drop Files Here To Upload
               </div>
             </div>
             <div class="col-md-12 col-lg-6">
-              <div
-                ng2FileDrop
-                [ngClass]="{ 'file-drop-over-another': hasAnotherDropZoneOver }"
-                (fileOver)="fileOverAnother($event)"
-                [uploader]="uploader"
-                class="py-5 mb-3 text-center font-medium-5 text-uppercase file-drop-zone"
-              >
+              <div ng2FileDrop [ngClass]="{ 'file-drop-over-another': hasAnotherDropZoneOver }"
+                (fileOver)="fileOverAnother($event)" [uploader]="uploader"
+                class="py-5 mb-3 text-center font-medium-5 text-uppercase file-drop-zone">
                 Another dropzone
               </div>
             </div>
@@ -45,30 +36,8 @@
               <fieldset class="form-group">
                 <label for="file-upload-multiple">Multiple:</label>
                 <div class="custom-file">
-                  <input
-                    type="file"
-                    class="custom-file-input"
-                    type="file"
-                    ng2FileSelect
-                    [uploader]="uploader"
-                    multiple
-                    id="file-upload-multiple"
-                  />
-                  <label class="custom-file-label">Choose file</label>
-                </div>
-              </fieldset>
-
-              <fieldset class="form-group">
-                <label for="file-upload-single">Single:</label>
-                <div class="custom-file">
-                  <input
-                    type="file"
-                    class="custom-file-input"
-                    type="file"
-                    ng2FileSelect
-                    [uploader]="uploader"
-                    id="file-upload-single"
-                  />
+                  <input type="file" class="custom-file-input" type="file" ng2FileSelect [uploader]="uploader" multiple
+                    id="file-upload-multiple" />
                   <label class="custom-file-label">Choose file</label>
                 </div>
               </fieldset>
@@ -107,30 +76,17 @@
                       <span *ngIf="item.isError"><i data-feather="x-circle"></i></span>
                     </td>
                     <td nowrap>
-                      <button
-                        type="button"
-                        class="btn btn-raised btn-outline-success btn-sm mr-50"
-                        (click)="item.upload()"
-                        [disabled]="item.isReady || item.isUploading || item.isSuccess"
-                        rippleEffect
-                      >
+                      <button type="button" class="btn btn-raised btn-outline-success btn-sm mr-50"
+                        (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess"
+                        rippleEffect>
                         <span data-feather="upload"></span>
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-raised btn-outline-warning btn-sm mr-50"
-                        (click)="item.cancel()"
-                        [disabled]="!item.isUploading"
-                        rippleEffect
-                      >
+                      <button type="button" class="btn btn-raised btn-outline-warning btn-sm mr-50"
+                        (click)="item.cancel()" [disabled]="!item.isUploading" rippleEffect>
                         <i data-feather="slash"></i>
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-raised btn-outline-danger btn-sm"
-                        (click)="item.remove()"
-                        rippleEffect
-                      >
+                      <button type="button" class="btn btn-raised btn-outline-danger btn-sm" (click)="item.remove()"
+                        rippleEffect>
                         <i data-feather="trash"></i>
                       </button>
                     </td>
@@ -141,31 +97,16 @@
               <div id="">
                 <p class="mt-1">Queue progress:</p>
                 <ngb-progressbar class="mb-1" type="primary" [value]="uploader.progress"></ngb-progressbar>
-                <button
-                  type="button"
-                  class="btn mr-1 btn-primary mb-1 mb-sm-0"
-                  (click)="uploader.uploadAll()"
-                  [disabled]="!uploader.getNotUploadedItems().length"
-                  rippleEffect
-                >
+                <button type="button" class="btn mr-1 btn-primary mb-1 mb-sm-0" (click)="uploader.uploadAll()"
+                  [disabled]="!uploader.getNotUploadedItems().length" rippleEffect>
                   <span data-feather="upload" class="mr-25"></span> Upload all
                 </button>
-                <button
-                  type="button"
-                  class="btn mr-1 btn-outline-warning mb-1 mb-sm-0"
-                  (click)="uploader.cancelAll()"
-                  [disabled]="!uploader.isUploading"
-                  rippleEffect
-                >
+                <button type="button" class="btn mr-1 btn-outline-warning mb-1 mb-sm-0" (click)="uploader.cancelAll()"
+                  [disabled]="!uploader.isUploading" rippleEffect>
                   <span data-feather="slash" class="mr-25"></span> Cancel all
                 </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-danger mb-1 mb-sm-0"
-                  (click)="uploader.clearQueue()"
-                  [disabled]="!uploader.queue.length"
-                  rippleEffect
-                >
+                <button type="button" class="btn btn-outline-danger mb-1 mb-sm-0" (click)="uploader.clearQueue()"
+                  [disabled]="!uploader.queue.length" rippleEffect>
                   <span data-feather="trash" class="mr-25"></span> Remove all
                 </button>
               </div>

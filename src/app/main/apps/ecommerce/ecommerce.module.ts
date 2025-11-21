@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -23,6 +23,7 @@ import { EcommerceCheckoutComponent } from 'app/main/apps/ecommerce/ecommerce-ch
 import { EcommerceCheckoutItemComponent } from 'app/main/apps/ecommerce/ecommerce-checkout/ecommerce-checkout-item/ecommerce-checkout-item.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CreateProductComponent } from './create-product/create-product.component';
+import { FileUploaderModule } from 'app/main/forms/form-elements/file-uploader/file-uploader.module';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -98,7 +99,8 @@ const routes: Routes = [
     CoreCommonModule,
     NgbModule,
     NouisliderModule,
-    NgxPermissionsModule
+    NgxPermissionsModule,
+    FileUploaderModule
   ],
   providers: [
     {
@@ -106,5 +108,7 @@ const routes: Routes = [
       useValue: DEFAULT_SWIPER_CONFIG
     }
   ]
+  ,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class EcommerceModule { }

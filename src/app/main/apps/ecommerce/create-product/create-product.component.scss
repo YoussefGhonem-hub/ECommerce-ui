@@ -1,0 +1,61 @@
+/* Custom switch for Allow Backorder */
+.custom-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+.custom-switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.custom-switch-indicator {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e9ecef;
+  border-radius: 24px;
+  transition: .4s;
+}
+.custom-switch-input:checked + .custom-switch-indicator {
+  background-color: #007bff;
+}
+.custom-switch-indicator:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+.custom-switch-input:checked + .custom-switch-indicator:before {
+  transform: translateX(22px);
+}
+/* Custom file input */
+.custom-file-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.custom-file-label {
+  border: 1px solid #ced4da;
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  width: 100%;
+  color: #495057;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  text-align: left;
+}
+.custom-file-input:focus + .custom-file-label {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
