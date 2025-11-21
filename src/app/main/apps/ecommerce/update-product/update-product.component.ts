@@ -28,9 +28,11 @@ export class UpdateProductComponent implements OnInit {
     success = false;
     images: any[] = [];
     newImages: File[] = [];
+    newImagePreviews: string[] = [];
     mainNewImageIndex: number | null = null;
     removeImageIds: string[] = [];
     setMainImageId: string | null = null;
+    setMainImageSource: 'new' | 'existing' | null = null;
 
     constructor(
         private fb: FormBuilder,
@@ -84,6 +86,17 @@ export class UpdateProductComponent implements OnInit {
                     allowBackorder: product.allowBackorder
                 });
                 this.images = product.images || [];
+                // Set main image radio selection as per response
+                const mainImg = this.images.find((img: any) => img.isMain);
+                if (mainImg) {
+                    this.setMainImageSource = 'existing';
+                    this.setMainImageId = mainImg.id;
+                    this.mainNewImageIndex = null;
+                } else {
+                    this.setMainImageSource = null;
+                    this.setMainImageId = null;
+                    this.mainNewImageIndex = null;
+                }
             }
         });
     }
@@ -91,11 +104,20 @@ export class UpdateProductComponent implements OnInit {
     onFileChange(event: any) {
         if (event.target.files && event.target.files.length > 0) {
             this.newImages = Array.from(event.target.files);
+            this.newImagePreviews = [];
+            this.newImages.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = (e: any) => {
+                    this.newImagePreviews[idx] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
             if (this.mainNewImageIndex == null && this.newImages.length > 0) {
                 this.mainNewImageIndex = 0;
             }
         } else {
             this.newImages = [];
+            this.newImagePreviews = [];
             this.mainNewImageIndex = null;
         }
     }
@@ -108,15 +130,18 @@ export class UpdateProductComponent implements OnInit {
         }
     }
 
-    setMainExistingImage(imageId: string) {
-        this.setMainImageId = imageId;
-        this.images = this.images.map((img: any) => ({ ...img, isMain: img.id === imageId }));
-        this.mainNewImageIndex = null;
-    }
-
-    setMainNewImage(index: number) {
-        this.mainNewImageIndex = index;
-        this.setMainImageId = null;
+    selectMainImage(source: 'new' | 'existing', value: any) {
+        if (source === 'new') {
+            this.setMainImageSource = 'new';
+            this.mainNewImageIndex = value;
+            this.setMainImageId = null;
+            this.images = this.images.map((img: any) => ({ ...img, isMain: false }));
+        } else {
+            this.setMainImageSource = 'existing';
+            this.setMainImageId = value;
+            this.mainNewImageIndex = null;
+            this.images = this.images.map((img: any) => ({ ...img, isMain: img.id === value }));
+        }
     }
 
     onSubmit() {
@@ -136,21 +161,27 @@ export class UpdateProductComponent implements OnInit {
         formData.append('Price', this.productForm.value.price);
         formData.append('StockQuantity', this.productForm.value.stockQuantity);
         formData.append('AllowBackorder', this.productForm.value.allowBackorder);
+
+        // Handle new images
         if (this.newImages.length > 0) {
-            this.newImages.forEach((file, idx) => {
+            this.newImages.forEach((file) => {
                 formData.append('NewImages', file);
             });
-            if (this.mainNewImageIndex != null) {
-                formData.append('MainNewImageIndex', this.mainNewImageIndex.toString());
-            }
         }
+
+        // MainNewImageIndex: only if a new image is selected as main
+        if (this.setMainImageSource === 'new' && this.mainNewImageIndex != null && this.newImages.length > 0) {
+            formData.append('MainNewImageIndex', this.mainNewImageIndex.toString());
+        } else if (this.setMainImageSource === 'existing' && this.setMainImageId) {
+            formData.append('SetMainImageId', this.setMainImageId);
+        }
+
+        // RemoveImageIds
         if (this.removeImageIds.length > 0) {
             this.removeImageIds.forEach(id => formData.append('RemoveImageIds', id));
         }
-        if (this.setMainImageId) {
-            formData.append('SetMainImageId', this.setMainImageId);
-        }
-        this.http.POST(ProductsController.UpdateProduct, formData).subscribe({
+
+        this.http.PUT(ProductsController.UpdateProduct, formData).subscribe({
             next: (res) => {
                 this.loading = false;
                 if (res && res.succeeded) {

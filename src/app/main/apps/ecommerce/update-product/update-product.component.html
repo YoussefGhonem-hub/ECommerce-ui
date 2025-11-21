@@ -70,16 +70,15 @@
                     <ul class="list-group">
                         <li *ngFor="let file of newImages; let i = index"
                             class="list-group-item d-flex align-items-center">
-                            <span>{{ file.name }}</span>
+                            <img *ngIf="newImagePreviews[i]" [src]="newImagePreviews[i]" [alt]="file.name"
+                                style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px;" />
                             <button type="button" class="btn btn-sm btn-outline-danger ml-auto"
                                 (click)="newImages.splice(i,1)">Remove</button>
-                            <input type="radio" name="mainNewImage" [checked]="mainNewImageIndex === i"
-                                (change)="setMainNewImage(i)" /> Main
                             <div class="custom-control custom-radio ml-2">
-                                <input type="radio" class="custom-control-input" [id]="'mainNewImage' + i"
-                                    name="mainNewImage" [checked]="mainNewImageIndex === i"
-                                    (change)="setMainNewImage(i)" />
-                                <label class="custom-control-label" [for]="'mainNewImage' + i">Main</label>
+                                <input type="radio" class="custom-control-input" [id]="'mainImageNew' + i"
+                                    name="mainImage" [checked]="mainNewImageIndex === i && setMainImageSource === 'new'"
+                                    (change)="selectMainImage('new', i)" />
+                                <label class="custom-control-label" [for]="'mainImageNew' + i">Main</label>
                             </div>
                         </li>
                     </ul>
@@ -92,14 +91,16 @@
                         <li *ngFor="let img of images" class="list-group-item d-flex align-items-center">
                             <img [src]="getImageUrl(img.path)" [alt]="img.id"
                                 style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px;" />
+
                             <!-- <span>{{ img.path }}</span> -->
                             <button type="button" class="btn btn-sm btn-outline-danger ml-auto"
                                 (click)="removeExistingImage(img.id)">Remove</button>
                             <div class="custom-control custom-radio ml-2">
-                                <input type="radio" class="custom-control-input" [id]="'mainExistingImage' + img.id"
-                                    name="mainExistingImage" [checked]="img.isMain"
-                                    (change)="setMainExistingImage(img.id)" />
-                                <label class="custom-control-label" [for]="'mainExistingImage' + img.id">Main</label>
+                                <input type="radio" class="custom-control-input" [id]="'mainImageExisting' + img.id"
+                                    name="mainImage"
+                                    [checked]="setMainImageSource === 'existing' && setMainImageId === img.id"
+                                    (change)="selectMainImage('existing', img.id)" />
+                                <label class="custom-control-label" [for]="'mainImageExisting' + img.id">Main</label>
                             </div>
                         </li>
                     </ul>
