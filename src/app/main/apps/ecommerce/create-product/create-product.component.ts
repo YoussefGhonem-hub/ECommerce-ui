@@ -1,10 +1,11 @@
-// Update the file input label with selected file names
+// ...existing code...
 
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { HttpService } from '@shared/services/http.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
+import { ProductAttributesController } from '@shared/Controllers/ProductAttributesController';
 import { CategoryController } from '@shared/Controllers/CategoryController';
 import { Router } from '@angular/router';
 
@@ -22,6 +23,11 @@ export class CreateProductComponent implements OnInit {
     loading = false;
     error = '';
     success = false;
+
+    // Attribute logic
+    attributes: any[] = [];
+    attributeSelections: any[] = [];
+    loadingAttributes = false;
 
     constructor(
         private fb: FormBuilder,
@@ -65,8 +71,51 @@ export class CreateProductComponent implements OnInit {
         }
         this.cdr.detectChanges();
     }
+
     ngOnInit() {
         this.fetchCategories();
+        this.fetchAttributes();
+    }
+
+    fetchAttributes() {
+        this.loadingAttributes = true;
+        this.http.GET(ProductAttributesController.GetAll).subscribe({
+            next: (res) => {
+                // Map API response to expected format for the UI
+                this.attributes = (res && Array.isArray(res)) ? res.map((attr: any) => ({
+                    attributeId: attr.attributeId,
+                    attributeName: attr.attributeName,
+                    hasNullMapping: attr.hasNullMapping,
+                    values: (attr.values || []).map((v: any) => ({ id: v.id, value: v.value }))
+                })) : [];
+                this.loadingAttributes = false;
+            },
+            error: () => {
+                this.attributes = [];
+                this.loadingAttributes = false;
+            }
+        });
+    }
+
+    addAttributeSelection() {
+        this.attributeSelections.push({
+            attributeId: null,
+            newAttributeName: '',
+            valueId: null,
+            newValue: '',
+            newValues: []
+        });
+    }
+
+    removeAttributeSelection(index: number) {
+        this.attributeSelections.splice(index, 1);
+    }
+
+    onAttributeChange(index: number) {
+        // Reset value selection when attribute changes
+        this.attributeSelections[index].valueId = null;
+        this.attributeSelections[index].newValue = '';
+        this.attributeSelections[index].newValues = [];
     }
 
     fetchCategories() {
@@ -142,6 +191,18 @@ export class CreateProductComponent implements OnInit {
             }
         }
 
+        // Prepare attributes for API
+        const attributesPayload = this.attributeSelections.map(sel => {
+            return {
+                AttributeId: sel.attributeId || null,
+                NewAttributeName: sel.attributeId ? null : (sel.newAttributeName || null),
+                ValueId: sel.valueId || null,
+                NewValue: sel.newValue || null,
+                NewValues: sel.newValues && sel.newValues.length > 0 ? sel.newValues : null
+            };
+        });
+        formData.append('Attributes', JSON.stringify(attributesPayload));
+
         this.http.POST(ProductsController.CreateProduct, formData).subscribe({
             next: (res) => {
                 this.loading = false;
@@ -157,5 +218,19 @@ export class CreateProductComponent implements OnInit {
                 this.error = err?.error?.message || 'Failed to create product.';
             }
         });
+    }
+    // Helper to get values for a selected attribute
+    getAttributeValues(attributeId: string) {
+        const attr = this.attributes.find((a: any) => a.attributeId === attributeId);
+        return attr ? attr.values : [];
+    }
+
+    // Handle new values input (comma separated)
+    handleNewValuesInput(sel: any) {
+        if (sel.newValuesInput) {
+            sel.newValues = sel.newValuesInput.split(',').map((v: string) => v.trim()).filter((v: string) => v);
+        } else {
+            sel.newValues = [];
+        }
     }
 }

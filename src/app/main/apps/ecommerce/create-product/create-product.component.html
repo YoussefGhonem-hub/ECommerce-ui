@@ -174,7 +174,69 @@
                 </table>
             </div>
         </div>
-        <div class="d-flex justify-content-end">
+        <!-- Attribute Selection Section -->
+        <div class="card mt-4">
+            <div class="card-header ">
+                <h5 class="mb-0">Product Attributes</h5>
+            </div>
+            <div class="card-body">
+                <div *ngIf="loadingAttributes" class="text-center py-3">
+                    <span class="spinner-border spinner-border-sm"></span> Loading attributes...
+                </div>
+                <div *ngIf="!loadingAttributes">
+                    <div *ngFor="let sel of attributeSelections; let i = index"
+                        class="border rounded p-3 mb-3 position-relative ">
+                        <button type="button" class="close position-absolute" style="right: 10px; top: 10px;"
+                            aria-label="Remove" (click)="removeAttributeSelection(i)">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="form-row align-items-end">
+                            <div class="form-group col-md-4">
+                                <label>Attribute</label>
+                                <select class="form-control" [(ngModel)]="sel.attributeId" name="attributeId{{i}}"
+                                    (change)="onAttributeChange(i)" [ngModelOptions]="{standalone: true}">
+                                    <option [ngValue]="null">-- New Attribute --</option>
+                                    <option *ngFor="let attr of attributes" [ngValue]="attr.attributeId">
+                                        {{attr.attributeName}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4" *ngIf="!sel.attributeId">
+                                <label>New Attribute Name</label>
+                                <input type="text" class="form-control" [(ngModel)]="sel.newAttributeName"
+                                    name="newAttributeName{{i}}" [ngModelOptions]="{standalone: true}"
+                                    placeholder="Enter attribute name">
+                            </div>
+                            <div class="form-group col-md-4" *ngIf="sel.attributeId">
+                                <label>Value</label>
+                                <select class="form-control" [(ngModel)]="sel.valueId" name="valueId{{i}}"
+                                    [ngModelOptions]="{standalone: true}">
+                                    <option [ngValue]="null">-- New Value --</option>
+                                    <option *ngFor="let val of getAttributeValues(sel.attributeId)" [ngValue]="val.id">
+                                        {{val.value}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4" *ngIf="sel.attributeId && !sel.valueId">
+                                <label>New Value</label>
+                                <input type="text" class="form-control" [(ngModel)]="sel.newValue" name="newValue{{i}}"
+                                    [ngModelOptions]="{standalone: true}" placeholder="Enter new value">
+                            </div>
+                            <div class="form-group col-md-4" *ngIf="!sel.attributeId">
+                                <label>New Values (comma separated)</label>
+                                <input type="text" class="form-control" [(ngModel)]="sel.newValuesInput"
+                                    name="newValuesInput{{i}}" [ngModelOptions]="{standalone: true}"
+                                    placeholder="e.g. Red, Blue, Green" (blur)="handleNewValuesInput(sel)">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary" (click)="addAttributeSelection()">
+                        <i data-feather="plus"></i> Add Attribute
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- End Attribute Section -->
+
+        <div class="d-flex justify-content-end mt-4">
             <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Create
                 Product</button>
         </div>
