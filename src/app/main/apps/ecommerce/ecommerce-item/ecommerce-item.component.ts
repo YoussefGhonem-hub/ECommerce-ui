@@ -7,6 +7,7 @@ import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { environment } from 'environments/environment';
+import { AuthenticationService } from 'app/auth/service/authentication.service';
 
 @Component({
   selector: 'app-ecommerce-item',
@@ -16,6 +17,21 @@ import { environment } from 'environments/environment';
   host: { class: 'ecommerce-application' }
 })
 export class EcommerceItemComponent implements OnInit {
+  isAdmin = false;
+
+  editProduct(product: any) {
+    // Implement navigation or modal for editing
+    // Example: this.router.navigate(['/admin/products/edit', product.id]);
+    alert('Edit product: ' + product.id);
+  }
+
+  removeProduct(product: any) {
+    // Implement product removal logic
+    if (confirm('Are you sure you want to remove this product?')) {
+      // Call service to remove product
+      alert('Product removed: ' + product.id);
+    }
+  }
   getProductImageUrl(path: string): string {
     if (!path) return '';
     if (path.startsWith('productimages')) {
@@ -37,7 +53,8 @@ export class EcommerceItemComponent implements OnInit {
     private _ecommerceService: EcommerceService,
     private httpService: HttpService,
     private guestUserService: GuestUserService,
-    private cartService: CartService
+    private cartService: CartService,
+    private authService: AuthenticationService
   ) { }
 
 
@@ -89,5 +106,7 @@ export class EcommerceItemComponent implements OnInit {
 
   // Lifecycle Hooks
   // -----------------------------------------------------------------------------------------------------
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin;
+  }
 }

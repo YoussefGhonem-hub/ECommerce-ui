@@ -37,20 +37,33 @@
     </div>
   </div>
 
-  <a class="btn btn-light btn-wishlist" (click)="toggleWishlist(product)" rippleEffect
-    [class.active]="product.isInWishlist === true">
-    <i class="fa mr-25" [ngClass]="product.isInWishlist === true ? 'fa-heart text-danger' : 'fa-heart-o'"></i>
-    <span>Wishlist</span>
-  </a>
-  <a *ngIf="product.isInCart !== true" href="javascript:void(0)" class="btn btn-primary btn-cart"
-    (click)="addToCart(product)" rippleEffect>
-    <i data-feather="shopping-cart" class="mr-25"></i>
-    <span class="add-to-cart">Add to cart</span>
-  </a>
-  <a *ngIf="product.isInCart === true" routerLink="/apps/e-commerce/checkout" class="btn btn-primary btn-cart"
-    rippleEffect>
-    <i data-feather="shopping-cart" class="mr-25"></i>
-    <span class="add-to-cart">View in cart</span>
-  </a>
+  <ng-container *ngIf="!isAdmin; else adminActions">
+    <a class="btn btn-light btn-wishlist" (click)="toggleWishlist(product)" rippleEffect
+      [class.active]="product.isInWishlist === true">
+      <i class="fa mr-25" [ngClass]="product.isInWishlist === true ? 'fa-heart text-danger' : 'fa-heart-o'"></i>
+      <span>Wishlist</span>
+    </a>
+    <a *ngIf="product.isInCart !== true" href="javascript:void(0)" class="btn btn-primary btn-cart"
+      (click)="addToCart(product)" rippleEffect>
+      <i data-feather="shopping-cart" class="mr-25"></i>
+      <span class="add-to-cart">Add to cart</span>
+    </a>
+    <a *ngIf="product.isInCart === true" routerLink="/apps/e-commerce/checkout" class="btn btn-primary btn-cart"
+      rippleEffect>
+      <i data-feather="shopping-cart" class="mr-25"></i>
+      <span class="add-to-cart">View in cart</span>
+    </a>
+  </ng-container>
+  <ng-template #adminActions>
+    <a href="javascript:void(0)" class="btn btn-primary btn-cart" (click)="editProduct(product)" rippleEffect>
+      <i class="fa fa-edit mr-25"></i>
+      <span class="add-to-cart">Edit</span>
+    </a>
+    <a (click)="removeProduct(product)" class="btn btn-light btn-wishlist" rippleEffect>
+      <i class="fa fa-trash mr-25"></i>
+      <span class="add-to-cart">Remove</span>
+    </a>
+
+  </ng-template>
 </div>
 <!--/ Ecommerce Item -->
