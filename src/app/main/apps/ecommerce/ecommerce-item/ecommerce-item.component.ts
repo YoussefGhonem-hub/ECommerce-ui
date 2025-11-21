@@ -8,6 +8,7 @@ import { CartController } from '@shared/Controllers/CartController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { environment } from 'environments/environment';
 import { AuthenticationService } from 'app/auth/service/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ecommerce-item',
@@ -20,9 +21,9 @@ export class EcommerceItemComponent implements OnInit {
   isAdmin = false;
 
   editProduct(product: any) {
-    // Implement navigation or modal for editing
-    // Example: this.router.navigate(['/admin/products/edit', product.id]);
-    alert('Edit product: ' + product.id);
+    if (product && product.id) {
+      this.router.navigate(['/apps/e-commerce/update-product', product.id]);
+    }
   }
 
   removeProduct(product: any) {
@@ -54,7 +55,8 @@ export class EcommerceItemComponent implements OnInit {
     private httpService: HttpService,
     private guestUserService: GuestUserService,
     private cartService: CartService,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private router: Router
   ) { }
 
 

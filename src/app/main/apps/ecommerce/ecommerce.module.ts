@@ -23,6 +23,7 @@ import { EcommerceCheckoutComponent } from 'app/main/apps/ecommerce/ecommerce-ch
 import { EcommerceCheckoutItemComponent } from 'app/main/apps/ecommerce/ecommerce-checkout/ecommerce-checkout-item/ecommerce-checkout-item.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CreateProductComponent } from './create-product/create-product.component';
+import { UpdateProductComponent } from './update-product/update-product.component';
 import { FileUploaderModule } from 'app/main/forms/form-elements/file-uploader/file-uploader.module';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -70,6 +71,11 @@ const routes: Routes = [
     data: { animation: 'EcommerceCheckoutComponent' }
   },
   {
+    path: 'update-product/:id',
+    component: UpdateProductComponent,
+    data: { animation: 'UpdateProductComponent' }
+  },
+  {
     path: 'details',
     redirectTo: '/apps/e-commerce/details/27', //Redirection
     data: { animation: 'EcommerceDetailsComponent' }
@@ -85,7 +91,8 @@ const routes: Routes = [
     EcommerceCheckoutComponent,
     EcommerceItemComponent,
     EcommerceCheckoutItemComponent,
-    CreateProductComponent
+    CreateProductComponent,
+    UpdateProductComponent
   ],
   imports: [
     CommonModule,

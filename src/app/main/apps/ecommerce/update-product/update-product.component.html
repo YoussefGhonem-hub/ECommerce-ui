@@ -1,0 +1,106 @@
+<div class="container mt-5">
+    <h2>Update Product</h2>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Name (Arabic)</label>
+                <input formControlName="nameAr" class="form-control" required />
+            </div>
+            <div class="form-group col-md-6">
+                <label>Name (English)</label>
+                <input formControlName="nameEn" class="form-control" required />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Description (Arabic)</label>
+                <textarea formControlName="descriptionAr" class="form-control"></textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Description (English)</label>
+                <textarea formControlName="descriptionEn" class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label>SKU</label>
+                <input formControlName="sku" class="form-control" required />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Brand</label>
+                <input formControlName="brand" class="form-control" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Category</label>
+                <select formControlName="categoryId" class="form-control" required>
+                    <option value="">Select Category</option>
+                    <option *ngFor="let cat of categories" [value]="cat.id">{{cat.nameEn}} / {{cat.nameAr}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label>Price</label>
+                <input formControlName="price" type="number" class="form-control" required />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Stock Quantity</label>
+                <input formControlName="stockQuantity" type="number" class="form-control" required />
+            </div>
+            <div class="form-group col-md-4 d-flex align-items-center">
+                <label class="mb-0 mr-2">Allow Backorder</label>
+                <label class="custom-switch">
+                    <input type="checkbox" formControlName="allowBackorder" class="custom-switch-input">
+                    <span class="custom-switch-indicator"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-lg-3">
+                <fieldset class="form-group">
+                    <label for="file-upload-multiple">Add New Images:</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="file-upload-multiple"
+                            (change)="onFileChange($event)" multiple />
+                        <label class="custom-file-label" for="file-upload-multiple">Choose file</label>
+                    </div>
+                </fieldset>
+                <div *ngIf="newImages.length > 0">
+                    <h6>New Images</h6>
+                    <ul class="list-group">
+                        <li *ngFor="let file of newImages; let i = index"
+                            class="list-group-item d-flex align-items-center">
+                            <span>{{ file.name }}</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger ml-auto"
+                                (click)="newImages.splice(i,1)">Remove</button>
+                            <input type="radio" name="mainNewImage" [checked]="mainNewImageIndex === i"
+                                (change)="setMainNewImage(i)" /> Main
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9 overflow-auto">
+                <div *ngIf="images.length > 0">
+                    <h6>Existing Images</h6>
+                    <ul class="list-group">
+                        <li *ngFor="let img of images" class="list-group-item d-flex align-items-center">
+                            <img [src]="img.path" [alt]="img.id"
+                                style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px;" />
+                            <span>{{ img.path }}</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger ml-auto"
+                                (click)="removeExistingImage(img.id)">Remove</button>
+                            <input type="radio" name="mainExistingImage" [checked]="img.isMain"
+                                (change)="setMainExistingImage(img.id)" /> Main
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Update
+                Product</button>
+        </div>
+        <div *ngIf="error" class="alert alert-danger mt-2">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success mt-2">Product updated successfully!</div>
+    </form>
+</div>
