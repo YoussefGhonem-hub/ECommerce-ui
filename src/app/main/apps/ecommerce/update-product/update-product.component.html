@@ -45,10 +45,23 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="sku">SKU</label>
-                <input id="sku" formControlName="sku" class="form-control"
-                    [ngClass]="{'is-invalid': productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched), 'is-valid': productForm.get('sku').valid && (productForm.get('sku').dirty || productForm.get('sku').touched)}"
-                    required />
+                <label for="sku">SKU
+                    <span tabindex="0" class="ml-1" style="cursor:pointer;" placement="top"
+                        ngbTooltip="Stock Keeping Unit: A unique identifier for each distinct product and service that can be purchased.">
+                        <i data-feather="info" style="width:16px;height:16px;vertical-align:middle;"></i>
+                    </span>
+                </label>
+                <div class="input-group">
+                    <input id="sku" formControlName="sku" class="form-control"
+                        [ngClass]="{'is-invalid': productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched), 'is-valid': productForm.get('sku').valid && (productForm.get('sku').dirty || productForm.get('sku').touched)}"
+                        required />
+                    <div class="input-group-append d-md-none d-lg-none d-xl-none">
+                        <span tabindex="0" class="input-group-text" placement="top"
+                            ngbTooltip="Stock Keeping Unit: A unique identifier for each distinct product and service that can be purchased.">
+                            <i data-feather="info" style="width:16px;height:16px;vertical-align:middle;"></i>
+                        </span>
+                    </div>
+                </div>
                 <div *ngIf="productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched)"
                     class="invalid-feedback">
                     SKU is required.
@@ -102,7 +115,13 @@
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="allowBackorderCheck"
                         formControlName="allowBackorder" />
-                    <label class="custom-control-label mb-0" for="allowBackorderCheck">Allow Backorder</label>
+                    <label class="custom-control-label mb-0" for="allowBackorderCheck">
+                        Allow Backorder
+                        <span tabindex="0" class="ml-1" style="cursor:pointer;" placement="top"
+                            ngbTooltip="Allow customers to place orders for this product even when it is out of stock.">
+                            <i data-feather="info" style="width:16px;height:16px;vertical-align:middle;"></i>
+                        </span>
+                    </label>
                 </div>
             </div>
         </div>
