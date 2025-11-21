@@ -3,49 +3,100 @@
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label>Name (Arabic)</label>
-                <input formControlName="nameAr" class="form-control" required />
+                <label for="nameAr">Name (Arabic)</label>
+                <input id="nameAr" formControlName="nameAr" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('nameAr').invalid && (productForm.get('nameAr').dirty || productForm.get('nameAr').touched), 'is-valid': productForm.get('nameAr').valid && (productForm.get('nameAr').dirty || productForm.get('nameAr').touched)}"
+                    required />
+                <div *ngIf="productForm.get('nameAr').invalid && (productForm.get('nameAr').dirty || productForm.get('nameAr').touched)"
+                    class="invalid-feedback">
+                    Name (Arabic) is required.
+                </div>
             </div>
             <div class="form-group col-md-6">
-                <label>Name (English)</label>
-                <input formControlName="nameEn" class="form-control" required />
+                <label for="nameEn">Name (English)</label>
+                <input id="nameEn" formControlName="nameEn" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('nameEn').invalid && (productForm.get('nameEn').dirty || productForm.get('nameEn').touched), 'is-valid': productForm.get('nameEn').valid && (productForm.get('nameEn').dirty || productForm.get('nameEn').touched)}"
+                    required />
+                <div *ngIf="productForm.get('nameEn').invalid && (productForm.get('nameEn').dirty || productForm.get('nameEn').touched)"
+                    class="invalid-feedback">
+                    Name (English) is required.
+                </div>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label>Description (Arabic)</label>
-                <textarea formControlName="descriptionAr" class="form-control"></textarea>
+                <label for="descriptionAr">Description (Arabic)</label>
+                <textarea id="descriptionAr" formControlName="descriptionAr" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('descriptionAr').invalid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched), 'is-valid': productForm.get('descriptionAr').valid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched)}"></textarea>
+                <div *ngIf="productForm.get('descriptionAr').invalid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched)"
+                    class="invalid-feedback">
+                    Description (Arabic) is required.
+                </div>
             </div>
             <div class="form-group col-md-6">
-                <label>Description (English)</label>
-                <textarea formControlName="descriptionEn" class="form-control"></textarea>
+                <label for="descriptionEn">Description (English)</label>
+                <textarea id="descriptionEn" formControlName="descriptionEn" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('descriptionEn').invalid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched), 'is-valid': productForm.get('descriptionEn').valid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched)}"></textarea>
+                <div *ngIf="productForm.get('descriptionEn').invalid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched)"
+                    class="invalid-feedback">
+                    Description (English) is required.
+                </div>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label>SKU</label>
-                <input formControlName="sku" class="form-control" required />
+                <label for="sku">SKU</label>
+                <input id="sku" formControlName="sku" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched), 'is-valid': productForm.get('sku').valid && (productForm.get('sku').dirty || productForm.get('sku').touched)}"
+                    required />
+                <div *ngIf="productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched)"
+                    class="invalid-feedback">
+                    SKU is required.
+                </div>
             </div>
             <div class="form-group col-md-4">
-                <label>Brand</label>
-                <input formControlName="brand" class="form-control" />
+                <label for="brand">Brand</label>
+                <input id="brand" formControlName="brand" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('brand').invalid && (productForm.get('brand').dirty || productForm.get('brand').touched), 'is-valid': productForm.get('brand').valid && (productForm.get('brand').dirty || productForm.get('brand').touched)}" />
+                <div *ngIf="productForm.get('brand').invalid && (productForm.get('brand').dirty || productForm.get('brand').touched)"
+                    class="invalid-feedback">
+                    Brand is required.
+                </div>
             </div>
             <div class="form-group col-md-4">
-                <label>Category</label>
-                <select formControlName="categoryId" class="form-control" required>
+                <label for="categoryId">Category</label>
+                <select id="categoryId" formControlName="categoryId" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('categoryId').invalid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched), 'is-valid': productForm.get('categoryId').valid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched)}"
+                    required>
                     <option value="">Select Category</option>
                     <option *ngFor="let cat of categories" [value]="cat.id">{{cat.nameEn}} / {{cat.nameAr}}</option>
                 </select>
+                <div *ngIf="productForm.get('categoryId').invalid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched)"
+                    class="invalid-feedback">
+                    Category is required.
+                </div>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label>Price</label>
-                <input formControlName="price" type="number" class="form-control" required />
+                <label for="price">Price</label>
+                <input id="price" formControlName="price" type="number" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('price').invalid && (productForm.get('price').dirty || productForm.get('price').touched), 'is-valid': productForm.get('price').valid && (productForm.get('price').dirty || productForm.get('price').touched)}"
+                    required />
+                <div *ngIf="productForm.get('price').invalid && (productForm.get('price').dirty || productForm.get('price').touched)"
+                    class="invalid-feedback">
+                    Price is required and must be a number.
+                </div>
             </div>
             <div class="form-group col-md-4">
-                <label>Stock Quantity</label>
-                <input formControlName="stockQuantity" type="number" class="form-control" required />
+                <label for="stockQuantity">Stock Quantity</label>
+                <input id="stockQuantity" formControlName="stockQuantity" type="number" class="form-control"
+                    [ngClass]="{'is-invalid': productForm.get('stockQuantity').invalid && (productForm.get('stockQuantity').dirty || productForm.get('stockQuantity').touched), 'is-valid': productForm.get('stockQuantity').valid && (productForm.get('stockQuantity').dirty || productForm.get('stockQuantity').touched)}"
+                    required />
+                <div *ngIf="productForm.get('stockQuantity').invalid && (productForm.get('stockQuantity').dirty || productForm.get('stockQuantity').touched)"
+                    class="invalid-feedback">
+                    Stock Quantity is required and must be a number.
+                </div>
             </div>
             <div class="form-group col-md-4 d-flex align-items-center">
                 <div class="custom-control custom-checkbox">
