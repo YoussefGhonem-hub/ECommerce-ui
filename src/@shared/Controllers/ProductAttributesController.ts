@@ -1,3 +1,4 @@
 export const ProductAttributesController = {
-    GetAll: 'api/productattributes',
+    GetAll: 'api/product-attributes',
+    Revoke: 'api/product-attributes/revoke', // Adjust the path if needed
 };
