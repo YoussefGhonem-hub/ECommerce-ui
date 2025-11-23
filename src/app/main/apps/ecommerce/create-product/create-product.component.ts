@@ -279,7 +279,7 @@ export class CreateProductComponent implements OnInit {
             }
         }
 
-        // Prepare attributes for API: only existing attribute and selected value ids
+        // Prepare attributes for API: append as indexed fields so backend binds as array
         const attrs = this.productForm.get('attributes') as FormArray;
         const attributesPayload = attrs.controls.map(g => {
             const val: any = g.value;
@@ -288,7 +288,18 @@ export class CreateProductComponent implements OnInit {
                 ValueIds: (val.selectedValueIds && val.selectedValueIds.length > 0) ? val.selectedValueIds : null
             };
         });
-        formData.append('Attributes', JSON.stringify(attributesPayload));
+
+        // Append attributes as indexed form fields (Attributes[0].AttributeId, Attributes[0].ValueIds[0], ...)
+        attributesPayload.forEach((a, i) => {
+            if (a.AttributeId !== null && a.AttributeId !== undefined) {
+                formData.append(`Attributes[${i}].AttributeId`, a.AttributeId.toString());
+            }
+            if (a.ValueIds && Array.isArray(a.ValueIds)) {
+                a.ValueIds.forEach((v: any, j: number) => {
+                    formData.append(`Attributes[${i}].ValueIds[${j}]`, v.toString());
+                });
+            }
+        });
 
         this.http.POST(ProductsController.CreateProduct, formData).subscribe({
             next: (res) => {
