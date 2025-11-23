@@ -13,12 +13,18 @@ export class ProductAttributesComponent implements OnInit {
     attributes: any[] = [];
     loading = false;
     error = '';
+    // pagination
+    pageNumber = 1;
+    pageSize = 10;
+    totalCount = 0;
 
     // modal/form
     modalRef: NgbModalRef | null = null;
     attributeForm: FormGroup;
     creating = false;
     editingId: string | null = null;
+    // when editing, keep track of existing values and whether they should be removed
+    existingValues: Array<{ id: string, value: string, remove?: boolean }> = [];
 
     constructor(
         private http: HttpService,
@@ -36,11 +42,22 @@ export class ProductAttributesComponent implements OnInit {
         this.loadAttributes();
     }
 
-    loadAttributes() {
+    loadAttributes(page?: number) {
+        if (page && page > 0) this.pageNumber = page;
         this.loading = true;
-        this.http.GET(ProductAttributesController.GetAll).subscribe({
+        const query = { pageNumber: this.pageNumber, pageSize: this.pageSize };
+        this.http.GET(ProductAttributesController.GetAll, query).subscribe({
             next: (res: any) => {
-                this.attributes = Array.isArray(res) ? res : (res && res.data) ? res.data : [];
+                // expected shape: { items: [...], totalCount, pageNumber, pageSize }
+                if (res) {
+                    this.attributes = Array.isArray(res.items) ? res.items : (Array.isArray(res) ? res : (res.data || []));
+                    this.totalCount = res.totalCount || 0;
+                    this.pageNumber = res.pageNumber || this.pageNumber;
+                    this.pageSize = res.pageSize || this.pageSize;
+                } else {
+                    this.attributes = [];
+                    this.totalCount = 0;
+                }
                 this.loading = false;
             },
             error: (err) => {
@@ -48,6 +65,22 @@ export class ProductAttributesComponent implements OnInit {
                 this.error = err?.message || 'Failed to load attributes';
             }
         });
+    }
+
+    get totalPages(): number {
+        return Math.max(1, Math.ceil((this.totalCount || 0) / this.pageSize));
+    }
+
+    changePage(page: number) {
+        if (page < 1 || page > this.totalPages) return;
+        this.pageNumber = page;
+        this.loadAttributes(page);
+    }
+
+    changePageSize(size: number) {
+        this.pageSize = size;
+        this.pageNumber = 1;
+        this.loadAttributes(1);
     }
 
     formatAttributeValues(attr: any): string {
@@ -68,7 +101,9 @@ export class ProductAttributesComponent implements OnInit {
     openEditModal(attr: any, content: any) {
         this.editingId = attr.attributeId || attr.id || null;
         const values = (attr.values || []).map((v: any) => v.value).join(',');
-        this.attributeForm.setValue({ name: attr.attributeName || attr.name || '', valuesText: values });
+        this.attributeForm.setValue({ name: attr.attributeName || attr.name || '', valuesText: '' });
+        // populate existingValues with remove flag default false
+        this.existingValues = (attr.values || []).map((v: any) => ({ id: v.id, value: v.value, remove: false }));
         this.modalRef = this.modalService.open(content, { centered: true });
     }
 
@@ -80,7 +115,9 @@ export class ProductAttributesComponent implements OnInit {
         this.creating = true;
 
         if (this.editingId) {
-            const payload = { AttributeId: this.editingId, Name: name, Values: values };
+            // Build update payload per backend: Id, Name, AddValues (strings), RemoveValueIds (guids)
+            const removeIds = this.existingValues.filter(v => v.remove).map(v => v.id);
+            const payload = { Id: this.editingId, Name: name, AddValues: values.length > 0 ? values : null, RemoveValueIds: removeIds.length > 0 ? removeIds : null };
             this.http.PUT(ProductAttributesController.Update, payload).subscribe({
                 next: (res: any) => {
                     this.creating = false;
