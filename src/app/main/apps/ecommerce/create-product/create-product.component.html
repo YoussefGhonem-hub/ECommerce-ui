@@ -31,7 +31,8 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title mb-0">Attributes</h5>
                             <button type="button" class="btn btn-sm btn-outline-primary"
-                                (click)="addAttributeSelection()">Add Attribute</button>
+                                (click)="addAttributeSelection()" [disabled]="allAttributesSelected()">Add
+                                Attribute</button>
                         </div>
 
                         <div *ngIf="loadingAttributes" class="text-muted">Loading attributes...</div>
@@ -45,8 +46,10 @@
                                         <select class="form-control" formControlName="attributeId"
                                             (change)="onAttributeChange(i)">
                                             <option value="">-- Select attribute --</option>
-                                            <option *ngFor="let a of attributes" [value]="a.attributeId">
-                                                {{a.attributeName}}</option>
+                                            <option *ngFor="let a of attributes" [value]="a.attributeId"
+                                                [disabled]="isAttributeSelected(a.attributeId) && attrCtrl.get('attributeId').value !== a.attributeId">
+                                                {{a.attributeName}}
+                                            </option>
                                         </select>
                                     </div>
 

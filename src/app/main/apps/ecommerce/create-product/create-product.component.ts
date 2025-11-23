@@ -105,6 +105,32 @@ export class CreateProductComponent implements OnInit {
         return this.productForm.get('attributes') as FormArray;
     }
 
+    // Return true if given attributeId is already selected in any attribute row
+    isAttributeSelected(attributeId: string): boolean {
+        if (!attributeId) return false;
+        const attrs = this.attributesFormArray;
+        if (!attrs || attrs.length === 0) return false;
+        return attrs.controls.some(g => {
+            const val = g.get('attributeId')?.value;
+            return val === attributeId;
+        });
+    }
+
+    // Return true when all available attributes are already selected (used to disable Add button)
+    allAttributesSelected(): boolean {
+        if (!this.attributes || this.attributes.length === 0) return true;
+        // count unique selected attribute ids
+        const selected = new Set<string>();
+        const attrs = this.attributesFormArray;
+        if (attrs) {
+            attrs.controls.forEach(g => {
+                const v = g.get('attributeId')?.value;
+                if (v) selected.add(v);
+            });
+        }
+        return selected.size >= this.attributes.length;
+    }
+
     addAttributeSelection() {
         const attrs = this.productForm.get('attributes') as FormArray;
         attrs.push(this.fb.group({
