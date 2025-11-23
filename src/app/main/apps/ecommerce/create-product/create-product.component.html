@@ -30,9 +30,13 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title mb-0">Attributes</h5>
-                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                (click)="addAttributeSelection()" [disabled]="allAttributesSelected()">Add
-                                Attribute</button>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-success mr-2"
+                                    (click)="openCreateAttributeModal(createAttributeModal)">New Attribute</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                    (click)="addAttributeSelection()" [disabled]="allAttributesSelected()">Add
+                                    Attribute</button>
+                            </div>
                         </div>
 
                         <div *ngIf="loadingAttributes" class="text-muted">Loading attributes...</div>
@@ -84,6 +88,35 @@
                 </div>
             </div>
         </div>
+
+        <!-- Create Attribute Modal -->
+        <ng-template #createAttributeModal let-modal>
+            <div class="modal-header">
+                <h5 class="modal-title">Create Attribute</h5>
+                <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createAttributeForm">
+                    <div class="form-group">
+                        <label for="attrName">Name</label>
+                        <input id="attrName" class="form-control" formControlName="name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="attrValues">Initial Values (comma separated)</label>
+                        <textarea id="attrValues" class="form-control" rows="3" formControlName="valuesText"
+                            placeholder="e.g. Small,Medium,Large"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+                <button type="button" class="btn btn-primary"
+                    [disabled]="createAttributeForm.invalid || creatingAttribute" (click)="createAttribute()">{{
+                    creatingAttribute ? 'Creating...' : 'Create' }}</button>
+            </div>
+        </ng-template>
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="sku">SKU

@@ -3,6 +3,7 @@
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { HttpService } from '@shared/services/http.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { ProductAttributesController } from '@shared/Controllers/ProductAttributesController';
@@ -29,12 +30,17 @@ export class CreateProductComponent implements OnInit {
     // attributesForm is a FormArray inside productForm to store attribute selections
     // each item is a FormGroup { attributeId: string|null, selectedValueIds: string[] }
     loadingAttributes = false;
+    // Modal / create attribute form
+    createAttributeForm: FormGroup;
+    creatingAttribute = false;
+    private _createAttrModalRef: NgbModalRef | null = null;
 
     constructor(
         private fb: FormBuilder,
         private http: HttpService,
         private router: Router,
         private cdr: ChangeDetectorRef
+        , private modalService: NgbModal
     ) {
         this.productForm = this.fb.group({
             nameAr: ['', Validators.required],
@@ -49,6 +55,11 @@ export class CreateProductComponent implements OnInit {
             allowBackorder: [false]
             ,
             attributes: this.fb.array([])
+        });
+
+        this.createAttributeForm = this.fb.group({
+            name: ['', Validators.required],
+            valuesText: [''] // comma separated values
         });
     }
     updateFileLabel(event: any) {
@@ -105,6 +116,15 @@ export class CreateProductComponent implements OnInit {
         return this.productForm.get('attributes') as FormArray;
     }
 
+    // allow optional preselect when adding a new selection row
+    addAttributeSelection(preselectAttributeId?: string | null) {
+        const attrs = this.productForm.get('attributes') as FormArray;
+        attrs.push(this.fb.group({
+            attributeId: [preselectAttributeId || null],
+            selectedValueIds: [[]]
+        }));
+    }
+
     // Return true if given attributeId is already selected in any attribute row
     isAttributeSelected(attributeId: string): boolean {
         if (!attributeId) return false;
@@ -131,12 +151,47 @@ export class CreateProductComponent implements OnInit {
         return selected.size >= this.attributes.length;
     }
 
-    addAttributeSelection() {
-        const attrs = this.productForm.get('attributes') as FormArray;
-        attrs.push(this.fb.group({
-            attributeId: [null],
-            selectedValueIds: [[]]
-        }));
+    // Open the create-attribute modal
+    openCreateAttributeModal(content: any) {
+        this.createAttributeForm.reset({ name: '', valuesText: '' });
+        this._createAttrModalRef = this.modalService.open(content, { centered: true, size: 'lg' });
+    }
+
+    // Submit new attribute to API
+    createAttribute() {
+        if (this.createAttributeForm.invalid) return;
+        this.creatingAttribute = true;
+        const name = this.createAttributeForm.get('name')?.value;
+        const valuesText = this.createAttributeForm.get('valuesText')?.value || '';
+        const values = valuesText.split(',').map((v: string) => v.trim()).filter((v: string) => v.length > 0);
+        const payload = { Name: name, Values: values };
+
+        this.http.POST(ProductAttributesController.Create, payload).subscribe({
+            next: (res: any) => {
+                this.creatingAttribute = false;
+                // Try to close modal
+                try { this._createAttrModalRef?.close(); } catch (e) { }
+                // If API returns created id, refresh attributes or append
+                if (res && res.succeeded) {
+                    // If returned value is new id, re-fetch attributes to get canonical data
+                    this.fetchAttributes();
+                    // Optionally add a preselected attribute row so user can pick values for it
+                    const newId = res.data || res.value || null;
+                    if (newId) {
+                        // Add a new selection and set its attributeId after short delay to avoid change detection issues
+                        setTimeout(() => this.addAttributeSelection(newId), 50);
+                    }
+                } else {
+                    // still refresh to show backend state
+                    this.fetchAttributes();
+                }
+            },
+            error: (err: any) => {
+                this.creatingAttribute = false;
+                // keep modal open and show console error — could be extended to show UI error
+                console.error('Failed to create attribute', err);
+            }
+        });
     }
 
     removeAttributeSelection(index: number) {
