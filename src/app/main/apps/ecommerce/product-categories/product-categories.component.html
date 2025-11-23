@@ -1,0 +1,105 @@
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>Product Categories</h3>
+        <div>
+            <button class="btn btn-sm btn-outline-primary" (click)="openCreateModal(createModal)"
+                aria-label="New Category">
+                <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
+            </button>
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name (EN)</th>
+                <th>Name (AR)</th>
+                <th>Parent</th>
+                <th>Featured</th>
+                <th style="width:120px">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let c of categories">
+                <td>{{ c.nameEn || c.name }}</td>
+                <td>{{ c.nameAr || '' }}</td>
+                <td>{{ getParentName(c) }}</td>
+                <td>{{ c.isFeatured ? 'Yes' : 'No' }}</td>
+                <td>
+                    <div class="attr-actions">
+                        <button class="btn btn-sm btn-outline-secondary action-btn"
+                            (click)="openEditModal(c, createModal)" aria-label="Edit">
+                            <i data-feather="edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger action-btn"
+                            (click)="confirmDelete(c.id || c.Id || c)">
+                            <i data-feather="trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="totalCount > 0">
+        <div>
+            <small class="text-muted">Showing page {{pageNumber}} of {{ totalPages }} — {{ totalCount }} items</small>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="mr-2">
+                <select class="form-control form-control-sm" [(ngModel)]="pageSize"
+                    (ngModelChange)="changePageSize(pageSize)" style="width:100px" [ngModelOptions]="{standalone:true}">
+                    <option [value]="10">10</option>
+                    <option [value]="25">25</option>
+                    <option [value]="50">50</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary mr-1" (click)="changePage(pageNumber - 1)"
+                    [disabled]="pageNumber <= 1">Previous</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="changePage(pageNumber + 1)"
+                    [disabled]="pageNumber >= totalPages">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="categories.length === 0" class="text-center text-muted mt-3">No categories found.</div>
+
+    <!-- Create/Edit Modal -->
+    <ng-template #createModal let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title">{{ editMode ? 'Edit Category' : 'Create Category' }}</h5>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()"><span
+                    aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="categoryForm">
+                <div class="form-group">
+                    <label>Name (EN)</label>
+                    <input class="form-control" formControlName="nameEn" />
+                </div>
+                <div class="form-group">
+                    <label>Name (AR)</label>
+                    <input class="form-control" formControlName="nameAr" />
+                </div>
+                <div class="form-group">
+                    <label>Parent</label>
+                    <select class="form-control" formControlName="parentId">
+                        <option [ngValue]="null">-- None --</option>
+                        <option *ngFor="let p of parents" [ngValue]="p.id">{{ p.nameEn || p.name }}</option>
+                    </select>
+                </div>
+                <div class="form-group form-check">
+                    <input class="form-check-input" type="checkbox" id="isFeatured" formControlName="isFeatured" />
+                    <label class="form-check-label" for="isFeatured">Is Featured</label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+            <button class="btn btn-primary" [disabled]="categoryForm.invalid" (click)="save()">{{ editMode ? 'Update' :
+                'Create' }}</button>
+        </div>
+    </ng-template>
+
+</div>

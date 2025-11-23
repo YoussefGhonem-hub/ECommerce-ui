@@ -25,6 +25,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { UpdateProductComponent } from './update-product/update-product.component';
 import { ProductAttributesComponent } from './product-attributes/product-attributes.component';
+import { ProductCategoriesComponent } from './product-categories/product-categories.component';
 import { FileUploaderModule } from 'app/main/forms/form-elements/file-uploader/file-uploader.module';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -38,6 +39,11 @@ const routes: Routes = [
     path: 'attributes',
     component: ProductAttributesComponent,
     data: { animation: 'ProductAttributesComponent' }
+  },
+  {
+    path: 'categories',
+    component: ProductCategoriesComponent,
+    data: { animation: 'ProductCategoriesComponent' }
   },
   {
     path: 'create-product',
@@ -101,6 +107,8 @@ const routes: Routes = [
     UpdateProductComponent,
     // Product Attributes management
     ProductAttributesComponent
+    ,
+    ProductCategoriesComponent
   ],
   imports: [
     CommonModule,

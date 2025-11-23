@@ -67,6 +67,15 @@ export const menu: CoreMenu[] = [
         icon: 'tag',
         url: 'apps/e-commerce/attributes'
       }
+      ,
+      {
+        id: 'Products-Categories',
+        title: 'Categories',
+        translate: 'MENU.APPS.EMAIL',
+        type: 'item',
+        icon: 'layers',
+        url: 'apps/e-commerce/categories'
+      }
 
     ]
   },
