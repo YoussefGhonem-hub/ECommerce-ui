@@ -128,6 +128,77 @@
         <!-- Attribute Selection Section -->
 
         <div class="form-row">
+            <div class="col-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">Attributes</h5>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                    (click)="addAttributeSelectionUpdate()"
+                                    [disabled]="availableAttributes.length === 0 || attributeSelections.length >= availableAttributes.length"
+                                    aria-label="Add Attribute">
+                                    <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="availableAttributes.length === 0" class="text-muted">Loading attributes...</div>
+
+                        <div *ngFor="let sel of attributeSelections; let i = index" class="border rounded p-2 mb-2">
+                            <div class="form-row align-items-center">
+                                <div class="form-group col-md-4">
+                                    <label>Attribute</label>
+                                    <select class="form-control" [(ngModel)]="attributeSelections[i].attributeId"
+                                        (change)="attributeSelections[i].selectedValueIds = []; attributeSelections[i].initialValueIds = []"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="">-- Select attribute --</option>
+                                        <option *ngFor="let a of availableAttributes" [value]="a.attributeId"
+                                            [disabled]="isAttributeSelectedUpdate(a.attributeId, i) && attributeSelections[i].attributeId !== a.attributeId">
+                                            {{a.attributeName}}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label>Values</label>
+                                    <div *ngIf="attributeSelections[i].attributeId">
+                                        <div *ngIf="getValuesForAttribute(attributeSelections[i].attributeId)?.length === 0"
+                                            class="text-muted">No values for this attribute.</div>
+                                        <div class="form-check"
+                                            *ngFor="let v of getValuesForAttribute(attributeSelections[i].attributeId)">
+                                            <input class="form-check-input" type="checkbox"
+                                                [id]="'up-attr-'+i+'-val-'+v.id"
+                                                (change)="toggleAttributeValueSelectionUpdate(i, v.id)"
+                                                [checked]="attributeSelections[i].selectedValueIds?.indexOf(v.id) !== -1" />
+                                            <label class="form-check-label"
+                                                [for]="'up-attr-'+i+'-val-'+v.id">{{v.value}}</label>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="!attributeSelections[i].attributeId" class="text-muted">Select an
+                                        attribute to choose values.</div>
+                                </div>
+
+                                <div class="form-group col-md-2 text-right">
+                                    <label class="d-block">Actions</label>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" [id]="'removeAttr'+i"
+                                            [(ngModel)]="attributeSelections[i].removeAttribute"
+                                            [ngModelOptions]="{standalone:true}" />
+                                        <label class="form-check-label" [for]="'removeAttr'+i">Remove All</label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        (click)="removeAttributeSelectionUpdate(i)">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
             <div class="col-lg-3">
                 <fieldset class="form-group">
                     <label for="file-upload-multiple">Add New Images:</label>

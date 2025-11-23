@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpService } from '@shared/services/http.service';
 import { CategoryController } from '@shared/Controllers/CategoryController';
+import { ProductAttributesController } from '@shared/Controllers/ProductAttributesController';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 
 @Component({
@@ -33,6 +34,10 @@ export class UpdateProductComponent implements OnInit {
     removeImageIds: string[] = [];
     setMainImageId: string | null = null;
     setMainImageSource: 'new' | 'existing' | null = null;
+    // Attributes management for update
+    availableAttributes: any[] = [];
+    // each selection row: { attributeId, attributeName, initialValueIds: string[], selectedValueIds: string[], removeAttribute: boolean }
+    attributeSelections: any[] = [];
 
     constructor(
         private fb: FormBuilder,
@@ -58,7 +63,24 @@ export class UpdateProductComponent implements OnInit {
     ngOnInit() {
         this.productId = this.route.snapshot.paramMap.get('id') || '';
         this.fetchCategories();
-        this.fetchProduct();
+        // fetch available attributes first, then product
+        this.fetchAttributes().then(() => this.fetchProduct());
+    }
+
+    fetchAttributes(): Promise<void> {
+        return new Promise((resolve) => {
+            this.http.GET(ProductAttributesController.GetAll).subscribe({
+                next: (res: any) => {
+                    this.availableAttributes = (res && Array.isArray(res)) ? res.map((attr: any) => ({
+                        attributeId: attr.attributeId,
+                        attributeName: attr.attributeName,
+                        values: (attr.values || []).map((v: any) => ({ id: v.id, value: v.value }))
+                    })) : [];
+                    resolve();
+                },
+                error: () => { this.availableAttributes = []; resolve(); }
+            });
+        });
     }
 
     fetchCategories() {
@@ -97,8 +119,66 @@ export class UpdateProductComponent implements OnInit {
                     this.setMainImageId = null;
                     this.mainNewImageIndex = null;
                 }
+                // Build attributeSelections from product data if present
+                const rawAttrs = product.attributes || product.attributeMappings || product.attributeValues || [];
+                this.attributeSelections = [];
+                if (Array.isArray(rawAttrs) && rawAttrs.length > 0) {
+                    rawAttrs.forEach((ra: any) => {
+                        const attributeId = ra.attributeId || ra.attributeID || ra.attribute || null;
+                        let initialValueIds: string[] = [];
+                        if (Array.isArray(ra.valueIds) && ra.valueIds.length > 0) {
+                            initialValueIds = ra.valueIds.map((v: any) => v.toString());
+                        } else if (Array.isArray(ra.values) && ra.values.length > 0) {
+                            // values might be objects with id and a mapped flag
+                            const mapped = ra.values.filter((v: any) => v.isMapped || v.mapped || v.selected || v.isSelected || v.mappedToProduct).map((v: any) => v.id?.toString()).filter(Boolean);
+                            if (mapped.length > 0) initialValueIds = mapped;
+                        }
+                        const attrMeta = this.availableAttributes.find((a: any) => a.attributeId === attributeId) || null;
+                        this.attributeSelections.push({
+                            attributeId: attributeId,
+                            attributeName: attrMeta ? attrMeta.attributeName : (ra.attributeName || ''),
+                            initialValueIds: initialValueIds,
+                            selectedValueIds: initialValueIds.slice(),
+                            removeAttribute: false
+                        });
+                    });
+                }
             }
         });
+    }
+
+    // Update attribute selection helpers for UI
+    addAttributeSelectionUpdate(preselectAttributeId?: string | null) {
+        this.attributeSelections.push({
+            attributeId: preselectAttributeId || null,
+            attributeName: '',
+            initialValueIds: [],
+            selectedValueIds: [],
+            removeAttribute: false
+        });
+    }
+
+    removeAttributeSelectionUpdate(index: number) {
+        this.attributeSelections.splice(index, 1);
+    }
+
+    isAttributeSelectedUpdate(attributeId: string, index: number): boolean {
+        if (!attributeId) return false;
+        return this.attributeSelections.some((s, i) => i !== index && s.attributeId === attributeId);
+    }
+
+    toggleAttributeValueSelectionUpdate(index: number, valueId: string) {
+        const sel = this.attributeSelections[index];
+        if (!sel) return;
+        const arr: string[] = Array.isArray(sel.selectedValueIds) ? sel.selectedValueIds.slice() : [];
+        const pos = arr.indexOf(valueId);
+        if (pos === -1) arr.push(valueId); else arr.splice(pos, 1);
+        sel.selectedValueIds = arr;
+    }
+
+    getValuesForAttribute(attributeId: string) {
+        const a = this.availableAttributes.find((x: any) => x.attributeId === attributeId);
+        return a ? a.values : [];
     }
 
     onFileChange(event: any) {
@@ -180,6 +260,36 @@ export class UpdateProductComponent implements OnInit {
         if (this.removeImageIds.length > 0) {
             this.removeImageIds.forEach(id => formData.append('RemoveImageIds', id));
         }
+
+        // Attributes updates: compute AddValueIds, RemoveValueIds, RemoveAttribute per selection
+        const updates: any[] = [];
+        this.attributeSelections.forEach(s => {
+            if (!s || !s.attributeId) return;
+            if (s.removeAttribute) {
+                updates.push({ AttributeId: s.attributeId, RemoveAttribute: true });
+            } else {
+                const initial = new Set((s.initialValueIds || []).map((v: any) => v.toString()));
+                const selected = new Set((s.selectedValueIds || []).map((v: any) => v.toString()));
+                const add = Array.from(selected).filter(x => !initial.has(x));
+                const remove = Array.from(initial).filter(x => !selected.has(x));
+                if (add.length > 0 || remove.length > 0) {
+                    updates.push({ AttributeId: s.attributeId, AddValueIds: add.length > 0 ? add : null, RemoveValueIds: remove.length > 0 ? remove : null, RemoveAttribute: false });
+                }
+            }
+        });
+
+        // Append updates as indexed form fields
+        updates.forEach((u, i) => {
+            formData.append(`Attributes[${i}].AttributeId`, u.AttributeId.toString());
+            if (u.AddValueIds && Array.isArray(u.AddValueIds)) {
+                u.AddValueIds.forEach((v: any, j: number) => formData.append(`Attributes[${i}].AddValueIds[${j}]`, v.toString()));
+            }
+            if (u.RemoveValueIds && Array.isArray(u.RemoveValueIds)) {
+                u.RemoveValueIds.forEach((v: any, j: number) => formData.append(`Attributes[${i}].RemoveValueIds[${j}]`, v.toString()));
+            }
+            // Always send RemoveAttribute flag (true/false)
+            formData.append(`Attributes[${i}].RemoveAttribute`, (u.RemoveAttribute ? 'true' : 'false'));
+        });
 
         this.http.PUT(ProductsController.UpdateProduct, formData).subscribe({
             next: (res) => {

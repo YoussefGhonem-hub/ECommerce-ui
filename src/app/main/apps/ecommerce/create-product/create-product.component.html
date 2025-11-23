@@ -152,10 +152,16 @@
                             <h5 class="card-title mb-0">Attributes</h5>
                             <div>
                                 <button type="button" class="btn btn-sm btn-outline-success mr-2"
-                                    (click)="openCreateAttributeModal(createAttributeModal)">New Attribute</button>
+                                    (click)="openCreateAttributeModal(createAttributeModal)">
+                                    <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
+
+                                    New Attribute</button>
                                 <button type="button" class="btn btn-sm btn-outline-primary"
-                                    (click)="addAttributeSelection()" [disabled]="allAttributesSelected()">Add
-                                    Attribute</button>
+                                    (click)="addAttributeSelection()" [disabled]="allAttributesSelected()"
+                                    aria-label="Add Attribute">
+                                    <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
+                                </button>
+
                             </div>
                         </div>
 
