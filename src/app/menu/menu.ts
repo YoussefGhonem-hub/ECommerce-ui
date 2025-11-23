@@ -48,7 +48,7 @@ export const menu: CoreMenu[] = [
         title: 'Products',
         translate: 'MENU.APPS.EMAIL',
         type: 'item',
-        icon: 'mail',
+        icon: 'shopping-cart',
         url: 'apps/e-commerce/shop'
       },
       {
@@ -56,8 +56,16 @@ export const menu: CoreMenu[] = [
         title: 'Orders',
         translate: 'MENU.APPS.EMAIL',
         type: 'item',
-        icon: 'mail',
+        icon: 'list',
         url: 'apps/e-commerce/orders'
+      },
+      {
+        id: 'Products-Attributes',
+        title: 'Product Attributes',
+        translate: 'MENU.APPS.EMAIL',
+        type: 'item',
+        icon: 'tag',
+        url: 'apps/e-commerce/attributes'
       }
 
     ]

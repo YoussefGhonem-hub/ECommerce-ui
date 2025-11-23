@@ -1,0 +1,23 @@
+.modal-body textarea { resize: vertical; }
+.table td { vertical-align: middle; }
+
+/* Align action icons in action buttons */
+.attr-actions {
+	display: flex;
+	gap: .4rem;
+	align-items: center;
+	justify-content: flex-end;
+}
+.attr-actions .action-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: .35rem .45rem;
+}
+.attr-actions .action-btn i {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	vertical-align: middle;
+}

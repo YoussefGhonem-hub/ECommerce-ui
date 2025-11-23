@@ -24,6 +24,7 @@ import { EcommerceCheckoutItemComponent } from 'app/main/apps/ecommerce/ecommerc
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { UpdateProductComponent } from './update-product/update-product.component';
+import { ProductAttributesComponent } from './product-attributes/product-attributes.component';
 import { FileUploaderModule } from 'app/main/forms/form-elements/file-uploader/file-uploader.module';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
@@ -33,6 +34,11 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 
 // routing
 const routes: Routes = [
+  {
+    path: 'attributes',
+    component: ProductAttributesComponent,
+    data: { animation: 'ProductAttributesComponent' }
+  },
   {
     path: 'create-product',
     component: CreateProductComponent,
@@ -92,7 +98,9 @@ const routes: Routes = [
     EcommerceItemComponent,
     EcommerceCheckoutItemComponent,
     CreateProductComponent,
-    UpdateProductComponent
+    UpdateProductComponent,
+    // Product Attributes management
+    ProductAttributesComponent
   ],
   imports: [
     CommonModule,
