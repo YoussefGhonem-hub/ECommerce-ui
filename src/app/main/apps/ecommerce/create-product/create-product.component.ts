@@ -26,7 +26,8 @@ export class CreateProductComponent implements OnInit {
 
     // Attribute logic
     attributes: any[] = [];
-    attributeSelections: any[] = [];
+    // attributesForm is a FormArray inside productForm to store attribute selections
+    // each item is a FormGroup { attributeId: string|null, selectedValueIds: string[] }
     loadingAttributes = false;
 
     constructor(
@@ -46,6 +47,8 @@ export class CreateProductComponent implements OnInit {
             price: [0, [Validators.required, Validators.min(0)]],
             stockQuantity: [0, [Validators.required, Validators.min(0)]],
             allowBackorder: [false]
+            ,
+            attributes: this.fb.array([])
         });
     }
     updateFileLabel(event: any) {
@@ -97,25 +100,29 @@ export class CreateProductComponent implements OnInit {
         });
     }
 
+    // Expose attributes FormArray to template
+    get attributesFormArray(): FormArray {
+        return this.productForm.get('attributes') as FormArray;
+    }
+
     addAttributeSelection() {
-        this.attributeSelections.push({
-            attributeId: null,
-            newAttributeName: '',
-            valueId: null,
-            newValue: '',
-            newValues: []
-        });
+        const attrs = this.productForm.get('attributes') as FormArray;
+        attrs.push(this.fb.group({
+            attributeId: [null],
+            selectedValueIds: [[]]
+        }));
     }
 
     removeAttributeSelection(index: number) {
-        this.attributeSelections.splice(index, 1);
+        const attrs = this.productForm.get('attributes') as FormArray;
+        attrs.removeAt(index);
     }
 
     onAttributeChange(index: number) {
         // Reset value selection when attribute changes
-        this.attributeSelections[index].valueId = null;
-        this.attributeSelections[index].newValue = '';
-        this.attributeSelections[index].newValues = [];
+        const attrs = this.productForm.get('attributes') as FormArray;
+        const ctrl = attrs.at(index).get('selectedValueIds');
+        if (ctrl) ctrl.setValue([]);
     }
 
     fetchCategories() {
@@ -191,14 +198,13 @@ export class CreateProductComponent implements OnInit {
             }
         }
 
-        // Prepare attributes for API
-        const attributesPayload = this.attributeSelections.map(sel => {
+        // Prepare attributes for API: only existing attribute and selected value ids
+        const attrs = this.productForm.get('attributes') as FormArray;
+        const attributesPayload = attrs.controls.map(g => {
+            const val: any = g.value;
             return {
-                AttributeId: sel.attributeId || null,
-                NewAttributeName: sel.attributeId ? null : (sel.newAttributeName || null),
-                ValueId: sel.valueId || null,
-                NewValue: sel.newValue || null,
-                NewValues: sel.newValues && sel.newValues.length > 0 ? sel.newValues : null
+                AttributeId: val.attributeId || null,
+                ValueIds: (val.selectedValueIds && val.selectedValueIds.length > 0) ? val.selectedValueIds : null
             };
         });
         formData.append('Attributes', JSON.stringify(attributesPayload));
@@ -225,12 +231,27 @@ export class CreateProductComponent implements OnInit {
         return attr ? attr.values : [];
     }
 
-    // Handle new values input (comma separated)
-    handleNewValuesInput(sel: any) {
-        if (sel.newValuesInput) {
-            sel.newValues = sel.newValuesInput.split(',').map((v: string) => v.trim()).filter((v: string) => v);
+    // Toggle selection of an existing attribute value (multiple allowed)
+    toggleAttributeValueSelection(index: number, valueId: string) {
+        const attrs = this.productForm.get('attributes') as FormArray;
+        if (!attrs || !attrs.at(index)) return;
+        const ctrl = attrs.at(index).get('selectedValueIds');
+        if (!ctrl) return;
+        const arr: string[] = Array.isArray(ctrl.value) ? ctrl.value.slice() : [];
+        const pos = arr.indexOf(valueId);
+        if (pos === -1) {
+            arr.push(valueId);
         } else {
-            sel.newValues = [];
+            arr.splice(pos, 1);
         }
+        ctrl.setValue(arr);
+    }
+
+    isValueSelected(index: number, valueId: string) {
+        const attrs = this.productForm.get('attributes') as FormArray;
+        if (!attrs || !attrs.at(index)) return false;
+        const ctrl = attrs.at(index).get('selectedValueIds');
+        const arr: string[] = Array.isArray(ctrl?.value) ? ctrl.value : [];
+        return arr.indexOf(valueId) !== -1;
     }
 }

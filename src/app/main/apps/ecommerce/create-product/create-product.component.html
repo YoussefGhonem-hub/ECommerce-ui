@@ -23,23 +23,61 @@
                 </div>
             </div>
         </div>
+        <!-- Attributes Section: pick attribute and multiple existing values -->
         <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="descriptionAr">Description (Arabic)</label>
-                <textarea id="descriptionAr" formControlName="descriptionAr" class="form-control"
-                    [ngClass]="{'is-invalid': productForm.get('descriptionAr').invalid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched), 'is-valid': productForm.get('descriptionAr').valid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched)}"></textarea>
-                <div *ngIf="productForm.get('descriptionAr').invalid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched)"
-                    class="invalid-feedback">
-                    Description (Arabic) is required.
-                </div>
-            </div>
-            <div class="form-group col-md-6">
-                <label for="descriptionEn">Description (English)</label>
-                <textarea id="descriptionEn" formControlName="descriptionEn" class="form-control"
-                    [ngClass]="{'is-invalid': productForm.get('descriptionEn').invalid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched), 'is-valid': productForm.get('descriptionEn').valid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched)}"></textarea>
-                <div *ngIf="productForm.get('descriptionEn').invalid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched)"
-                    class="invalid-feedback">
-                    Description (English) is required.
+            <div class="col-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">Attributes</h5>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                (click)="addAttributeSelection()">Add Attribute</button>
+                        </div>
+
+                        <div *ngIf="loadingAttributes" class="text-muted">Loading attributes...</div>
+
+                        <div formArrayName="attributes">
+                            <div *ngFor="let attrCtrl of attributesFormArray.controls; let i = index"
+                                [formGroupName]="i" class="border rounded p-2 mb-2">
+                                <div class="form-row align-items-center">
+                                    <div class="form-group col-md-4">
+                                        <label>Attribute</label>
+                                        <select class="form-control" formControlName="attributeId"
+                                            (change)="onAttributeChange(i)">
+                                            <option value="">-- Select attribute --</option>
+                                            <option *ngFor="let a of attributes" [value]="a.attributeId">
+                                                {{a.attributeName}}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label>Values</label>
+                                        <div *ngIf="attrCtrl.get('attributeId').value">
+                                            <div *ngIf="getAttributeValues(attrCtrl.get('attributeId').value)?.length === 0"
+                                                class="text-muted">No values for this attribute.</div>
+                                            <div class="form-check"
+                                                *ngFor="let v of getAttributeValues(attrCtrl.get('attributeId').value)">
+                                                <input class="form-check-input" type="checkbox"
+                                                    [id]="'attr-'+i+'-val-'+v.id"
+                                                    (change)="toggleAttributeValueSelection(i, v.id)"
+                                                    [checked]="isValueSelected(i, v.id)" />
+                                                <label class="form-check-label"
+                                                    [for]="'attr-'+i+'-val-'+v.id">{{v.value}}</label>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="!attrCtrl.get('attributeId').value" class="text-muted">Select an
+                                            attribute to choose values.</div>
+                                    </div>
+
+                                    <div class="form-group col-md-2 text-right">
+                                        <label class="d-block">Actions</label>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            (click)="removeAttributeSelection(i)">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,19 +101,17 @@
                     </div>
                 </div>
                 <div *ngIf="productForm.get('sku').invalid && (productForm.get('sku').dirty || productForm.get('sku').touched)"
-                    class="invalid-feedback">
-                    SKU is required.
-                </div>
+                    class="invalid-feedback">SKU is required.</div>
             </div>
+
             <div class="form-group col-md-4">
                 <label for="brand">Brand</label>
                 <input id="brand" formControlName="brand" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('brand').invalid && (productForm.get('brand').dirty || productForm.get('brand').touched), 'is-valid': productForm.get('brand').valid && (productForm.get('brand').dirty || productForm.get('brand').touched)}" />
                 <div *ngIf="productForm.get('brand').invalid && (productForm.get('brand').dirty || productForm.get('brand').touched)"
-                    class="invalid-feedback">
-                    Brand is required.
-                </div>
+                    class="invalid-feedback">Brand is required.</div>
             </div>
+
             <div class="form-group col-md-4">
                 <label for="categoryId">Category</label>
                 <select id="categoryId" formControlName="categoryId" class="form-control"
@@ -85,9 +121,7 @@
                     <option *ngFor="let cat of categories" [value]="cat.id">{{cat.nameEn}} / {{cat.nameAr}}</option>
                 </select>
                 <div *ngIf="productForm.get('categoryId').invalid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched)"
-                    class="invalid-feedback">
-                    Category is required.
-                </div>
+                    class="invalid-feedback">Category is required.</div>
             </div>
         </div>
         <div class="form-row">
@@ -147,8 +181,8 @@
                             <th>Size</th>
                             <th>Main</th>
                             <th>Preview</th>
-                            <th>Actions</th>
-                        </tr>
+
+
                     </thead>
                     <tbody>
                         <tr *ngFor="let file of images; let i = index">
@@ -157,7 +191,6 @@
                             <td class="text-center">
                                 <input type="radio" name="mainImageRadio" [checked]="mainImageIndex === i"
                                     (change)="onMainImageChange(i)" />
-                                <!-- <span *ngIf="mainImageIndex === i" class="badge badge-primary ml-1">Main</span> -->
                             </td>
                             <td>
                                 <img *ngIf="imagePreviews[i]?.src" [src]="imagePreviews[i].src" [alt]="file?.name"
@@ -174,73 +207,11 @@
                 </table>
             </div>
         </div>
-        <!-- Attribute Selection Section -->
-        <div class="card mt-4">
-            <div class="card-header ">
-                <h5 class="mb-0">Product Attributes</h5>
-            </div>
-            <div class="card-body">
-                <div *ngIf="loadingAttributes" class="text-center py-3">
-                    <span class="spinner-border spinner-border-sm"></span> Loading attributes...
-                </div>
-                <div *ngIf="!loadingAttributes">
-                    <div *ngFor="let sel of attributeSelections; let i = index"
-                        class="border rounded p-3 mb-3 position-relative ">
-                        <button type="button" class="close position-absolute" style="right: 10px; top: 10px;"
-                            aria-label="Remove" (click)="removeAttributeSelection(i)">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <div class="form-row align-items-end">
-                            <div class="form-group col-md-4">
-                                <label>Attribute</label>
-                                <select class="form-control" [(ngModel)]="sel.attributeId" name="attributeId{{i}}"
-                                    (change)="onAttributeChange(i)" [ngModelOptions]="{standalone: true}">
-                                    <option [ngValue]="null">-- New Attribute --</option>
-                                    <option *ngFor="let attr of attributes" [ngValue]="attr.attributeId">
-                                        {{attr.attributeName}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4" *ngIf="!sel.attributeId">
-                                <label>New Attribute Name</label>
-                                <input type="text" class="form-control" [(ngModel)]="sel.newAttributeName"
-                                    name="newAttributeName{{i}}" [ngModelOptions]="{standalone: true}"
-                                    placeholder="Enter attribute name">
-                            </div>
-                            <div class="form-group col-md-4" *ngIf="sel.attributeId">
-                                <label>Value</label>
-                                <select class="form-control" [(ngModel)]="sel.valueId" name="valueId{{i}}"
-                                    [ngModelOptions]="{standalone: true}">
-                                    <option [ngValue]="null">-- New Value --</option>
-                                    <option *ngFor="let val of getAttributeValues(sel.attributeId)" [ngValue]="val.id">
-                                        {{val.value}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-4" *ngIf="sel.attributeId && !sel.valueId">
-                                <label>New Value</label>
-                                <input type="text" class="form-control" [(ngModel)]="sel.newValue" name="newValue{{i}}"
-                                    [ngModelOptions]="{standalone: true}" placeholder="Enter new value">
-                            </div>
-                            <div class="form-group col-md-4" *ngIf="!sel.attributeId">
-                                <label>New Values (comma separated)</label>
-                                <input type="text" class="form-control" [(ngModel)]="sel.newValuesInput"
-                                    name="newValuesInput{{i}}" [ngModelOptions]="{standalone: true}"
-                                    placeholder="e.g. Red, Blue, Green" (blur)="handleNewValuesInput(sel)">
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-outline-primary" (click)="addAttributeSelection()">
-                        <i data-feather="plus"></i> Add Attribute
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- End Attribute Section -->
-
         <div class="d-flex justify-content-end mt-4">
             <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Create
                 Product</button>
         </div>
-        <div *ngIf="error" class="alert alert-danger mt-2">{{error}}</div>
+        <div *ngIf="error" class="alert alert-danger m-2">{{error}}</div>
         <div *ngIf="success" class="alert alert-success mt-2">Product created successfully!</div>
     </form>
 </div>
