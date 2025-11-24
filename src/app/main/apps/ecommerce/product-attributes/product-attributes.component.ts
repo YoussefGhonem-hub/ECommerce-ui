@@ -29,6 +29,33 @@ export class ProductAttributesComponent implements OnInit {
     // when adding new values for Color attribute, maintain an array of color strings
     newColorValues: string[] = [];
 
+    // Small color palette for mapping named colors to hex
+    private readonly COLOR_PALETTE: { [key: string]: string } = {
+        'Red': '#dc3545',
+        'Blue': '#007bff',
+        'Green': '#28a745',
+        'Black': '#000000',
+        'White': '#ffffff',
+        'Gray': '#6c757d',
+        'Grey': '#6c757d'
+    };
+
+    // Fallback: generate a deterministic hex color from a string
+    private stringToColor(str: string): string {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            // tslint:disable-next-line: no-bitwise
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        let color = '#';
+        for (let i = 0; i < 3; i++) {
+            // tslint:disable-next-line: no-bitwise
+            const value = (hash >> (i * 8)) & 255;
+            color += ('00' + value.toString(16)).substr(-2);
+        }
+        return color;
+    }
+
     constructor(
         private http: HttpService,
         private fb: FormBuilder,
@@ -109,9 +136,47 @@ export class ProductAttributesComponent implements OnInit {
         this.attributeForm.setValue({ name: attr.attributeName || attr.name || '', valuesText: '' });
         // populate existingValues with remove flag default false and keep originalValue for change detection
         this.existingValues = (attr.values || []).map((v: any) => ({ id: v.id, value: v.value, originalValue: v.value, remove: false }));
+        // If editing a Color attribute, normalize values to valid #RRGGBB for the color input
+        if ((this.attributeForm.get('name')?.value || '').toLowerCase() === 'color') {
+            this.existingValues = this.existingValues.map(ev => ({
+                ...ev,
+                // keep originalValue, but set value to a normalized hex string suitable for <input type="color">
+                value: this.normalizeColorForInput(ev.value)
+            }));
+        }
         // reset newColorValues when editing; user can still add additional colors via the add control
         this.newColorValues = [];
         this.modalRef = this.modalService.open(content, { centered: true });
+    }
+
+    /**
+     * Normalize various color value forms into a valid #RRGGBB string for color input.
+     * - Accepts '#abc', '#aabbcc', 'abc', 'aabbcc', named colors like 'Black'
+     * - Falls back to generating a color from the string when unknown
+     */
+    private normalizeColorForInput(val: string): string {
+        if (!val) return '#000000';
+        let s = String(val).trim();
+        // If already starts with #
+        if (s.startsWith('#')) {
+            const hex = s.substring(1);
+            if (/^[0-9A-Fa-f]{6}$/.test(hex)) return '#' + hex.toLowerCase();
+            if (/^[0-9A-Fa-f]{3}$/.test(hex)) {
+                // expand shorthand #abc -> #aabbcc
+                return '#' + hex.split('').map(c => c + c).join('').toLowerCase();
+            }
+        }
+        // If plain 6-digit hex without #
+        if (/^[0-9A-Fa-f]{6}$/.test(s)) return '#' + s.toLowerCase();
+        // If plain 3-digit hex without #
+        if (/^[0-9A-Fa-f]{3}$/.test(s)) return '#' + s.split('').map(c => c + c).join('').toLowerCase();
+
+        // Lookup in palette (case-insensitive)
+        const found = Object.keys(this.COLOR_PALETTE).find(k => k.toLowerCase() === s.toLowerCase());
+        if (found) return this.COLOR_PALETTE[found];
+
+        // As a last resort, generate a color from the string
+        return this.stringToColor(s);
     }
 
     saveAttribute() {
@@ -125,14 +190,35 @@ export class ProductAttributesComponent implements OnInit {
         if (this.editingId) {
             // Build update payload per backend: Id, Name, AddValues (strings), RemoveValueIds (guids)
             // Detect changed existing values: we'll remove the old id and add the new value
-            const changed = this.existingValues.filter(v => !v.remove && v.originalValue !== undefined && v.originalValue !== v.value);
+            const isColor = (name || '').toLowerCase() === 'color';
+            const changed = this.existingValues.filter(v => {
+                if (v.remove) return false;
+                if (v.originalValue === undefined) return false;
+                if (isColor) {
+                    return this.normalizeColorForInput(v.originalValue) !== this.normalizeColorForInput(v.value);
+                }
+                return v.originalValue !== v.value;
+            });
             const changedRemoveIds = changed.map(v => v.id);
             const changedAddValues = changed.map(v => v.value);
 
             const removeIds = this.existingValues.filter(v => v.remove).map(v => v.id).concat(changedRemoveIds);
-            const addValues = (values || []).concat(changedAddValues).filter(Boolean);
 
-            const payload = { Id: this.editingId, Name: name, AddValues: addValues.length > 0 ? addValues : null, RemoveValueIds: removeIds.length > 0 ? removeIds : null };
+            // Merge new values and changedAddValues, dedupe (case-insensitive for colors)
+            let addValuesArr: string[] = [];
+            if (isColor) {
+                const set = new Set<string>();
+                (values || []).forEach(v => set.add(String(v).toLowerCase()));
+                changedAddValues.forEach(v => set.add(String(v).toLowerCase()));
+                addValuesArr = Array.from(set).map(s => s);
+            } else {
+                const set = new Set<string>();
+                (values || []).forEach(v => { if (v) set.add(String(v)); });
+                changedAddValues.forEach(v => { if (v) set.add(String(v)); });
+                addValuesArr = Array.from(set);
+            }
+
+            const payload = { Id: this.editingId, Name: name, AddValues: addValuesArr.length > 0 ? addValuesArr : null, RemoveValueIds: removeIds.length > 0 ? removeIds : null };
             this.http.PUT(ProductAttributesController.Update, payload).subscribe({
                 next: (res: any) => {
                     this.creating = false;
