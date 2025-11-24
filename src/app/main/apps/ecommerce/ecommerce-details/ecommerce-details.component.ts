@@ -267,6 +267,95 @@ export class EcommerceDetailsComponent implements OnInit {
     this.contentHeaderMethod();
   }
 
+  /**
+   * Return the current product URL for sharing
+   */
+  getShareUrl(): string {
+    try {
+      return window.location.href;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  /**
+   * Share product to social platforms or open link
+   */
+  shareTo(platform: string): void {
+    const shareUrl = encodeURIComponent(this.getShareUrl());
+    const title = encodeURIComponent(this.product?.nameEn || this.product?.name || '');
+    const text = encodeURIComponent(this.product?.descriptionEn || '');
+
+    // Construct platform-specific URL
+    let url = '';
+    switch ((platform || '').toLowerCase()) {
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+        break;
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?url=${shareUrl}&text=${title}`;
+        break;
+      case 'youtube':
+      case 'instagram':
+        // These platforms don't have simple share endpoints for arbitrary links — open the product page instead
+        url = this.getShareUrl();
+        break;
+      default:
+        url = this.getShareUrl();
+    }
+
+    // Prefer Web Share API when available for native-like sharing
+    const nav: any = (navigator as any);
+    if (nav && typeof nav.share === 'function') {
+      nav.share({ title: this.product?.nameEn || '', text: this.product?.descriptionEn || '', url: this.getShareUrl() })
+        .catch(() => {
+          // Fallback to opening the constructed URL
+          if (url) { window.open(url, '_blank', 'noopener'); }
+        });
+    } else {
+      if (url) { window.open(url, '_blank', 'noopener'); }
+    }
+  }
+
+  /**
+   * Copy current product link to clipboard
+   */
+  copyLink(): void {
+    const link = this.getShareUrl();
+    if (!link) return;
+    const nav: any = (navigator as any);
+    if (nav && typeof nav.clipboard !== 'undefined' && typeof nav.clipboard.writeText === 'function') {
+      nav.clipboard.writeText(link).then(() => {
+        // minimal UX: alert; in real app replace with toast
+        alert('Product link copied to clipboard');
+      }).catch(() => {
+        this.fallbackCopy(link);
+      });
+    } else {
+      this.fallbackCopy(link);
+    }
+  }
+
+  /**
+   * Fallback clipboard copy using temporary input
+   */
+  private fallbackCopy(text: string) {
+    try {
+      const input = document.createElement('input');
+      input.style.position = 'fixed';
+      input.style.left = '-1000px';
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      alert('Product link copied to clipboard');
+    } catch (e) {
+      console.error('[EcommerceDetails] copy fallback failed', e);
+      alert('Could not copy link. Please copy it from the address bar.');
+    }
+  }
+
   contentHeaderMethod() {
     this.contentHeader = {
       headerTitle: 'Product Details',

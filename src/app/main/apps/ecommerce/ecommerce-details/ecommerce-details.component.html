@@ -108,17 +108,25 @@
                     <i data-feather="share-2"></i>
                   </button>
                   <div class="dropdown-menu-right" ngbDropdownMenu>
-                    <a ngbDropdownItem href="javascript:void(0)">
+                    <a ngbDropdownItem href="javascript:void(0)" (click)="$event.preventDefault(); shareTo('facebook')"
+                      title="Share on Facebook">
                       <i data-feather="facebook"></i>
                     </a>
-                    <a ngbDropdownItem href="javascript:void(0)">
+                    <a ngbDropdownItem href="javascript:void(0)" (click)="$event.preventDefault(); shareTo('twitter')"
+                      title="Share on Twitter">
                       <i data-feather="twitter"></i>
                     </a>
-                    <a ngbDropdownItem href="javascript:void(0)">
+                    <a ngbDropdownItem href="javascript:void(0)" (click)="$event.preventDefault(); shareTo('youtube')"
+                      title="Open on YouTube">
                       <i data-feather="youtube"></i>
                     </a>
-                    <a ngbDropdownItem href="javascript:void(0)">
+                    <a ngbDropdownItem href="javascript:void(0)" (click)="$event.preventDefault(); shareTo('instagram')"
+                      title="Open on Instagram">
                       <i data-feather="instagram"></i>
+                    </a>
+                    <a ngbDropdownItem href="javascript:void(0)" (click)="$event.preventDefault(); copyLink()"
+                      title="Copy product link">
+                      <i class="fa fa-link"></i>
                     </a>
                   </div>
                 </div>
