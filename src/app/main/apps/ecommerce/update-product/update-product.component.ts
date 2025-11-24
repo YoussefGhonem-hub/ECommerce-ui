@@ -69,13 +69,18 @@ export class UpdateProductComponent implements OnInit {
 
     fetchAttributes(): Promise<void> {
         return new Promise((resolve) => {
-            this.http.GET(ProductAttributesController.GetAll).subscribe({
+            this.http.GET(ProductAttributesController.Getdropdown).subscribe({
                 next: (res: any) => {
-                    this.availableAttributes = (res && Array.isArray(res)) ? res.map((attr: any) => ({
-                        attributeId: attr.attributeId,
-                        attributeName: attr.attributeName,
-                        values: (attr.values || []).map((v: any) => ({ id: v.id, value: v.value }))
-                    })) : [];
+                    this.availableAttributes = (res && Array.isArray(res)) ? res.map((attr: any) => {
+                        const attributeId = attr.attributeId || attr.id || null;
+                        const attributeName = attr.attributeName || attr.name || '';
+                        const values = Array.isArray(attr.values) ? attr.values.map((v: any) => {
+                            const id = (v && (v.id !== undefined && v.id !== null)) ? v.id : ((v && v.value !== undefined && v.value !== null) ? String(v.value) : (typeof v === 'string' ? v : ''));
+                            const value = (v && (v.value !== undefined && v.value !== null)) ? v.value : ((v && v.name !== undefined && v.name !== null) ? v.name : (typeof v === 'string' ? v : ''));
+                            return { id, value };
+                        }) : [];
+                        return { attributeId, attributeName, values };
+                    }) : [];
                     resolve();
                 },
                 error: () => { this.availableAttributes = []; resolve(); }

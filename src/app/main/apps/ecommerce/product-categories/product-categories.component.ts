@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
 import { HttpService } from '@shared/services/http.service';
 import { CategoryController } from '@shared/Controllers/CategoryController';
 
@@ -93,9 +94,27 @@ export class ProductCategoriesComponent implements OnInit {
     }
   }
 
-  confirmDelete(id: any) {
-    if (!confirm('Delete this category?')) return;
-    this.http.DELETE(CategoryController.Delete(id)).subscribe(() => this.loadCategories());
+  async confirmDelete(id: any) {
+    const result = await Swal.fire({
+      title: 'Delete this category?',
+      text: 'This action cannot be undone.',
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      this.http.DELETE(CategoryController.Delete(id)).subscribe({
+        next: () => {
+          Swal.fire('Deleted', 'Category has been deleted.', 'success');
+          this.loadCategories();
+        },
+        error: (err) => {
+          Swal.fire('Error', err?.message || 'Failed to delete', 'error');
+        }
+      });
+    }
   }
 
   changePage(n: number) {

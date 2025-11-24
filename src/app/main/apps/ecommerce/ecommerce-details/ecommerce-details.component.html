@@ -33,10 +33,10 @@
               <ul class="product-features list-unstyled">
                 <li *ngIf="product?.hasFreeShipping"><i data-feather="shopping-cart"></i> <span>Free Shipping</span>
                 </li>
-                <li>
+                <!-- <li>
                   <i data-feather="dollar-sign"></i>
                   <span>EMI options available</span>
-                </li>
+                </li> -->
               </ul>
               <hr />
               <!-- Dynamic Product Attributes Section -->
@@ -84,22 +84,24 @@
 
               <hr />
               <div class="d-flex flex-column flex-sm-row pt-1">
-                <a *ngIf="product?.isInCart !== true" href="javascript:void(0)"
-                  class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="addToCart(product)">
-                  <i data-feather="shopping-cart" class="mr-25"></i>
-                  <span class="add-to-cart">Add to cart</span>
-                </a>
-                <a *ngIf="product?.isInCart === true" routerLink="/apps/e-commerce/checkout"
-                  class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" rippleEffect>
-                  <i data-feather="shopping-cart" class="mr-25"></i>
-                  <span class="add-to-cart">View in cart</span>
-                </a>
-                <a href="javascript:void(0)" (click)="toggleWishlist(product)"
-                  class="btn btn-outline-secondary btn-wishlist mr-0 mr-sm-1 mb-1 mb-sm-0" rippleEffect>
-                  <i class="fa mr-50"
-                    [ngClass]="product?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
-                  <span>Wishlist</span>
-                </a>
+                <ng-container *ngxPermissionsOnly="['Customer']">
+                  <a *ngIf="product?.isInCart !== true" href="javascript:void(0)"
+                    class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="addToCart(product)">
+                    <i data-feather="shopping-cart" class="mr-25"></i>
+                    <span class="add-to-cart">Add to cart</span>
+                  </a>
+                  <a *ngIf="product?.isInCart === true" routerLink="/apps/e-commerce/checkout"
+                    class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" rippleEffect>
+                    <i data-feather="shopping-cart" class="mr-25"></i>
+                    <span class="add-to-cart">View in cart</span>
+                  </a>
+                  <a href="javascript:void(0)" (click)="toggleWishlist(product)"
+                    class="btn btn-outline-secondary btn-wishlist mr-0 mr-sm-1 mb-1 mb-sm-0" rippleEffect>
+                    <i class="fa mr-50"
+                      [ngClass]="product?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
+                    <span>Wishlist</span>
+                  </a>
+                </ng-container>
                 <div class="btn-group dropdown-icon-wrapper btn-share" ngbDropdown>
                   <button ngbDropdownToggle type="button" class="btn btn-icon hide-arrow btn-outline-secondary"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" rippleEffect>

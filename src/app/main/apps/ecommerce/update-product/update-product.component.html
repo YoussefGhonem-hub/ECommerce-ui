@@ -135,15 +135,11 @@
                             <h5 class="card-title mb-0">Attributes</h5>
                             <div>
                                 <button type="button" class="btn btn-sm btn-outline-primary"
-                                    (click)="addAttributeSelectionUpdate()"
-                                    [disabled]="availableAttributes.length === 0 || attributeSelections.length >= availableAttributes.length"
-                                    aria-label="Add Attribute">
+                                    (click)="addAttributeSelectionUpdate()" aria-label="Add Attribute">
                                     <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
                                 </button>
                             </div>
                         </div>
-
-                        <div *ngIf="availableAttributes.length === 0" class="text-muted">Loading attributes...</div>
 
                         <div *ngFor="let sel of attributeSelections; let i = index" class="border rounded p-2 mb-2">
                             <div class="form-row align-items-center">
@@ -180,13 +176,6 @@
                                 </div>
 
                                 <div class="form-group col-md-2 text-right">
-                                    <label class="d-block">Actions</label>
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input" type="checkbox" [id]="'removeAttr'+i"
-                                            [(ngModel)]="attributeSelections[i].removeAttribute"
-                                            [ngModelOptions]="{standalone:true}" />
-                                        <label class="form-check-label" [for]="'removeAttr'+i">Remove All</label>
-                                    </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger"
                                         (click)="removeAttributeSelectionUpdate(i)">Remove</button>
                                 </div>

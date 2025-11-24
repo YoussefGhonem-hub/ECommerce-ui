@@ -17,6 +17,7 @@ import { NavbarSearchComponent } from 'app/layout/components/navbar/navbar-searc
 import { NavbarCartComponent } from 'app/layout/components/navbar/navbar-cart/navbar-cart.component';
 import { NavbarNotificationComponent } from 'app/layout/components/navbar/navbar-notification/navbar-notification.component';
 import { SharedDirectivesModule } from "app/shared/shared-directives.module";
+import { NgxPermissionsModule } from "ngx-permissions";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -31,7 +32,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NavbarCartComponent,
     NavbarNotificationComponent
   ],
-  imports: [RouterModule, NgbModule, CoreCommonModule, PerfectScrollbarModule, CoreTouchspinModule, SharedDirectivesModule],
+  imports: [RouterModule, NgbModule, CoreCommonModule, PerfectScrollbarModule, CoreTouchspinModule, SharedDirectivesModule, NgxPermissionsModule],
   providers: [
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
