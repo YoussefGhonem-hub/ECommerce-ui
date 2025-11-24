@@ -58,7 +58,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   }
 
   private initAttributes() {
-    debugger
+
     if (!this.product || !this.product.productAttributes) {
       this.groupedAttributes = {};
       this.productAttributes = {};
@@ -70,7 +70,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
     this.productAttributes = {};
     this.colorMap = {};
     this.product.productAttributes?.forEach((attr: any) => {
-      debugger
+
       const attrName = attr.attributeName;
       if (!this.groupedAttributes[attrName]) {
         this.groupedAttributes[attrName] = [];

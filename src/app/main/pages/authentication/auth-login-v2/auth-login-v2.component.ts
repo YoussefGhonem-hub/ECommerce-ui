@@ -111,7 +111,7 @@ export class AuthLoginV2Component implements OnInit {
           if (res && res.succeeded) {
             // Check user role and redirect accordingly
             const user = this._authenticationService.currentUserValue;
-            debugger
+
             if (user && user.role === 'Admin') {
               this._router.navigate(['/dashboard/ecommerce']);
             } else {

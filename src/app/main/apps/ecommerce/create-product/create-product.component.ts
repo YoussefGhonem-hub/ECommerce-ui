@@ -246,7 +246,7 @@ export class CreateProductComponent implements OnInit {
     onMainImageChange(index: number) {
         this.mainImageIndex = index;
         // Update main property for each preview
-        debugger
+
         if (this.imagePreviews) {
             this.imagePreviews = this.imagePreviews.map((img, i) => ({ ...img, main: i === index }));
         }
