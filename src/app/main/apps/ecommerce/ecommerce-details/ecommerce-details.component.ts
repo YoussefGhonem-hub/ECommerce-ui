@@ -174,7 +174,9 @@ export class EcommerceDetailsComponent implements OnInit {
 
       // Build color map for Color attribute
       if (attrName.toLowerCase() === 'color') {
-        this.colorMap[attr.value] = this.getColorHex(attr.value);
+        // Use the attribute value as-is (e.g. '#000000' or a color name)
+        // This ensures hex values returned from the API are used directly
+        this.colorMap[attr.value] = attr.value;
       }
     });
   }

@@ -24,7 +24,10 @@ export class ProductAttributesComponent implements OnInit {
     creating = false;
     editingId: string | null = null;
     // when editing, keep track of existing values and whether they should be removed
-    existingValues: Array<{ id: string, value: string, remove?: boolean }> = [];
+    // originalValue is stored to detect edits (so we can replace by removing old id and adding new value)
+    existingValues: Array<{ id: string, value: string, originalValue?: string, remove?: boolean }> = [];
+    // when adding new values for Color attribute, maintain an array of color strings
+    newColorValues: string[] = [];
 
     constructor(
         private http: HttpService,
@@ -95,6 +98,8 @@ export class ProductAttributesComponent implements OnInit {
     openCreateModal(content: any) {
         this.editingId = null;
         this.attributeForm.reset({ name: '', valuesText: '' });
+        // initialize color inputs for convenience
+        this.newColorValues = ['#000000'];
         this.modalRef = this.modalService.open(content, { centered: true });
     }
 
@@ -102,8 +107,10 @@ export class ProductAttributesComponent implements OnInit {
         this.editingId = attr.attributeId || attr.id || null;
         const values = (attr.values || []).map((v: any) => v.value).join(',');
         this.attributeForm.setValue({ name: attr.attributeName || attr.name || '', valuesText: '' });
-        // populate existingValues with remove flag default false
-        this.existingValues = (attr.values || []).map((v: any) => ({ id: v.id, value: v.value, remove: false }));
+        // populate existingValues with remove flag default false and keep originalValue for change detection
+        this.existingValues = (attr.values || []).map((v: any) => ({ id: v.id, value: v.value, originalValue: v.value, remove: false }));
+        // reset newColorValues when editing; user can still add additional colors via the add control
+        this.newColorValues = [];
         this.modalRef = this.modalService.open(content, { centered: true });
     }
 
@@ -111,17 +118,27 @@ export class ProductAttributesComponent implements OnInit {
         if (this.attributeForm.invalid) return;
         const name = this.attributeForm.get('name')?.value;
         const valuesText = this.attributeForm.get('valuesText')?.value || '';
-        const values = valuesText.split(',').map((v: string) => v.trim()).filter((v: string) => v.length > 0);
+        const isColor = (name || '').toLowerCase() === 'color';
+        const values = isColor ? this.newColorValues.map(v => v).filter(Boolean) : valuesText.split(',').map((v: string) => v.trim()).filter((v: string) => v.length > 0);
         this.creating = true;
 
         if (this.editingId) {
             // Build update payload per backend: Id, Name, AddValues (strings), RemoveValueIds (guids)
-            const removeIds = this.existingValues.filter(v => v.remove).map(v => v.id);
-            const payload = { Id: this.editingId, Name: name, AddValues: values.length > 0 ? values : null, RemoveValueIds: removeIds.length > 0 ? removeIds : null };
+            // Detect changed existing values: we'll remove the old id and add the new value
+            const changed = this.existingValues.filter(v => !v.remove && v.originalValue !== undefined && v.originalValue !== v.value);
+            const changedRemoveIds = changed.map(v => v.id);
+            const changedAddValues = changed.map(v => v.value);
+
+            const removeIds = this.existingValues.filter(v => v.remove).map(v => v.id).concat(changedRemoveIds);
+            const addValues = (values || []).concat(changedAddValues).filter(Boolean);
+
+            const payload = { Id: this.editingId, Name: name, AddValues: addValues.length > 0 ? addValues : null, RemoveValueIds: removeIds.length > 0 ? removeIds : null };
             this.http.PUT(ProductAttributesController.Update, payload).subscribe({
                 next: (res: any) => {
                     this.creating = false;
                     this.modalRef?.close();
+                    // clear new color inputs after successful save
+                    this.newColorValues = [];
                     this.loadAttributes();
                 },
                 error: (err) => { this.creating = false; this.error = err?.message || 'Failed to update'; }
@@ -132,6 +149,7 @@ export class ProductAttributesComponent implements OnInit {
                 next: (res: any) => {
                     this.creating = false;
                     this.modalRef?.close();
+                    this.newColorValues = [];
                     this.loadAttributes();
                 },
                 error: (err) => { this.creating = false; this.error = err?.message || 'Failed to create'; }
