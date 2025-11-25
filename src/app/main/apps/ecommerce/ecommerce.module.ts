@@ -14,6 +14,7 @@ import { CoreTouchspinModule } from '@core/components/core-touchspin/core-touchs
 import { ContentHeaderModule } from 'app/layout/components/content-header/content-header.module';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
+import { AdminOrdersComponent } from './admin-orders/admin-orders.component';
 import { EcommerceDetailsComponent } from 'app/main/apps/ecommerce/ecommerce-details/ecommerce-details.component';
 import { EcommerceItemComponent } from 'app/main/apps/ecommerce/ecommerce-item/ecommerce-item.component';
 import { EcommerceShopComponent } from 'app/main/apps/ecommerce/ecommerce-shop/ecommerce-shop.component';
@@ -88,6 +89,11 @@ const routes: Routes = [
     data: { animation: 'UpdateProductComponent' }
   },
   {
+    path: 'admin-orders',
+    component: AdminOrdersComponent,
+    data: { animation: 'AdminOrdersComponent' }
+  },
+  {
     path: 'details',
     redirectTo: '/apps/e-commerce/details/27', //Redirection
     data: { animation: 'EcommerceDetailsComponent' }
@@ -101,6 +107,7 @@ const routes: Routes = [
     EcommerceDetailsComponent,
     EcommerceWishlistComponent,
     EcommerceCheckoutComponent,
+    AdminOrdersComponent,
     EcommerceItemComponent,
     EcommerceCheckoutItemComponent,
     CreateProductComponent,

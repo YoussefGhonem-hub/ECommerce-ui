@@ -20,15 +20,7 @@ export const menu: CoreMenu[] = [
     children: [
       {
         id: 'analytics',
-        title: 'Analytics',
-        translate: 'MENU.DASHBOARD.ANALYTICS',
-        type: 'item',
-        icon: 'circle',
-        url: 'dashboard/analytics'
-      },
-      {
-        id: 'ecommerce',
-        title: 'eCommerce',
+        title: 'analytics',
         translate: 'MENU.DASHBOARD.ECOMMERCE',
         type: 'item',
         icon: 'circle',
@@ -57,7 +49,17 @@ export const menu: CoreMenu[] = [
         translate: 'MENU.APPS.EMAIL',
         type: 'item',
         icon: 'list',
+        role: ['Customer'],
         url: 'apps/e-commerce/orders'
+      },
+      {
+        id: 'Orders',
+        title: 'Orders',
+        translate: 'MENU.APPS.EMAIL',
+        type: 'item',
+        icon: 'list',
+        role: ['Admin'],
+        url: 'apps/e-commerce/admin-orders'
       },
       {
         id: 'Products-Attributes',

@@ -1,0 +1,187 @@
+<div class="content-wrapper container-xxl p-0">
+    <div class="content-body">
+        <section>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="m-0">Orders</h4>
+                <div class="text-muted">Total: {{ totalCount }}</div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4 mb-2">
+                            <input class="form-control" placeholder="Search order / tracking"
+                                [(ngModel)]="filters.search" />
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <input class="form-control" placeholder="Order #" [(ngModel)]="filters.orderNumber" />
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <select class="form-control" [(ngModel)]="filters.paymentStatus">
+                                <option *ngFor="let p of paymentStatusOptions" [ngValue]="p.value">{{ p.label }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <input type="date" class="form-control" [(ngModel)]="filters.from" />
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <input type="date" class="form-control" [(ngModel)]="filters.to" />
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-sm-2 mb-2">
+                            <input type="number" step="0.01" class="form-control" placeholder="Min total"
+                                [(ngModel)]="filters.minTotal" />
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <input type="number" step="0.01" class="form-control" placeholder="Max total"
+                                [(ngModel)]="filters.maxTotal" />
+                        </div>
+                        <div class="col-sm-2 mb-2">
+                            <select class="form-control" [(ngModel)]="filters.pageSize">
+                                <option [ngValue]="10">10</option>
+                                <option [ngValue]="20">20</option>
+                                <option [ngValue]="50">50</option>
+                                <option [ngValue]="100">100</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <button class="btn btn-primary mr-2" (click)="applyFilters()">Apply</button>
+                            <button class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Tabs -->
+            <ul class="nav nav-pills mb-4">
+                <li class="nav-item" *ngFor="let s of statusOptions">
+                    <a class="nav-link" [class.active]="statusFilter===s.label" href="javascript:void(0)"
+                        (click)="changeTab(s)">{{ s.label }}</a>
+                </li>
+            </ul>
+
+            <!-- Cards list -->
+            <div class="row">
+                <div class="col-12" *ngIf="loading">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 mb-3" *ngFor="let order of orders">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="font-weight-bold">{{ order.orderNumber || order.id }}</div>
+                                <div class="small text-muted">{{ order.createdDate | date:'short' }}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="h5 mb-0">{{ order.total | currency }}</div>
+                                <div class="small text-muted">{{ order.status }}</div>
+                                <button class="btn btn-sm btn-link p-0 mt-2" (click)="toggleDetails(order.id)">{{
+                                    expandedOrderId===order.id ? 'Hide' : 'Details' }}</button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Customer:</strong> {{ order.shippingAddress?.fullName || '-' }}</p>
+                            <p class="mb-2"><strong>Items:</strong> {{ order.items?.length || 0 }}</p>
+                            <p class="mb-0"><strong>Shipping:</strong> {{ order.shippingMethodName || '-' }}</p>
+                        </div>
+
+                        <div *ngIf="expandedOrderId===order.id" class="card-footer">
+                            <ul ngbNav #navOrder="ngbNav" class="nav nav-tabs mb-3">
+                                <li ngbNavItem class="nav-item">
+                                    <a ngbNavLink class="nav-link">Overview</a>
+                                    <ng-template ngbNavContent>
+                                        <div>
+                                            <p class="mb-1"><strong>Order #:</strong> {{ order.orderNumber || order.id
+                                                }}</p>
+                                            <p class="mb-1"><strong>Created:</strong> {{ order.createdDate |
+                                                date:'medium' }}</p>
+                                            <p class="mb-1"><strong>Totals:</strong> Subtotal {{ order.subTotal |
+                                                currency }} — Discount {{ order.discountTotal | currency }} — Tax {{
+                                                order.taxTotal | currency }} — Shipping {{ order.shippingTotal |
+                                                currency }}</p>
+                                            <p class="mb-0"><strong>Total:</strong> {{ order.total | currency }}</p>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                                <li ngbNavItem class="nav-item">
+                                    <a ngbNavLink class="nav-link">Items</a>
+                                    <ng-template ngbNavContent>
+                                        <div *ngIf="order.items?.length; else noItems">
+                                            <ul class="list-unstyled">
+                                                <li *ngFor="let it of order.items" class="py-2 border-bottom">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div>
+                                                            <div class="font-weight-bold">{{ it.productName }}</div>
+                                                            <div class="small text-muted">Qty: {{ it.quantity }} • {{
+                                                                formatAttributes(it.attributes) }}</div>
+                                                        </div>
+                                                        <div class="text-right">
+                                                            <div>{{ it.unitPrice | currency }}</div>
+                                                            <div class="small text-muted">Line: {{ it.lineTotal |
+                                                                currency }}</div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <ng-template #noItems>
+                                            <div class="text-muted">No items found.</div>
+                                        </ng-template>
+                                    </ng-template>
+                                </li>
+                                <li ngbNavItem class="nav-item">
+                                    <a ngbNavLink class="nav-link">Shipping</a>
+                                    <ng-template ngbNavContent>
+                                        <div>
+                                            <p class="mb-1"><strong>Method:</strong> {{ order.shippingMethodName || '-'
+                                                }} <span class="small text-muted">{{ order.shippingEstimatedTime || ''
+                                                    }}</span></p>
+                                            <p class="mb-1"><strong>Tracking:</strong> {{ order.trackingNumber || '-' }}
+                                            </p>
+                                            <p class="mb-0"><strong>Address:</strong> {{ order.shippingAddress?.fullName
+                                                }} — {{ order.shippingAddress?.street }}</p>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                                <li ngbNavItem class="nav-item">
+                                    <a ngbNavLink class="nav-link">Payment</a>
+                                    <ng-template ngbNavContent>
+                                        <div>
+                                            <p class="mb-1"><strong>Payment Status:</strong> {{ order.paymentStatus }}
+                                            </p>
+                                            <p class="mb-1"><strong>Coupon:</strong> {{ order.couponCode || '-' }}</p>
+                                            <p class="mb-0"><strong>Notes:</strong> {{ order.notes || '-' }}</p>
+                                        </div>
+                                    </ng-template>
+                                </li>
+                            </ul>
+
+                            <div [ngbNavOutlet]="navOrder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex align-items-center justify-content-between mt-4">
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" [disabled]="pageNumber<=1"
+                        (click)="gotoPage(pageNumber-1)">Prev</button>
+                    <button class="btn btn-sm btn-outline-secondary ml-2" [disabled]="pageNumber>=totalPages"
+                        (click)="gotoPage(pageNumber+1)">Next</button>
+                </div>
+                <div>
+                    <small class="text-muted">Page {{ pageNumber }} of {{ totalPages }}</small>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
