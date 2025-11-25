@@ -85,7 +85,7 @@ const appRoutes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/pages/miscellaneous/error' //Error 404 - Page not found
+    loadChildren: () => import('./main/dashboard/dashboard.module').then(m => m.DashboardModule)
   }
 ];
 
