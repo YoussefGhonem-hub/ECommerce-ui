@@ -29,7 +29,7 @@ jobs:
 
       # Step 5: Build the Angular app
       - name: Build Angular app
-        run: ng build Steex --configuration production
+        run: ng build vuexy --configuration production
 
       # Step 6: Deploy via FTP
       - name: Deploy via FTP
@@ -38,6 +38,6 @@ jobs:
           server: win6054.site4now.net
           username: amrsherif-002
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/steex/ # Add a trailing slash to indicate it is a folder
+          local-dir: ./dist/vuexy/ # Add a trailing slash to indicate it is a folder
           server-dir: /dubaidashbord/ # Optionally, add a trailing slash here too
           port: 21
