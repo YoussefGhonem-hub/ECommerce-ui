@@ -3,41 +3,35 @@ name: Deploy to SmarterASP.NET
 on:
   push:
     branches:
+      - master
       - deploy
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # Use Node.js version 18 for compatibility
+          node-version: "18"
+          cache: "npm"
 
-      # Step 3: Install Angular CLI
-      - name: Install Angular CLI
-        run: npm install -g @angular/cli
-
-      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 5: Build the Angular app
-      - name: Build Angular app
-        run: ng build vuexy --configuration production
+      - name: Build (production)
+        run: npm run build:prod
 
-      # Step 6: Deploy via FTP
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: win6054.site4now.net
           username: amrsherif-002
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/vuexy/ # Add a trailing slash to indicate it is a folder
-          server-dir: /dubaidashbord/ # Optionally, add a trailing slash here too
+          local-dir: ./dist/vuexy/
+          server-dir: /dubaidashbord/
           port: 21
