@@ -39,14 +39,7 @@
                             <input type="number" step="0.01" class="form-control" placeholder="Max total"
                                 [(ngModel)]="filters.maxTotal" />
                         </div>
-                        <div class="col-sm-2 mb-2">
-                            <select class="form-control" [(ngModel)]="filters.pageSize">
-                                <option [ngValue]="10">10</option>
-                                <option [ngValue]="20">20</option>
-                                <option [ngValue]="50">50</option>
-                                <option [ngValue]="100">100</option>
-                            </select>
-                        </div>
+
                         <div class="col-sm-6 text-right">
                             <button class="btn btn-primary mr-2" (click)="applyFilters()">Apply</button>
                             <button class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
@@ -187,11 +180,21 @@
 
             <!-- Pagination -->
             <div class="d-flex align-items-center justify-content-between mt-4">
-                <div>
+                <div class="d-flex align-items-center">
                     <button class="btn btn-sm btn-outline-secondary" [disabled]="pageNumber<=1"
                         (click)="gotoPage(pageNumber-1)">Prev</button>
                     <button class="btn btn-sm btn-outline-secondary ml-2" [disabled]="pageNumber>=totalPages"
                         (click)="gotoPage(pageNumber+1)">Next</button>
+                    <div class="ml-3">
+                        <label class="small mb-0 mr-2">Per page</label>
+                        <select class="form-control form-control-sm d-inline-block" style="width:85px"
+                            [(ngModel)]="filters.pageSize" (ngModelChange)="applyFilters()">
+                            <option [ngValue]="10">10</option>
+                            <option [ngValue]="20">20</option>
+                            <option [ngValue]="50">50</option>
+                            <option [ngValue]="100">100</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
                     <small class="text-muted">Page {{ pageNumber }} of {{ totalPages }}</small>
