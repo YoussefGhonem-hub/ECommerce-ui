@@ -18,9 +18,8 @@
                             <input class="form-control" placeholder="Order #" [(ngModel)]="filters.orderNumber" />
                         </div>
                         <div class="col-sm-2 mb-2">
-                            <select class="form-control" [(ngModel)]="filters.paymentStatus">
-                                <option *ngFor="let p of paymentStatusOptions" [ngValue]="p.value">{{ p.label }}
-                                </option>
+                            <select class="form-control" [(ngModel)]="filters.status">
+                                <option *ngFor="let s of statusOptions" [ngValue]="s.value">{{ s.label }}</option>
                             </select>
                         </div>
                         <div class="col-sm-2 mb-2">
@@ -56,13 +55,7 @@
                 </div>
             </div>
 
-            <!-- Status Tabs -->
-            <ul class="nav nav-pills mb-4">
-                <li class="nav-item" *ngFor="let s of statusOptions">
-                    <a class="nav-link" [class.active]="statusFilter===s.label" href="javascript:void(0)"
-                        (click)="changeTab(s)">{{ s.label }}</a>
-                </li>
-            </ul>
+            <!-- status is selected via dropdown in the filters above -->
 
             <!-- Cards list -->
             <div class="row">
@@ -81,8 +74,14 @@
                             </div>
                             <div class="text-right">
                                 <div class="h5 mb-0">{{ order.total | currency }}</div>
-                                <div class="small text-muted">{{ order.status }}</div>
-                                <button class="btn btn-sm btn-link p-0 mt-2" (click)="toggleDetails(order.id)">{{
+                                <div class="mb-1"><span [ngClass]="getStatusBadgeClass(order.status)">{{
+                                        getStatusLabel(order.status) }}</span></div>
+                                <select class="form-control form-control-sm mb-1" [(ngModel)]="order.status"
+                                    (change)="updateOrderStatus(order.id, order.status)">
+                                    <option *ngFor="let s of statusOptions" [ngValue]="s.value" disabled
+                                        [disabled]="s.label==null|| s.label==order.status">{{ s.label }}</option>
+                                </select>
+                                <button class="btn btn-sm btn-link p-0 mt-1" (click)="toggleDetails(order.id)">{{
                                     expandedOrderId===order.id ? 'Hide' : 'Details' }}</button>
                             </div>
                         </div>
@@ -151,7 +150,7 @@
                                         </div>
                                     </ng-template>
                                 </li>
-                                <li ngbNavItem class="nav-item">
+                                <!-- <li ngbNavItem class="nav-item">
                                     <a ngbNavLink class="nav-link">Payment</a>
                                     <ng-template ngbNavContent>
                                         <div>
@@ -161,7 +160,7 @@
                                             <p class="mb-0"><strong>Notes:</strong> {{ order.notes || '-' }}</p>
                                         </div>
                                     </ng-template>
-                                </li>
+                                </li> -->
                             </ul>
 
                             <div [ngbNavOutlet]="navOrder"></div>

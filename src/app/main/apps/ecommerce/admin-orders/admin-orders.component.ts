@@ -34,22 +34,15 @@ export class AdminOrdersComponent implements OnInit {
     statusFilter: string = 'All';
     expandedOrderId: string | null = null;
 
-    // status options map to backend numeric status (adjust values to match your backend)
+    // status options mapped to backend OrderStatus enum
     statusOptions: Array<{ label: string, value: number | null }> = [
-        { label: 'All', value: null },
-        { label: 'Pending', value: 0 },
-        { label: 'Processing', value: 1 },
-        { label: 'Shipped', value: 2 },
-        { label: 'Delivered', value: 3 },
-        { label: 'Cancelled', value: 4 }
+        { label: 'Processing', value: 4 },
+        { label: 'Delivered', value: 7 },
+        { label: 'Cancelled', value: 8 },
+        { label: 'Returned', value: 9 }
     ];
 
-    paymentStatusOptions: Array<{ label: string, value: number | null }> = [
-        { label: 'Any', value: null },
-        { label: 'Pending', value: 0 },
-        { label: 'Paid', value: 1 },
-        { label: 'Failed', value: 2 }
-    ];
+
 
     constructor(private httpService: HttpService) { }
 
@@ -163,5 +156,70 @@ export class AdminOrdersComponent implements OnInit {
     formatAttributes(attrs: any[] | undefined | null): string {
         if (!attrs || !Array.isArray(attrs) || attrs.length === 0) { return ''; }
         return attrs.map(a => a.attributeName + (a.value ? (': ' + a.value) : '')).join(', ');
+    }
+
+    updateOrderStatus(orderId: string, newStatus: any): void {
+        if (!orderId || newStatus === null || newStatus === undefined) { return; }
+        const statusNum = (typeof newStatus === 'number') ? newStatus : Number(newStatus);
+        if (Number.isNaN(statusNum)) { return; }
+        const payload = { orderId, status: statusNum };
+        this.httpService.PUT(OrderController.UpdateOrderStatus, payload).subscribe((res: any) => {
+            if (res && res.succeeded) {
+                // refresh orders to reflect change
+                this.loadOrders(this.pageNumber);
+            }
+        });
+    }
+
+    getStatusLabel(statusValue: any): string {
+        if (statusValue === null || statusValue === undefined) { return '' };
+        // try numeric match first
+        const asNum = (typeof statusValue === 'number') ? statusValue : (Number(statusValue));
+        if (!Number.isNaN(asNum)) {
+            const found = this.statusOptions.find(s => s.value === asNum);
+            if (found) { return found.label; }
+        }
+        // fallback: try matching by label (case-insensitive)
+        const asStr = String(statusValue).toLowerCase();
+        const foundByLabel = this.statusOptions.find(s => (s.label || '').toLowerCase() === asStr);
+        if (foundByLabel) { return foundByLabel.label; }
+        return String(statusValue);
+    }
+
+    getStatusBadgeClass(statusValue: any): string {
+        // normalize to number when possible
+        if (statusValue === null || statusValue === undefined) { return 'badge badge-pill badge-secondary'; }
+        const asNum = (typeof statusValue === 'number') ? statusValue : Number(statusValue);
+        const v = Number.isNaN(asNum) ? null : asNum;
+        switch (v) {
+            case 1: // Pending
+                return 'badge badge-pill badge-warning';
+            case 2: // PaymentPending
+                return 'badge badge-pill badge-warning';
+            case 3: // Paid
+                return 'badge badge-pill badge-success';
+            case 4: // Processing
+                return 'badge badge-pill badge-primary';
+            case 5: // Packed
+                return 'badge badge-pill badge-info';
+            case 6: // Shipped
+                return 'badge badge-pill badge-primary';
+            case 7: // Delivered
+                return 'badge badge-pill badge-success';
+            case 8: // Cancelled
+                return 'badge badge-pill badge-danger';
+            case 9: // Returned
+                return 'badge badge-pill badge-dark';
+            default:
+                // try label-based mapping (e.g., backend returned 'Pending')
+                const s = String(statusValue).toLowerCase();
+                if (s.includes('pending')) { return 'badge badge-pill badge-warning'; }
+                if (s.includes('paid') || s.includes('delivered')) { return 'badge badge-pill badge-success'; }
+                if (s.includes('processing') || s.includes('shipped')) { return 'badge badge-pill badge-primary'; }
+                if (s.includes('packed')) { return 'badge badge-pill badge-info'; }
+                if (s.includes('cancel')) { return 'badge badge-pill badge-danger'; }
+                if (s.includes('return')) { return 'badge badge-pill badge-dark'; }
+                return 'badge badge-pill badge-secondary';
+        }
     }
 }
