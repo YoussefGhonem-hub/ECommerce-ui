@@ -222,4 +222,31 @@ export class AdminOrdersComponent implements OnInit {
                 return 'badge badge-pill badge-secondary';
         }
     }
+
+    /**
+     * Return a feather icon name for a given status value.
+     */
+    getStatusIcon(statusValue: any): string {
+        if (statusValue === null || statusValue === undefined) { return 'info'; }
+        const asNum = (typeof statusValue === 'number') ? statusValue : Number(statusValue);
+        const v = Number.isNaN(asNum) ? null : asNum;
+        switch (v) {
+            case 4: // Processing
+                return 'clock';
+            case 7: // Delivered
+                return 'check-circle';
+            case 8: // Cancelled
+                return 'x-circle';
+            case 9: // Returned
+                return 'corner-up-left';
+            default:
+                const s = String(statusValue).toLowerCase();
+                if (s.includes('pending')) { return 'clock'; }
+                if (s.includes('paid') || s.includes('delivered')) { return 'check-circle'; }
+                if (s.includes('processing') || s.includes('shipped')) { return 'truck'; }
+                if (s.includes('cancel')) { return 'x-circle'; }
+                if (s.includes('return')) { return 'corner-up-left'; }
+                return 'info';
+        }
+    }
 }

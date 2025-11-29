@@ -67,31 +67,47 @@
 
                 <div class="col-md-6 col-lg-4 mb-3" *ngFor="let order of orders">
                     <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-start">
+                        <div class="card-header d-flex align-items-start justify-content-between">
                             <div>
-                                <div class="font-weight-bold">{{ order.orderNumber || order.id }}</div>
-                                <div class="small text-muted">{{ order.createdDate | date:'short' }}</div>
+                                <h4 class="card-title mb-0">{{ order.orderNumber || order.id }}</h4>
+                                <div class="small "><i data-feather="calendar" class="mr-50"></i>{{
+                                    order.createdDate | date:'short' }}</div>
                             </div>
-                            <div class="text-right">
-                                <div class="h5 mb-0">{{ order.total | currency }}</div>
-                                <div class="mb-1"><span [ngClass]="getStatusBadgeClass(order.status)">{{
-                                        getStatusLabel(order.status) }}</span></div>
-                                <select class="form-control form-control-sm mb-1" [(ngModel)]="order.status"
-                                    (change)="updateOrderStatus(order.id, order.status)">
-                                    <option *ngFor="let s of statusOptions" [ngValue]="s.value" disabled
-                                        [disabled]="s.label==null|| s.label==order.status">{{ s.label }}</option>
-                                </select>
-                                <button class="btn btn-sm btn-link p-0 mt-1" (click)="toggleDetails(order.id)">{{
-                                    expandedOrderId===order.id ? 'Hide' : 'Details' }}</button>
+                            <div class="d-flex align-items-center">
+                                <div ngbDropdown container="body">
+                                    <button type="button" class="btn btn-sm p-0 hide-arrow" ngbDropdownToggle
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <i data-feather="more-vertical" class="font-medium-3 cursor-pointer"></i>
+                                    </button>
+                                    <div ngbDropdownMenu>
+                                        <a ngbDropdownItem href="javascript:void(0);" *ngFor="let s of statusOptions"
+                                            (click)="(s.value===null || s.value==order.status) ? $event.preventDefault() : onStatusChange(s.value, order)"
+                                            [class.disabled]="s.value===null || s.value==order.status">
+                                            <i [attr.data-feather]="getStatusIcon(s.value)" class="mr-50"></i>{{ s.label
+                                            }}
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="card-body">
-                            <p class="mb-2"><strong>Customer:</strong> {{ order.shippingAddress?.fullName || '-' }}</p>
-                            <p class="mb-2"><strong>Items:</strong> {{ order.items?.length || 0 }}</p>
-                            <p class="mb-0"><strong>Shipping:</strong> {{ order.shippingMethodName || '-' }}</p>
+                            <div class="d-flex justify-content-end align-items-center mb-2">
+                                <div><span [ngClass]="getStatusBadgeClass(order.status)">{{ getStatusLabel(order.status)
+                                        }}</span></div>
+                                <div class="ml-1 font-weight-bold">{{ order.total | currency }}</div>
+
+                            </div>
+                            <p class="mb-2"><i data-feather="user" class="mr-50"></i><strong>Customer:</strong> {{
+                                order.shippingAddress?.fullName || '-' }}</p>
+                            <p class="mb-2"><i data-feather="shopping-cart" class="mr-50"></i><strong>Items:</strong> {{
+                                order.items?.length || 0 }}</p>
+                            <p class="mb-0"><i data-feather="map-pin" class="mr-50"></i><strong>Shipping:</strong> {{
+                                order.shippingMethodName || '-' }}</p>
                         </div>
 
+                        <button type="button" class="btn btn-primary btn-block" (click)="toggleDetails(order.id)">{{
+                            expandedOrderId===order.id ? 'Hide' : 'Details' }}</button>
                         <div *ngIf="expandedOrderId===order.id" class="card-footer">
                             <ul ngbNav #navOrder="ngbNav" class="nav nav-tabs mb-3">
                                 <li ngbNavItem class="nav-item">
