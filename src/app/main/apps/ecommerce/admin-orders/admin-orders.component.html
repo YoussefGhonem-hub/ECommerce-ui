@@ -80,12 +80,12 @@
                                         <i data-feather="more-vertical" class="font-medium-3 cursor-pointer"></i>
                                     </button>
                                     <div ngbDropdownMenu>
-                                        <a ngbDropdownItem href="javascript:void(0);" *ngFor="let s of statusOptions"
-                                            (click)="(s.value===null || s.value==order.status) ? $event.preventDefault() : onStatusChange(s.value, order)"
-                                            [class.disabled]="s.value===null || s.value==order.status">
-                                            <i [attr.data-feather]="getStatusIcon(s.value)" class="mr-50"></i>{{ s.label
-                                            }}
-                                        </a>
+                                        <button ngbDropdownItem type="button" *ngFor="let s of statusOptions"
+                                            [disabled]="s.value===null || s.value==order.status"
+                                            (click)="(s.label==null|| s.label==order.status) ? $event.preventDefault() : updateOrderStatus(order.id, s.value)">
+                                            <i [attr.data-feather]="getStatusIcon(s.value)" class="mr-50"></i>
+                                            <span>{{ s.label }}</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
