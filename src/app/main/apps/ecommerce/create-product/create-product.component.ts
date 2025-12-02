@@ -208,7 +208,7 @@ export class CreateProductComponent implements OnInit {
 
     fetchCategories() {
         this.http.GET(CategoryController.GetCategories).subscribe(res => {
-            if (res && res.succeeded && res.items) {
+            if (res && res.items) {
                 this.categories = res.items;
             }
         });

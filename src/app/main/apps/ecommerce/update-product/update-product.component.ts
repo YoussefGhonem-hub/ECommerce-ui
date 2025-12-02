@@ -90,7 +90,7 @@ export class UpdateProductComponent implements OnInit {
 
     fetchCategories() {
         this.http.GET(CategoryController.GetCategories).subscribe(res => {
-            if (res && res.succeeded && res.data) {
+            if (res && res.items) {
                 this.categories = res.items;
             }
         });
