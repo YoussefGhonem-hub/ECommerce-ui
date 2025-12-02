@@ -15,7 +15,6 @@ import { ProfileModule } from './profile/profile.module';
 import { PricingModule } from './pricing/pricing.module';
 import { FaqModule } from 'app/main/pages/faq/faq.module';
 import { AccountSettingsModule } from './account-settings/account-settings.module';
-import { CustomerOrdersModule } from './customer-orders/customer-orders.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 
@@ -37,7 +36,6 @@ import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
     KbModule,
     FaqModule,
     AccountSettingsModule,
-    CustomerOrdersModule
   ],
 
   providers: []

@@ -64,8 +64,8 @@ export class EcommerceSidebarComponent implements OnInit, OnDestroy {
     this.HttpService.GET(CategoryController.GetCategories)
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((res: any) => {
-        if (res.succeeded && res.data) {
-          this.categories = res.data;
+        if (res && res.succeeded && res.items) {
+          this.categories = res.items;
         }
       });
   }

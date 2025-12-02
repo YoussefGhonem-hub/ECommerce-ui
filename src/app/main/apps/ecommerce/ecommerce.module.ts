@@ -28,6 +28,7 @@ import { UpdateProductComponent } from './update-product/update-product.componen
 import { ProductAttributesComponent } from './product-attributes/product-attributes.component';
 import { ProductCategoriesComponent } from './product-categories/product-categories.component';
 import { FileUploaderModule } from 'app/main/forms/form-elements/file-uploader/file-uploader.module';
+import { CustomerOrdersComponent } from 'app/main/pages/customer-orders/customer-orders.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -94,6 +95,11 @@ const routes: Routes = [
     data: { animation: 'AdminOrdersComponent' }
   },
   {
+    path: 'orders',
+    component: CustomerOrdersComponent,
+    data: { animation: 'CustomerOrdersComponent' }
+  },
+  {
     path: 'details',
     redirectTo: '/apps/e-commerce/details/27', //Redirection
     data: { animation: 'EcommerceDetailsComponent' }
@@ -108,6 +114,7 @@ const routes: Routes = [
     EcommerceWishlistComponent,
     EcommerceCheckoutComponent,
     AdminOrdersComponent,
+    CustomerOrdersComponent,
     EcommerceItemComponent,
     EcommerceCheckoutItemComponent,
     CreateProductComponent,

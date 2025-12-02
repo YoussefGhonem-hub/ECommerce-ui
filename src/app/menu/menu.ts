@@ -7,6 +7,8 @@ export const menu: CoreMenu[] = [
   // Dashboard
   {
     id: 'dashboard',
+    role: ['Admin'],
+
     title: 'Dashboard',
     translate: 'MENU.DASHBOARD.COLLAPSIBLE',
     type: 'collapsible',
@@ -64,6 +66,7 @@ export const menu: CoreMenu[] = [
       {
         id: 'Products-Attributes',
         title: 'Product Attributes',
+        role: ['Admin'],
         translate: 'MENU.APPS.EMAIL',
         type: 'item',
         icon: 'tag',
@@ -72,6 +75,7 @@ export const menu: CoreMenu[] = [
       ,
       {
         id: 'Products-Categories',
+        role: ['Admin'],
         title: 'Categories',
         translate: 'MENU.APPS.EMAIL',
         type: 'item',
