@@ -1,0 +1,113 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Web App",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build:prod"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Sync Capacitor",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "sync"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Build and Sync Mobile",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "build:mobile"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Android",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "run", "android"],
+      "problemMatcher": [],
+      "dependsOn": ["Build and Sync Mobile"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run Android (Live Reload)",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "run", "android", "--livereload", "--external"],
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run iOS",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "run", "ios"],
+      "problemMatcher": [],
+      "dependsOn": ["Build and Sync Mobile"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run iOS (Live Reload)",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "run", "ios", "--livereload", "--external"],
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Open Android Studio",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "open", "android"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Xcode",
+      "type": "shell",
+      "command": "npx",
+      "args": ["cap", "open", "ios"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Serve Web App (Development)",
+      "type": "shell",
+      "command": "npm",
+      "args": ["start"],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Compiled successfully"
+        }
+      }
+    }
+  ]
+}

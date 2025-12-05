@@ -19,6 +19,7 @@ import { locale as menuEnglish } from 'app/menu/i18n/en';
 import { locale as menuFrench } from 'app/menu/i18n/fr';
 import { locale as menuGerman } from 'app/menu/i18n/de';
 import { locale as menuPortuguese } from 'app/menu/i18n/pt';
+import { MobileInit } from './mobile-init';
 
 @Component({
   selector: 'app-root',
@@ -90,6 +91,9 @@ export class AppComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
+    // Initialize mobile platform features
+    MobileInit.initialize();
+
     // Init wave effect (Ripple effect)
     Waves.init();
 
