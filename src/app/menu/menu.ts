@@ -40,7 +40,7 @@ export const menu: CoreMenu[] = [
       {
         id: 'Products',
         title: 'Products',
-        translate: 'MENU.APPS.EMAIL',
+        translate: 'MENU.APPS.ECOMMERCE.SHOP',
         type: 'item',
         icon: 'shopping-cart',
         url: 'apps/e-commerce/shop'
@@ -48,7 +48,7 @@ export const menu: CoreMenu[] = [
       {
         id: 'Orders',
         title: 'Orders',
-        translate: 'MENU.APPS.EMAIL',
+        translate: 'MENU.APPS.ECOMMERCE.ORDERS',
         type: 'item',
         icon: 'list',
         role: ['Customer'],
@@ -57,7 +57,7 @@ export const menu: CoreMenu[] = [
       {
         id: 'Orders',
         title: 'Orders',
-        translate: 'MENU.APPS.EMAIL',
+        translate: 'MENU.APPS.ECOMMERCE.ORDERS',
         type: 'item',
         icon: 'list',
         role: ['Admin'],
@@ -67,7 +67,7 @@ export const menu: CoreMenu[] = [
         id: 'Products-Attributes',
         title: 'Product Attributes',
         role: ['Admin'],
-        translate: 'MENU.APPS.EMAIL',
+        translate: 'MENU.APPS.ECOMMERCE.ATTRIBUTES',
         type: 'item',
         icon: 'tag',
         url: 'apps/e-commerce/attributes'
@@ -77,7 +77,7 @@ export const menu: CoreMenu[] = [
         id: 'Products-Categories',
         role: ['Admin'],
         title: 'Categories',
-        translate: 'MENU.APPS.EMAIL',
+        translate: 'MENU.APPS.ECOMMERCE.CATEGORIES',
         type: 'item',
         icon: 'layers',
         url: 'apps/e-commerce/categories'

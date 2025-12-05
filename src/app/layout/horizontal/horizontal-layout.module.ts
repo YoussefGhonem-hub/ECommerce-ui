@@ -16,4 +16,4 @@ import { HorizontalLayoutComponent } from 'app/layout/horizontal/horizontal-layo
   imports: [RouterModule, CoreCommonModule, CoreSidebarModule, NavbarModule, ContentModule, MenuModule, FooterModule],
   exports: [HorizontalLayoutComponent]
 })
-export class HorizontalLayoutModule {}
+export class HorizontalLayoutModule { }

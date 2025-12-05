@@ -27,7 +27,10 @@ export const locale = {
           DETAIL: 'Detalhes',
           WISHLIST: 'Lista de Desejos',
           CHECKOUT: 'Confira',
-          MANAGE_PRODUCTS: 'Gerenciar Produtos'
+          MANAGE_PRODUCTS: 'Gerenciar Produtos',
+          ORDERS: 'Pedidos',
+          ATTRIBUTES: 'Atributos do Produto',
+          CATEGORIES: 'Categorias'
         },
         USER: {
           COLLAPSIBLE: 'Do utilizador',
