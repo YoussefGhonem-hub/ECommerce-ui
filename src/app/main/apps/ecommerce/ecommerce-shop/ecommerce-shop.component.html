@@ -51,8 +51,9 @@
                   </label>
                 </div>
                 <!-- Admin Only: Create Product Button -->
-                <button *ngIf="isAdmin" class="btn btn-primary ml-2" (click)="goToCreateProduct()">
-                  <i class="fa fa-plus mr-1"></i> Create Product
+                <button *ngIf="isAdmin" class="btn btn-primary ml-2 ml-sm-2 ml-md-2" (click)="goToCreateProduct()">
+                  <i class="fa fa-plus mr-1"></i> <span class="d-none d-sm-inline">Create Product</span><span
+                    class="d-inline d-sm-none">Create</span>
                 </button>
               </div>
             </div>

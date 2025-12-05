@@ -1,8 +1,8 @@
-<div class="container mt-5">
-    <h2>Create Product</h2>
+<div class="container-fluid container-md mt-3 mt-md-5 px-2 px-md-3">
+    <h2 class="mb-3 mb-md-4">Create Product</h2>
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
-        <div class="form-row">
-            <div class="form-group col-md-6">
+        <div class="row">
+            <div class="form-group col-12 col-md-6">
                 <label for="nameAr">Name (Arabic)</label>
                 <input id="nameAr" formControlName="nameAr" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('nameAr').invalid && (productForm.get('nameAr').dirty || productForm.get('nameAr').touched), 'is-valid': productForm.get('nameAr').valid && (productForm.get('nameAr').dirty || productForm.get('nameAr').touched)}"
@@ -12,7 +12,7 @@
                     Name (Arabic) is required.
                 </div>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-12 col-md-6">
                 <label for="nameEn">Name (English)</label>
                 <input id="nameEn" formControlName="nameEn" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('nameEn').invalid && (productForm.get('nameEn').dirty || productForm.get('nameEn').touched), 'is-valid': productForm.get('nameEn').valid && (productForm.get('nameEn').dirty || productForm.get('nameEn').touched)}"
@@ -23,13 +23,13 @@
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
+        <div class="row">
+            <div class="form-group col-12 col-md-6">
                 <label for="descriptionAr">Description (Arabic)</label>
                 <textarea id="descriptionAr" rows="4" formControlName="descriptionAr" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('descriptionAr').invalid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched), 'is-valid': productForm.get('descriptionAr').valid && (productForm.get('descriptionAr').dirty || productForm.get('descriptionAr').touched)}"></textarea>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-12 col-md-6">
                 <label for="descriptionEn">Description (English)</label>
                 <textarea id="descriptionEn" rows="4" formControlName="descriptionEn" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('descriptionEn').invalid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched), 'is-valid': productForm.get('descriptionEn').valid && (productForm.get('descriptionEn').dirty || productForm.get('descriptionEn').touched)}"></textarea>
@@ -88,7 +88,7 @@
                     class="invalid-feedback">SKU is required.</div>
             </div>
 
-            <div class="form-group col-md-4">
+            <div class="form-group col-12 col-md-4">
                 <label for="brand">Brand</label>
                 <input id="brand" formControlName="brand" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('brand').invalid && (productForm.get('brand').dirty || productForm.get('brand').touched), 'is-valid': productForm.get('brand').valid && (productForm.get('brand').dirty || productForm.get('brand').touched)}" />
@@ -96,7 +96,7 @@
                     class="invalid-feedback">Brand is required.</div>
             </div>
 
-            <div class="form-group col-md-4">
+            <div class="form-group col-12 col-md-4">
                 <label for="categoryId">Category</label>
                 <select id="categoryId" formControlName="categoryId" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('categoryId').invalid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched), 'is-valid': productForm.get('categoryId').valid && (productForm.get('categoryId').dirty || productForm.get('categoryId').touched)}"
@@ -108,8 +108,8 @@
                     class="invalid-feedback">Category is required.</div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-md-4">
+        <div class="row">
+            <div class="form-group col-12 col-md-4">
                 <label for="price">Price</label>
                 <input id="price" formControlName="price" type="number" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('price').invalid && (productForm.get('price').dirty || productForm.get('price').touched), 'is-valid': productForm.get('price').valid && (productForm.get('price').dirty || productForm.get('price').touched)}"
@@ -119,7 +119,7 @@
                     Price is required and must be a number.
                 </div>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-12 col-md-4">
                 <label for="stockQuantity">Stock Quantity</label>
                 <input id="stockQuantity" formControlName="stockQuantity" type="number" class="form-control"
                     [ngClass]="{'is-invalid': productForm.get('stockQuantity').invalid && (productForm.get('stockQuantity').dirty || productForm.get('stockQuantity').touched), 'is-valid': productForm.get('stockQuantity').valid && (productForm.get('stockQuantity').dirty || productForm.get('stockQuantity').touched)}"
@@ -129,7 +129,7 @@
                     Stock Quantity is required and must be a number.
                 </div>
             </div>
-            <div class="form-group col-md-4 d-flex align-items-center">
+            <div class="form-group col-12 col-md-4 d-flex align-items-center mt-3 mt-md-0">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="allowBackorderCheck"
                         formControlName="allowBackorder" />
@@ -144,13 +144,14 @@
             </div>
         </div>
         <!-- Attributes Section: pick attribute and multiple existing values -->
-        <div class="form-row">
+        <div class="row">
             <div class="col-12">
-                <div class="card mb-3">
+                <div class="card mb-3 shadow-sm">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="card-title mb-0">Attributes</h5>
-                            <div>
+                        <div
+                            class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3">
+                            <h5 class="card-title mb-2 mb-sm-0">Attributes</h5>
+                            <div class="d-flex flex-wrap gap-2">
                                 <button type="button" class="btn btn-sm btn-outline-success mr-2"
                                     (click)="openCreateAttributeModal(createAttributeModal)">
                                     <i data-feather="plus" style="width:16px;height:16px;vertical-align:middle;"></i>
@@ -169,8 +170,8 @@
 
                         <div formArrayName="attributes">
                             <div *ngFor="let attrCtrl of attributesFormArray.controls; let i = index"
-                                [formGroupName]="i" class="border rounded p-2 mb-2">
-                                <div class="form-row align-items-center">
+                                [formGroupName]="i" class=" p-3 mb-3">
+                                <div class="row">
                                     <div class="form-group col-md-4">
                                         <label>Attribute</label>
                                         <select class="form-control" formControlName="attributeId"
@@ -183,7 +184,7 @@
                                         </select>
                                     </div>
 
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-12 col-md-6">
                                         <label>Values</label>
                                         <div *ngIf="attrCtrl.get('attributeId').value">
                                             <div *ngIf="getAttributeValues(attrCtrl.get('attributeId').value)?.length === 0"
@@ -202,9 +203,9 @@
                                             attribute to choose values.</div>
                                     </div>
 
-                                    <div class="form-group col-md-2 text-right">
-                                        <label class="d-block">Actions</label>
-                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                    <div class="form-group col-12 col-md-2 text-md-right">
+                                        <label class="d-none d-md-block">Actions</label>
+                                        <button type="button" class="btn btn-sm btn-outline-danger btn-block"
                                             (click)="removeAttributeSelection(i)">Remove</button>
                                     </div>
                                 </div>
@@ -215,8 +216,8 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="col-lg-3">
+        <div class="row">
+            <div class="col-12 col-lg-4 mb-3 mb-lg-0">
                 <fieldset class="form-group">
                     <label for="file-upload-multiple">Select files:</label>
                     <div class="custom-file">
@@ -227,46 +228,50 @@
                     </div>
                 </fieldset>
             </div>
-            <div class="col-lg-9 overflow-auto">
-                <div *ngIf="images.length > 0" class="d-flex justify-content-between mb-1">
+            <div class="col-12 col-lg-8">
+                <div *ngIf="images.length > 0" class="d-flex justify-content-between mb-2">
                 </div>
-                <table class="table" *ngIf="images.length > 0">
-                    <thead>
-                        <tr>
-                            <th width="50%">Name</th>
-                            <th>Size</th>
-                            <th>Main</th>
-                            <th>Preview</th>
+                <div class="table-responsive" *ngIf="images.length > 0">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th width="50%">Name</th>
+                                <th>Size</th>
+                                <th>Main</th>
+                                <th>Preview</th>
 
 
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let file of images; let i = index">
-                            <td><strong>{{ file?.name }}</strong></td>
-                            <td>{{ file?.size / 1024 / 1024 | number: '.2' }} MB</td>
-                            <td class="text-center">
-                                <input type="radio" name="mainImageRadio" [checked]="mainImageIndex === i"
-                                    (change)="onMainImageChange(i)" />
-                            </td>
-                            <td>
-                                <img *ngIf="imagePreviews[i]?.src" [src]="imagePreviews[i].src" [alt]="file?.name"
-                                    style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;" />
-                            </td>
-                            <td nowrap>
-                                <button type="button" class="btn btn-raised btn-outline-danger btn-sm"
-                                    (click)="removeImage(i)" rippleEffect>
-                                    <i data-feather="trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let file of images; let i = index">
+                                <td><strong>{{ file?.name }}</strong></td>
+                                <td>{{ file?.size / 1024 / 1024 | number: '.2' }} MB</td>
+                                <td class="text-center">
+                                    <input type="radio" name="mainImageRadio" [checked]="mainImageIndex === i"
+                                        (change)="onMainImageChange(i)" />
+                                </td>
+                                <td>
+                                    <img *ngIf="imagePreviews[i]?.src" [src]="imagePreviews[i].src" [alt]="file?.name"
+                                        style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;" />
+                                </td>
+                                <td nowrap>
+                                    <button type="button" class="btn btn-raised btn-outline-danger btn-sm"
+                                        (click)="removeImage(i)" rippleEffect>
+                                        <i data-feather="trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-4">
-            <button class="btn btn-primary" type="submit" [disabled]="productForm.invalid || loading">Create
-                Product</button>
+        <div class="d-flex justify-content-center justify-content-md-end mt-4">
+            <button class="btn btn-primary btn-block btn-md-auto px-5 py-2" type="submit"
+                [disabled]="productForm.invalid || loading">
+                <i data-feather="save" class="mr-1"></i>Create Product
+            </button>
         </div>
         <div *ngIf="error" class="alert alert-danger m-2">{{error}}</div>
         <div *ngIf="success" class="alert alert-success mt-2">Product created successfully!</div>
