@@ -36,6 +36,13 @@ export class AdminOrdersComponent implements OnInit {
 
     // status options mapped to backend OrderStatus enum
     statusOptions: Array<{ label: string, value: number | null }> = [
+        { label: 'Pending', value: 1 },
+        { label: 'Processing', value: 4 },
+        { label: 'Delivered', value: 7 },
+        { label: 'Cancelled', value: 8 },
+        { label: 'Returned', value: 9 }
+    ];
+    statusOptionsAction: Array<{ label: string, value: number | null }> = [
         { label: 'Processing', value: 4 },
         { label: 'Delivered', value: 7 },
         { label: 'Cancelled', value: 8 },
