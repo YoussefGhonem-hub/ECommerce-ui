@@ -1,8 +1,122 @@
+// Modal styling
+.modal-body .form-group { 
+  margin-bottom: 0.75rem; 
+}
+
+// Card-based layout
+.category-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    
+    i {
+      color: inherit;
+    }
+  }
+  
+  .card-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    
+    &.bg-light-success {
+      background-color: rgba(40, 199, 111, 0.12) !important;
+      border-top-color: rgba(40, 199, 111, 0.2);
+    }
+  }
+}
+
+// Category info
+.category-info {
+  .badge {
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  
+  .badge-light-info {
+    background-color: rgba(0, 207, 232, 0.12);
+    color: #00cfe8;
+    border-color: rgba(0, 207, 232, 0.3);
+  }
+  
+  .badge-light-secondary {
+    background-color: rgba(108, 117, 125, 0.12);
+    color: #6c757d;
+    border-color: rgba(108, 117, 125, 0.3);
+  }
+}
+
+// Action buttons
 .attr-actions {
   display: flex;
-  gap: 6px;
+  gap: 0.4rem;
   align-items: center;
+  justify-content: flex-end;
+  
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+    
+    i {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      vertical-align: middle;
+    }
+  }
 }
-.action-btn { padding: 4px 6px; }
 
-.modal-body .form-group { margin-bottom: 0.75rem; }
+// Featured star icon
+.text-warning {
+  color: #ff9f43 !important;
+  fill: #ff9f43 !important;
+}
+
+// Mobile responsive
+@media (max-width: 767.98px) {
+  .category-card {
+    margin-bottom: 1rem;
+    
+    .card-body {
+      padding: 1rem;
+    }
+    
+    .card-title {
+      font-size: 1rem;
+    }
+  }
+  
+  .category-info {
+    .badge {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Empty state
+.text-center {
+  i {
+    opacity: 0.5;
+  }
+}

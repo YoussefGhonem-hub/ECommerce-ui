@@ -1,9 +1,9 @@
 <div class="container-fluid container-md mt-3 px-2 px-md-3">
-    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4">
+    <div
+        class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 mb-md-4">
         <h3 class="mb-2 mb-sm-0">Product Attributes</h3>
         <div>
-            <button class="btn btn-primary" (click)="openCreateModal(createModal)"
-                aria-label="New Attribute">
+            <button class="btn btn-primary" (click)="openCreateModal(createModal)" aria-label="New Attribute">
                 <i data-feather="plus" class="mr-1" style="width:16px;height:16px;vertical-align:middle;"></i>
                 New Attribute
             </button>
@@ -24,31 +24,27 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h5 class="card-title mb-0 text-primary font-weight-bold">
-                            <i data-feather="tag" style="width:18px;height:18px;vertical-align:middle;" class="mr-1"></i>
+                            <i data-feather="tag" style="width:18px;height:18px;vertical-align:middle;"
+                                class="mr-1"></i>
                             {{ a.attributeName || a.name }}
                         </h5>
                         <div class="attr-actions">
-                            <button class="btn btn-sm btn-outline-secondary action-btn" 
-                                (click)="openEditModal(a, createModal)" 
-                                aria-label="Edit"
-                                ngbTooltip="Edit">
+                            <button class="btn btn-sm btn-outline-secondary action-btn"
+                                (click)="openEditModal(a, createModal)" aria-label="Edit" ngbTooltip="Edit">
                                 <i data-feather="edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger action-btn" 
-                                (click)="confirmDelete(a)"
-                                aria-label="Delete"
-                                ngbTooltip="Delete">
+                            <button class="btn btn-sm btn-outline-danger action-btn" (click)="confirmDelete(a)"
+                                aria-label="Delete" ngbTooltip="Delete">
                                 <i data-feather="trash"></i>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="card-text">
                         <p class="text-muted small mb-2">VALUES:</p>
                         <div class="attribute-values">
                             <ng-container *ngIf="(a.values && a.values.length > 0); else noValues">
-                                <span class="badge badge-light-primary mr-1 mb-1 px-2 py-1" 
-                                    *ngFor="let v of a.values">
+                                <span class="badge badge-light-primary mr-1 mb-1 px-2 py-1" *ngFor="let v of a.values">
                                     {{ v.value || v.name }}
                                 </span>
                             </ng-container>
@@ -69,7 +65,8 @@
     </div>
 
     <!-- Pagination -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3" *ngIf="totalCount > 0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mb-3"
+        *ngIf="totalCount > 0">
         <div class="mb-2 mb-md-0">
             <small class="text-muted">
                 <i data-feather="layers" style="width:14px;height:14px;vertical-align:middle;" class="mr-1"></i>

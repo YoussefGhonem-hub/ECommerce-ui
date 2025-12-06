@@ -86,10 +86,16 @@ export class ProductCategoriesComponent implements OnInit {
       payload.Id = this.currentEditId;
       this.http.PUT(CategoryController.Update, payload).subscribe(() => {
         this.loadCategories();
+        if (this.modalRef) {
+          this.modalRef.close();
+        }
       });
     } else {
       this.http.POST(CategoryController.CreateCategory, payload).subscribe(() => {
         this.loadCategories();
+        if (this.modalRef) {
+          this.modalRef.close();
+        }
       });
     }
   }
