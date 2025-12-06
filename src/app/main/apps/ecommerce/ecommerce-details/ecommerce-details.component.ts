@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
@@ -7,9 +7,12 @@ import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
+import { ReviewsController } from '@shared/Controllers/ReviewsController';
 import { CartService } from '@shared/services/cart.service';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { HttpService } from '@shared/services/http.service';
+import { AuthenticationService } from 'app/auth/service/authentication.service';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-ecommerce-details',
   templateUrl: './ecommerce-details.component.html',
@@ -28,6 +31,18 @@ export class EcommerceDetailsComponent implements OnInit {
   public groupedAttributes: { [key: string]: any[] } = {}; // Grouped attributes by name
   public productAttributes: { [key: string]: string } = {}; // Track selected values
   public colorMap: { [key: string]: string } = {}; // Map color names to hex values or CSS classes
+
+  // Reviews
+  public reviews: any[] = [];
+  public averageRating: number = 0;
+  public totalReviews: number = 0;
+  public userReview: any = null;
+  public reviewForm = {
+    rating: 0,
+    comment: ''
+  };
+  public isSubmittingReview: boolean = false;
+  public showReviewForm: boolean = false;
 
   // Color mapping for common color names
   private readonly COLOR_PALETTE: { [key: string]: string } = {
@@ -84,7 +99,9 @@ export class EcommerceDetailsComponent implements OnInit {
     private HttpService: HttpService,
     private guestUserService: GuestUserService,
     private _ecommerceService: EcommerceService,
-    private cartService: CartService
+    private cartService: CartService,
+    private authService: AuthenticationService,
+    private router: Router
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.productId = params['id'];
@@ -264,9 +281,128 @@ export class EcommerceDetailsComponent implements OnInit {
       });
   }
 
+  /**
+   * Load product reviews
+   */
+  loadReviews(): void {
+    if (!this.productId) return;
+
+    this.HttpService.GET(ReviewsController.GetProductReviews(this.productId)).subscribe(
+      (res: any) => {
+        if (res && res.succeeded) {
+          this.reviews = res.data || [];
+          this.totalReviews = this.reviews.length;
+          this.calculateAverageRating();
+        }
+      },
+      (error) => {
+        console.error('Error loading reviews:', error);
+      }
+    );
+  }
+
+  /**
+   * Calculate average rating from reviews
+   */
+  calculateAverageRating(): void {
+    if (this.reviews.length === 0) {
+      this.averageRating = 0;
+      return;
+    }
+    const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+    this.averageRating = sum / this.reviews.length;
+  }
+
+  /**
+   * Submit a review
+   */
+  submitReview(): void {
+    // Check if user is logged in
+    if (!this.authService.currentUserValue) {
+      Swal.fire({
+        title: 'Login Required',
+        text: 'You need to login to submit a review',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#7367F0',
+        cancelButtonColor: '#E42728',
+        confirmButtonText: 'Login Now',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/pages/authentication/login-v2']);
+        }
+      });
+      return;
+    }
+
+    if (this.reviewForm.rating === 0) {
+      Swal.fire('Error!', 'Please select a rating', 'error');
+      return;
+    }
+
+    this.isSubmittingReview = true;
+    const reviewData = {
+      productId: this.productId,
+      rating: this.reviewForm.rating,
+      comment: this.reviewForm.comment || null
+    };
+
+    this.HttpService.POST(ReviewsController.AddReview, reviewData).subscribe(
+      (res: any) => {
+        if (res && res.succeeded) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Your review has been submitted and is pending approval.',
+            confirmButtonColor: '#7367F0'
+          });
+          this.reviewForm = { rating: 0, comment: '' };
+          this.showReviewForm = false;
+          this.loadReviews();
+        } else {
+          Swal.fire('Error!', res.message || 'Failed to submit review.', 'error');
+        }
+        this.isSubmittingReview = false;
+      },
+      (error) => {
+        console.error('Error submitting review:', error);
+        Swal.fire('Error!', 'An error occurred while submitting your review.', 'error');
+        this.isSubmittingReview = false;
+      }
+    );
+  }
+
+  /**
+   * Toggle review form visibility
+   */
+  toggleReviewForm(): void {
+    // Check if user is logged in
+    if (!this.authService.currentUserValue) {
+      Swal.fire({
+        title: 'Login Required',
+        text: 'You need to login to write a review',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#7367F0',
+        cancelButtonColor: '#E42728',
+        confirmButtonText: 'Login Now',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/pages/authentication/login-v2']);
+        }
+      });
+      return;
+    }
+
+    this.showReviewForm = !this.showReviewForm;
+  }
+
   ngOnInit(): void {
     this.getProductId();
     this.contentHeaderMethod();
+    this.loadReviews();
   }
 
   /**

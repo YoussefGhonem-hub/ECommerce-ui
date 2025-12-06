@@ -242,3 +242,35 @@ width: 30px;
 .gap-2 {
   gap: 0.5rem !important;
 }
+
+// Reviews Section Styling
+.reviews-list {
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .rating-sm {
+    .fa {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.rating-input {
+  .fa {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

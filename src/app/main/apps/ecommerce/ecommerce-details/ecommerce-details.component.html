@@ -164,6 +164,96 @@
         </div>
         <!-- Item features ends -->
 
+        <!-- Reviews Section starts -->
+        <div class="card-body border-top">
+          <div class="mt-4 mb-2">
+            <h4>Customer Reviews</h4>
+            <div class="d-flex align-items-center mb-2">
+              <div class="rating rating-lg mr-1">
+                <ngb-rating [rate]="averageRating" [readonly]="true" [max]="5" class="outline-none">
+                  <ng-template let-fill="fill" let-index="index">
+                    <span class="fa fa-star-o mr-25" [class.fa-star]="fill === 100"></span>
+                  </ng-template>
+                </ngb-rating>
+              </div>
+              <span class="text-muted">{{ averageRating | number:'1.1-1' }} out of 5 ({{ totalReviews }} {{ totalReviews
+                === 1 ? 'review' : 'reviews' }})</span>
+            </div>
+
+            <!-- Write Review Button -->
+            <button class="btn btn-primary mb-3" (click)="toggleReviewForm()" rippleEffect>
+              <i data-feather="edit" class="mr-50"></i>
+              <span>{{ showReviewForm ? 'Cancel' : 'Write a Review' }}</span>
+            </button>
+
+            <!-- Review Form -->
+            <div class="card mb-3" *ngIf="showReviewForm">
+              <div class="card-body">
+                <h5 class="mb-2">Write Your Review</h5>
+                <div class="form-group">
+                  <label class="form-label">Rating <span class="text-danger">*</span></label>
+                  <div class="rating-input">
+                    <ngb-rating [(rate)]="reviewForm.rating" [max]="5" class="outline-none">
+                      <ng-template let-fill="fill" let-index="index">
+                        <span class="fa fa-star-o fa-2x cursor-pointer" [class.fa-star]="fill === 100"
+                          [class.text-warning]="fill === 100"></span>
+                      </ng-template>
+                    </ngb-rating>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Comment</label>
+                  <textarea class="form-control" rows="4" placeholder="Share your experience with this product..."
+                    [(ngModel)]="reviewForm.comment"></textarea>
+                </div>
+                <button class="btn btn-primary" (click)="submitReview()" [disabled]="isSubmittingReview" rippleEffect>
+                  <span *ngIf="!isSubmittingReview">Submit Review</span>
+                  <span *ngIf="isSubmittingReview">
+                    <span class="spinner-border spinner-border-sm mr-50"></span>
+                    Submitting...
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list">
+              <div class="card mb-2" *ngFor="let review of reviews">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div>
+                      <div class="rating rating-sm mb-50">
+                        <ngb-rating [rate]="review.rating" [readonly]="true" [max]="5" class="outline-none">
+                          <ng-template let-fill="fill" let-index="index">
+                            <span class="fa fa-star-o mr-25" [class.fa-star]="fill === 100"></span>
+                          </ng-template>
+                        </ngb-rating>
+                      </div>
+                      <h6 class="mb-0">{{ review.user?.firstName || 'Anonymous' }} {{ review.user?.lastName || '' }}
+                      </h6>
+                      <small class="text-muted">{{ review.createdDate | date:'MMM d, y' }}</small>
+                    </div>
+                    <span class="badge badge-light-success" *ngIf="review.isApproved">Verified</span>
+                  </div>
+                  <p class="card-text mb-1" *ngIf="review.comment">{{ review.comment }}</p>
+                  <div class="alert alert-primary mb-0" *ngIf="review.adminReply">
+                    <div class="alert-body">
+                      <strong>Admin Reply:</strong> {{ review.adminReply }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div class="text-center py-3" *ngIf="reviews.length === 0">
+                <i data-feather="message-square" class="font-large-2 text-muted mb-1"></i>
+                <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Reviews Section ends -->
+
         <!-- Related Products starts -->
         <div class="card-body">
           <div class="mt-4 mb-2 text-center">
