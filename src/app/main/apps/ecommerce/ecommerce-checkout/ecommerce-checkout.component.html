@@ -150,7 +150,8 @@
                       </li>
                       <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
                         <div class="detail-title">Discount</div>
-                        <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal || 0 }} EGP</div>
+                        <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal || 0 }} EGP
+                        </div>
                       </li>
                       <li class="price-detail">
                         <div class="detail-title">Shipping
@@ -512,7 +513,8 @@
                       </li>
                       <li class="price-detail d-flex justify-content-between" *ngIf="checkoutData?.discountTotal > 0">
                         <span class="detail-title text-success">Discount</span>
-                        <span class="detail-amt text-success font-weight-bold">-{{ checkoutData?.discountTotal || 0 }} EGP</span>
+                        <span class="detail-amt text-success font-weight-bold">-{{ checkoutData?.discountTotal || 0 }}
+                          EGP</span>
                       </li>
                       <li class="price-detail d-flex justify-content-between">
                         <span class="detail-title">
