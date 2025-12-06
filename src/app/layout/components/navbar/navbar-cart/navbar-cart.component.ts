@@ -54,7 +54,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
           normalizedItem.productId = item.productId || item.ProductId;
           normalizedItem.productName = item.productName || item.ProductName;
           normalizedItem.brand = item.brand || item.Brand;
-          normalizedItem.mainImagePath = environment.baseURL + (item.mainImagePath || item.MainImagePath);
+          normalizedItem.mainImagePath = environment.baseURL + '/' + (item.mainImagePath || item.MainImagePath);
           normalizedItem.price = item.price || item.Price || 0;
           normalizedItem.quantity = item.quantity || item.Quantity || 0;
           normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);

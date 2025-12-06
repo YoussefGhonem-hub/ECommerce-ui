@@ -1,7 +1,7 @@
 <div class="card ecommerce-card">
   <div class="item-img">
     <a [routerLink]="'/apps/e-commerce/details/' + product.productId">
-      <img [src]="product.mainImagePath" alt="img-placeholder" />
+      <img [src]="baseUrl+'/'+product.mainImagePath" alt="img-placeholder" />
     </a>
   </div>
   <div class="card-body">
