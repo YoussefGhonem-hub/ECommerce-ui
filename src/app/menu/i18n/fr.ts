@@ -30,7 +30,8 @@ export const locale = {
           MANAGE_PRODUCTS: 'Gérer les produits',
           ORDERS: 'Commandes',
           ATTRIBUTES: 'Attributs de produit',
-          CATEGORIES: 'Catégories'
+          CATEGORIES: 'Catégories',
+          COUPONS: 'Coupons'
         },
         USER: {
           COLLAPSIBLE: 'Utilisateur',

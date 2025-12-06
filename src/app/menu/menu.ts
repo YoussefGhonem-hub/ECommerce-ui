@@ -81,6 +81,15 @@ export const menu: CoreMenu[] = [
         type: 'item',
         icon: 'layers',
         url: 'apps/e-commerce/categories'
+      },
+      {
+        id: 'Coupons',
+        role: ['Admin'],
+        title: 'Coupons',
+        translate: 'MENU.APPS.ECOMMERCE.COUPONS',
+        type: 'item',
+        icon: 'tag',
+        url: 'admin/coupons'
       }
 
     ]

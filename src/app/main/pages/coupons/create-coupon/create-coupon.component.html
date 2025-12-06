@@ -1,0 +1,197 @@
+<div class="content-wrapper container-xxl p-0">
+    <app-content-header [contentHeader]="contentHeader"></app-content-header>
+
+    <div class="content-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Loading State -->
+                        <div *ngIf="isLoading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Loading coupon data...</p>
+                        </div>
+
+                        <!-- Form -->
+                        <form [formGroup]="couponForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+                            <div class="row">
+                                <!-- Coupon Code -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="code">Coupon Code <span class="text-danger">*</span></label>
+                                        <input type="text" id="code" class="form-control text-uppercase"
+                                            formControlName="code" placeholder="SUMMER2024"
+                                            [class.is-invalid]="getFormControl('code')?.invalid && getFormControl('code')?.touched" />
+                                        <div *ngIf="getFormControl('code')?.invalid && getFormControl('code')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small *ngIf="getFormControl('code')?.errors?.['required']">Coupon code is
+                                                required</small>
+                                            <small *ngIf="getFormControl('code')?.errors?.['minlength']">Minimum 3
+                                                characters required</small>
+                                            <small *ngIf="getFormControl('code')?.errors?.['maxlength']">Maximum 50
+                                                characters allowed</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Discount Type -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="discountType">Discount Type <span
+                                                class="text-danger">*</span></label>
+                                        <select id="discountType" class="form-control" formControlName="discountType">
+                                            <option value="percentage">Percentage Discount</option>
+                                            <option value="fixedAmount">Fixed Amount Discount</option>
+                                            <option value="freeShipping">Free Shipping</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Percentage Discount -->
+                                <div class="col-md-6 col-12" *ngIf="discountType === 'percentage'">
+                                    <div class="form-group">
+                                        <label for="percentage">Percentage (%) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" id="percentage" class="form-control"
+                                            formControlName="percentage" placeholder="10" min="0" max="100" step="0.01"
+                                            [class.is-invalid]="getFormControl('percentage')?.invalid && getFormControl('percentage')?.touched" />
+                                        <div *ngIf="getFormControl('percentage')?.invalid && getFormControl('percentage')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small *ngIf="getFormControl('percentage')?.errors?.['required']">Percentage
+                                                is required</small>
+                                            <small *ngIf="getFormControl('percentage')?.errors?.['min']">Minimum value
+                                                is
+                                                0.01%</small>
+                                            <small *ngIf="getFormControl('percentage')?.errors?.['max']">Maximum value
+                                                is
+                                                100%</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Fixed Amount Discount -->
+                                <div class="col-md-6 col-12" *ngIf="discountType === 'fixedAmount'">
+                                    <div class="form-group">
+                                        <label for="fixedAmount">Fixed Amount (EGP) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" id="fixedAmount" class="form-control"
+                                            formControlName="fixedAmount" placeholder="50" min="0" step="0.01"
+                                            [class.is-invalid]="getFormControl('fixedAmount')?.invalid && getFormControl('fixedAmount')?.touched" />
+                                        <div *ngIf="getFormControl('fixedAmount')?.invalid && getFormControl('fixedAmount')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small *ngIf="getFormControl('fixedAmount')?.errors?.['required']">Fixed
+                                                amount is required</small>
+                                            <small *ngIf="getFormControl('fixedAmount')?.errors?.['min']">Minimum value
+                                                is 0.01 EGP</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Free Shipping Info -->
+                                <div class="col-12" *ngIf="discountType === 'freeShipping'">
+                                    <div class="alert alert-info" role="alert">
+                                        <div class="alert-body">
+                                            <i data-feather="info" class="mr-50"></i>
+                                            This coupon will provide free shipping to customers.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Start Date -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="startDate">Start Date <span class="text-danger">*</span></label>
+                                        <input type="date" id="startDate" class="form-control"
+                                            formControlName="startDate"
+                                            [class.is-invalid]="getFormControl('startDate')?.invalid && getFormControl('startDate')?.touched" />
+                                        <div *ngIf="getFormControl('startDate')?.invalid && getFormControl('startDate')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small>Start date is required</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- End Date -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="endDate">End Date <span class="text-danger">*</span></label>
+                                        <input type="date" id="endDate" class="form-control" formControlName="endDate"
+                                            [class.is-invalid]="getFormControl('endDate')?.invalid && getFormControl('endDate')?.touched" />
+                                        <div *ngIf="getFormControl('endDate')?.invalid && getFormControl('endDate')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small>End date is required</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Usage Limit -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="usageLimit">Total Usage Limit (Optional)</label>
+                                        <input type="number" id="usageLimit" class="form-control"
+                                            formControlName="usageLimit" placeholder="100" min="1"
+                                            [class.is-invalid]="getFormControl('usageLimit')?.invalid && getFormControl('usageLimit')?.touched" />
+                                        <small class="form-text text-muted">Leave empty for unlimited usage</small>
+                                        <div *ngIf="getFormControl('usageLimit')?.invalid && getFormControl('usageLimit')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small>Minimum value is 1</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Per User Limit -->
+                                <div class="col-md-6 col-12">
+                                    <div class="form-group">
+                                        <label for="perUserLimit">Per User Limit (Optional)</label>
+                                        <input type="number" id="perUserLimit" class="form-control"
+                                            formControlName="perUserLimit" placeholder="1" min="1"
+                                            [class.is-invalid]="getFormControl('perUserLimit')?.invalid && getFormControl('perUserLimit')?.touched" />
+                                        <small class="form-text text-muted">Maximum uses per customer</small>
+                                        <div *ngIf="getFormControl('perUserLimit')?.invalid && getFormControl('perUserLimit')?.touched"
+                                            class="invalid-feedback d-block">
+                                            <small>Minimum value is 1</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Active Status -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch custom-control-inline">
+                                            <input type="checkbox" class="custom-control-input" id="isActive"
+                                                formControlName="isActive">
+                                            <label class="custom-control-label" for="isActive">
+                                                Active (Customers can use this coupon)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="col-12">
+                                    <hr>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary" (click)="onCancel()"
+                                            [disabled]="isSaving" rippleEffect>
+                                            <i data-feather="x" class="mr-50"></i>
+                                            Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-primary"
+                                            [disabled]="isSaving || couponForm.invalid" rippleEffect>
+                                            <span *ngIf="isSaving" class="spinner-border spinner-border-sm mr-1"></span>
+                                            <i *ngIf="!isSaving" data-feather="save" class="mr-50"></i>
+                                            {{ isSaving ? 'Saving...' : (isEditMode ? 'Update Coupon' : 'Create Coupon')
+                                            }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

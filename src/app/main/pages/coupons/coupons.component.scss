@@ -1,0 +1,24 @@
+.coupon-code-display {
+  background: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7));
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  
+  h2 {
+    color: #fff !important;
+    letter-spacing: 2px;
+  }
+}
+
+.coupon-details {
+  font-size: 0.95rem;
+}
+
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+  }
+}
