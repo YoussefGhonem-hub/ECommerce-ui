@@ -182,7 +182,7 @@
                   <div class="col-6">
                     <h4 class="card-title mb-1">Earnings</h4>
                     <div class="font-small-2">This Month</div>
-                    <h5 class="mb-1">{{ data?.earning?.thisMonthTotal | currency:'USD':'symbol':'1.2-2' }}</h5>
+                    <h5 class="mb-1">{{ data?.earning?.thisMonthTotal | number:'1.2-2' }} EGP</h5>
                     <p class="card-text text-muted font-small-2">
                       <span class="font-weight-bolder">{{ (data?.earning?.percentChange || 0) | number:'1.0-1'
                         }}%</span>

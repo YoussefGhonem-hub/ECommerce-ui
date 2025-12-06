@@ -18,7 +18,7 @@
                   product?.brand
                   }}</a></span>
               <div class="ecommerce-details-price d-flex flex-wrap mt-1">
-                <h4 class="item-price mr-1">${{ product?.price }}</h4>
+                <h4 class="item-price mr-1">{{ product?.price }} EGP</h4>
                 <div class="rating rating-sm pl-1 border-left mb-1">
                   <ngb-rating [rate]="product?.averageRating" [readonly]="true" [max]="5" class="outline-none">
                     <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
@@ -191,7 +191,7 @@
                               [class.fa-star]="fill === 100"></span></ng-template>
                         </ngb-rating>
                       </div>
-                      <p class="card-text text-primary mb-0">${{ relatedProduct?.price }}</p>
+                      <p class="card-text text-primary mb-0">{{ relatedProduct?.price }} EGP</p>
                       <div class="mt-2">
                         <a [routerLink]="['/apps/e-commerce/details', relatedProduct?.id]"
                           class="btn btn-sm btn-primary mr-1">
