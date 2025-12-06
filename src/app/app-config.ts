@@ -16,8 +16,8 @@ import { CoreConfig } from '@core/types';
 // prettier-ignore
 export const coreConfig: CoreConfig = {
   app: {
-    appName: 'Y-Market',                                        // App Name
-    appTitle: 'Y-Market', // App Title
+    appName: 'API',                                        // App Name
+    appTitle: 'API', // App Title
     appLogoImage: 'assets/images/logo/mylogo.png',                  // App Logo
     appLanguage: 'en',                                           // App Default Language (en, fr, de, pt etc..)
   },
