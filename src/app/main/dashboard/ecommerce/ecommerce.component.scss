@@ -10,3 +10,71 @@
     }
   }
 }
+
+// Revenue Report Mobile Responsive
+.card-revenue-budget {
+  .revenue-report-wrapper {
+    padding: 1.5rem;
+    
+    @media (max-width: 767.98px) {
+      padding: 1rem;
+    }
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    
+    @media (max-width: 575.98px) {
+      font-size: 1.1rem;
+    }
+  }
+  
+  .revenue-filters {
+    .gap-1 {
+      gap: 0.5rem;
+    }
+    
+    @media (max-width: 575.98px) {
+      .form-control-sm,
+      .btn-sm {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.5rem;
+      }
+      
+      input[type="date"] {
+        min-width: 100px !important;
+      }
+      
+      .btn-primary {
+        padding: 0.375rem 1rem;
+      }
+    }
+  }
+  
+  // Chart responsiveness
+  #revenue-report-chart {
+    .apexcharts-canvas {
+      max-width: 100%;
+      
+      @media (max-width: 767.98px) {
+        svg {
+          width: 100% !important;
+        }
+      }
+    }
+  }
+  
+  // Legend bullets
+  .bullet {
+    @media (max-width: 575.98px) {
+      width: 8px;
+      height: 8px;
+    }
+  }
+  
+  .small {
+    @media (max-width: 575.98px) {
+      font-size: 0.8rem;
+    }
+  }
+}

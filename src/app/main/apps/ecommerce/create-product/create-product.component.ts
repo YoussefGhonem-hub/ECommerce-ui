@@ -95,13 +95,20 @@ export class CreateProductComponent implements OnInit {
         this.loadingAttributes = true;
         this.http.GET(ProductAttributesController.GetAll).subscribe({
             next: (res) => {
-                // Map API response to expected format for the UI
-                this.attributes = (res && Array.isArray(res)) ? res.map((attr: any) => ({
-                    attributeId: attr.attributeId,
-                    attributeName: attr.attributeName,
-                    hasNullMapping: attr.hasNullMapping,
-                    values: (attr.values || []).map((v: any) => ({ id: v.id, value: v.value }))
-                })) : [];
+                // API returns array directly: [{ attributeId, attributeName, hasNullMapping, values: [{ id, value }] }]
+                if (res && Array.isArray(res)) {
+                    this.attributes = res.map((attr: any) => ({
+                        attributeId: attr.attributeId || attr.id,
+                        attributeName: attr.attributeName || attr.name,
+                        hasNullMapping: attr.hasNullMapping || false,
+                        values: (attr.values || []).map((v: any) => ({
+                            id: v.id,
+                            value: v.value || v.name || ''
+                        }))
+                    }));
+                } else {
+                    this.attributes = [];
+                }
                 this.loadingAttributes = false;
             },
             error: () => {

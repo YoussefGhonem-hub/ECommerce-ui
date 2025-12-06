@@ -78,12 +78,23 @@ export class ProductAttributesComponent implements OnInit {
         const query = { pageNumber: this.pageNumber, pageSize: this.pageSize };
         this.http.GET(ProductAttributesController.GetAll, query).subscribe({
             next: (res: any) => {
-                // expected shape: { items: [...], totalCount, pageNumber, pageSize }
+                // API returns array directly: [{ attributeId, attributeName, hasNullMapping, values: [{ id, value }] }]
+                // Handle both paginated response { items, totalCount } and direct array
                 if (res) {
-                    this.attributes = Array.isArray(res.items) ? res.items : (Array.isArray(res) ? res : (res.data || []));
-                    this.totalCount = res.totalCount || 0;
-                    this.pageNumber = res.pageNumber || this.pageNumber;
-                    this.pageSize = res.pageSize || this.pageSize;
+                    if (Array.isArray(res)) {
+                        // Direct array response
+                        this.attributes = res;
+                        this.totalCount = res.length;
+                    } else if (res.items && Array.isArray(res.items)) {
+                        // Paginated response
+                        this.attributes = res.items;
+                        this.totalCount = res.totalCount || res.items.length;
+                        this.pageNumber = res.pageNumber || this.pageNumber;
+                        this.pageSize = res.pageSize || this.pageSize;
+                    } else {
+                        this.attributes = [];
+                        this.totalCount = 0;
+                    }
                 } else {
                     this.attributes = [];
                     this.totalCount = 0;
