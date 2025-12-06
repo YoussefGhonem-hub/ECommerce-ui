@@ -43,7 +43,7 @@ export class ToastrInterceptor implements HttpInterceptor {
                         } else if (error.error && error.error.validationErrors) {
                             this.toastr.error('Validation error', 'Error');
                         } else {
-                            this.toastr.error(error.message || 'Unknown error', 'Error');
+                            // this.toastr.error(error.message || 'Unknown error', 'Error');
                         }
                     }
                 }

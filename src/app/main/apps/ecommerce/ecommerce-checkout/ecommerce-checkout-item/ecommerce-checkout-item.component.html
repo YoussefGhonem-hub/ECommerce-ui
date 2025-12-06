@@ -1,8 +1,24 @@
 <div class="card ecommerce-card">
   <div class="item-img">
-    <a [routerLink]="'/apps/e-commerce/details/' + product.productId">
-      <img [src]="baseUrl+'/'+product.mainImagePath" alt="img-placeholder" />
-    </a>
+    <!-- Carousel for multiple images -->
+    <ng-container *ngIf="product.imageUrls && product.imageUrls.length > 1; else singleImage">
+      <ngb-carousel [interval]="0" [showNavigationArrows]="true" [showNavigationIndicators]="true">
+        <ng-template ngbSlide *ngFor="let imageUrl of product.imageUrls">
+          <div class="picsum-img-wrapper">
+            <a [routerLink]="'/apps/e-commerce/details/' + product.productId">
+              <img [src]="baseUrl+'/'+imageUrl" alt="product image" class="d-block w-100" />
+            </a>
+          </div>
+        </ng-template>
+      </ngb-carousel>
+    </ng-container>
+
+    <!-- Single image fallback -->
+    <ng-template #singleImage>
+      <a [routerLink]="'/apps/e-commerce/details/' + product.productId">
+        <img [src]="getProductImage()" alt="img-placeholder" />
+      </a>
+    </ng-template>
   </div>
   <div class="card-body">
     <div class="item-name">

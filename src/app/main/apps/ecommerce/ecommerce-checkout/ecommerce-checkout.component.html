@@ -437,7 +437,8 @@
                     <h6 class="mb-2">Items ({{ cartItems?.length || 0 }})</h6>
                     <div class="item-summary" *ngFor="let item of cartItems">
                       <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                        <img [src]="item.mainImagePath" class="img-fluid rounded mr-2"
+                        <!-- Display first image from imageUrls or fallback to mainImagePath -->
+                        <img [src]="getItemImage(item)" class="img-fluid rounded mr-2"
                           style="width: 50px; height: 50px; object-fit: cover" [alt]="item.productName">
                         <div class="flex-grow-1">
                           <h6 class="mb-0">{{ item.productName }}</h6>

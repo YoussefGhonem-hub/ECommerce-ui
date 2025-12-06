@@ -1,4 +1,50 @@
 
+// Carousel Styling for Product Images
+.item-img {
+  ngb-carousel {
+    .picsum-img-wrapper {
+      position: relative;
+      height: 100%;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    ::ng-deep {
+      .carousel-control-prev,
+      .carousel-control-next {
+        width: 40px;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      .carousel-indicators {
+        margin-bottom: 0.5rem;
+
+        li {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          margin: 0 4px;
+          background-color: rgba(255, 255, 255, 0.5);
+          border: none;
+
+          &.active {
+            background-color: #fff;
+          }
+        }
+      }
+    }
+  }
+}
+
 // Product Attributes Styling
 .product-attributes {
   margin: 1.5rem 0;

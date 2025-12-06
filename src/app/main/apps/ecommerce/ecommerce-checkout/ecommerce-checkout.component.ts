@@ -896,4 +896,14 @@ export class EcommerceCheckoutComponent implements OnInit {
       }
     };
   }
+
+  /**
+   * Get item image with fallback logic
+   */
+  getItemImage(item: any): string {
+    if (item.imageUrls && item.imageUrls.length > 0) {
+      return item.imageUrls[0];
+    }
+    return item.mainImagePath || 'assets/images/placeholder-product.png';
+  }
 }

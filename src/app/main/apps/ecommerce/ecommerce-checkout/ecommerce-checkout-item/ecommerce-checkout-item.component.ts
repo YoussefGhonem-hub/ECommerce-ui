@@ -200,6 +200,16 @@ export class EcommerceCheckoutItemComponent implements OnInit {
 
 
   /**
+   * Get product image URL with fallback
+   */
+  getProductImage(): string {
+    if (this.product.imageUrls && this.product.imageUrls.length > 0) {
+      return this.baseUrl + '/' + this.product.imageUrls[0];
+    }
+    return this.product.mainImagePath ? this.baseUrl + '/' + this.product.mainImagePath : 'assets/images/placeholder-product.png';
+  }
+
+  /**
    * Get formatted subtotal for display
    */
   getFormattedSubTotal(): string {
