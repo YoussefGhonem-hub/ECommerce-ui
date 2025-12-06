@@ -5,25 +5,18 @@
       <div class="card-body">
         <a href="javascript:void(0);" class="brand-logo">
           <img src="{{ coreConfig.app.appLogoImage }}" alt="brand-logo" height="28" />
-          <h2 class="brand-text text-primary ml-1">Vuexy</h2>
+          <h2 class="brand-text text-primary ml-1">API Brand</h2>
         </a>
 
-        <h4 class="card-title mb-1">Welcome to Vuexy! 👋</h4>
+        <h4 class="card-title mb-1">Welcome to API Brand! 👋</h4>
         <p class="card-text mb-2">Please sign-in to your account and start the adventure</p>
 
         <form class="auth-login-form mt-2" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="form-group">
             <label for="login-email" class="form-label">Email</label>
-            <input
-              type="text"
-              formControlName="email"
-              class="form-control"
-              placeholder="john@example.com"
-              aria-describedby="login-email"
-              tabindex="1"
-              autofocus
-              [ngClass]="{ 'is-invalid': submitted && f.email.errors }"
-            />
+            <input type="text" formControlName="email" class="form-control" placeholder="john@example.com"
+              aria-describedby="login-email" tabindex="1" autofocus
+              [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
             <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
               <div *ngIf="f.email.errors.required">Email is required</div>
               <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
@@ -38,34 +31,19 @@
               </a>
             </div>
             <div class="input-group input-group-merge form-password-toggle">
-              <input
-                [type]="passwordTextType ? 'text' : 'password'"
-                formControlName="password"
-                class="form-control form-control-merge"
-                tabindex="2"
-                placeholder="·········"
-                aria-describedby="login-password"
-                [ngClass]="{ 'is-invalid error': submitted && f.password.errors }"
-              />
+              <input [type]="passwordTextType ? 'text' : 'password'" formControlName="password"
+                class="form-control form-control-merge" tabindex="2" placeholder="·········"
+                aria-describedby="login-password" [ngClass]="{ 'is-invalid error': submitted && f.password.errors }" />
 
               <div class="input-group-append">
-                <span class="input-group-text cursor-pointer"
-                  ><i
-                    class="feather font-small-4"
-                    [ngClass]="{
+                <span class="input-group-text cursor-pointer"><i class="feather font-small-4" [ngClass]="{
                       'icon-eye-off': passwordTextType,
                       'icon-eye': !passwordTextType
-                    }"
-                    (click)="togglePasswordTextType()"
-                  ></i
-                ></span>
+                    }" (click)="togglePasswordTextType()"></i></span>
               </div>
             </div>
-            <div
-              *ngIf="submitted && f.password.errors"
-              class="invalid-feedback"
-              [ngClass]="{ 'd-block': submitted && f.password.errors }"
-            >
+            <div *ngIf="submitted && f.password.errors" class="invalid-feedback"
+              [ngClass]="{ 'd-block': submitted && f.password.errors }">
               <div *ngIf="f.password.errors.required">Password is required</div>
             </div>
           </div>

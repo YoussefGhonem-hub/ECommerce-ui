@@ -49,6 +49,11 @@ const appRoutes: Routes = [
     loadChildren: () => import('./main/pages/pages.module').then(m => m.PagesModule)
   },
   {
+    path: 'admin',
+    loadChildren: () => import('./main/admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'ui',
     loadChildren: () => import('./main/ui/ui.module').then(m => m.UIModule),
     canActivate: [AuthGuard]

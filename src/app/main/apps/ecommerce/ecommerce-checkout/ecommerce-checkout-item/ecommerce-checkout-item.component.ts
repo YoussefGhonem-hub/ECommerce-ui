@@ -6,6 +6,8 @@ import { CartController } from '@shared/Controllers/CartController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { CartService } from '@shared/services/cart.service';
+import { env } from 'process';
+import { environment } from 'environments/environment.prod';
 
 @Component({
   selector: 'app-ecommerce-checkout-item',
@@ -17,7 +19,7 @@ import { CartService } from '@shared/services/cart.service';
 export class EcommerceCheckoutItemComponent implements OnInit {
   // Input Decorator
   @Input() product;
-
+  baseUrl: any = environment.baseURL;
   @Output() cartRefresh = new EventEmitter<void>();
   @Output() quantityUpdated = new EventEmitter<{ item: any, newQuantity: number, newSubTotal: number }>();
 
@@ -196,6 +198,16 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   }
 
 
+
+  /**
+   * Get product image URL with fallback
+   */
+  getProductImage(): string {
+    if (this.product.imageUrls && this.product.imageUrls.length > 0) {
+      return this.baseUrl + '/' + this.product.imageUrls[0];
+    }
+    return this.product.mainImagePath ? this.baseUrl + '/' + this.product.mainImagePath : 'assets/images/placeholder-product.png';
+  }
 
   /**
    * Get formatted subtotal for display

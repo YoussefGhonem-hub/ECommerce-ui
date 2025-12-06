@@ -1,0 +1,67 @@
+.coupon-code-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #d8d6de;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #7367f0;
+    background: #f3f2f7;
+  }
+}
+
+.coupon-code-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+
+  .code-value {
+    font-family: 'Courier New', monospace;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #5e5873;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+}
+
+.copy-btn {
+  padding: 0.5rem 0.75rem;
+  min-width: auto;
+
+  i {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.coupon-details {
+  font-size: 0.95rem;
+}
+
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Dropdown menu styles
+.dropdown-menu-end {
+  .dropdown-item {
+    cursor: pointer;
+    
+    &:hover {
+      background-color: rgba(115, 103, 240, 0.08);
+    }
+
+    &.text-danger:hover {
+      background-color: rgba(234, 84, 85, 0.08);
+    }
+  }
+}

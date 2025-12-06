@@ -20,8 +20,7 @@
       <ng-container *ngIf="cartItems.length > 0; else emptyCart">
         <ng-container *ngFor="let item of cartItems">
           <div class="media align-items-center">
-            <img class="d-block rounded mr-1" [src]="item.mainImagePath" [alt]="item.productName" width="62"
-              onerror="this.src='assets/images/placeholder-product.png'" />
+            <img class="d-block rounded mr-1" [src]="baseUrl+item.mainImagePath" [alt]="item.productName" width="62" />
             <div class="media-body">
               <button class="btn p-0" (click)="removeFromCart(item)">
                 <i class="ficon cart-item-remove" data-feather="x"></i>
@@ -35,7 +34,7 @@
                 <small class="cart-item-by">{{ item.brand }}</small>
               </div>
 
-              <h5 class="cart-item-price">${{ item.subTotal }}</h5>
+              <h5 class="cart-item-price">{{ item.subTotal }} EGP</h5>
             </div>
           </div>
         </ng-container>
@@ -59,7 +58,7 @@
     <li class="dropdown-menu-footer" *ngIf="cartItems.length > 0">
       <div class="d-flex justify-content-between mb-1">
         <h6 class="font-weight-bolder mb-0">Total:</h6>
-        <h6 class="text-primary font-weight-bolder mb-0">${{ getTotalPrice() }}</h6>
+        <h6 class="text-primary font-weight-bolder mb-0">{{ getTotalPrice() }} EGP</h6>
       </div>
       <a class="btn btn-primary btn-block" routerLink="/apps/e-commerce/checkout">Checkout</a>
     </li>

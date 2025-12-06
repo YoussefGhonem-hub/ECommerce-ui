@@ -146,11 +146,12 @@
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</div>
-                        <div class="detail-amt">{{ checkoutData?.subTotal || 0 }}</div>
+                        <div class="detail-amt">{{ checkoutData?.subTotal || 0 }} EGP</div>
                       </li>
                       <li class="price-detail" *ngIf="checkoutData?.discountTotal > 0">
                         <div class="detail-title">Discount</div>
-                        <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal || 0 }}</div>
+                        <div class="detail-amt discount-amt text-success">-{{ checkoutData?.discountTotal || 0 }} EGP
+                        </div>
                       </li>
                       <li class="price-detail">
                         <div class="detail-title">Shipping
@@ -158,7 +159,7 @@
                         </div>
                         <div class="detail-amt" [class.discount-amt]="checkoutData?.freeShippingApplied"
                           [class.text-success]="checkoutData?.freeShippingApplied">
-                          {{ checkoutData?.freeShippingApplied ? 'Free' : '' + (checkoutData?.shippingTotal || 0) }}
+                          {{ checkoutData?.freeShippingApplied ? 'Free' : (checkoutData?.shippingTotal || 0) + ' EGP' }}
                         </div>
                       </li>
                     </ul>
@@ -166,7 +167,7 @@
                     <ul class="list-unstyled">
                       <li class="price-detail">
                         <div class="detail-title detail-total">Total</div>
-                        <div class="detail-amt font-weight-bolder">{{ checkoutData?.total || 0 }}</div>
+                        <div class="detail-amt font-weight-bolder">{{ checkoutData?.total || 0 }} EGP</div>
                       </li>
                     </ul>
                     <button type="button" class="btn btn-primary btn-block btn-next place-order" (click)="nextStep()"
@@ -436,14 +437,15 @@
                     <h6 class="mb-2">Items ({{ cartItems?.length || 0 }})</h6>
                     <div class="item-summary" *ngFor="let item of cartItems">
                       <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                        <img [src]="item.mainImagePath" class="img-fluid rounded mr-2"
+                        <!-- Display first image from imageUrls or fallback to mainImagePath -->
+                        <img [src]="getItemImage(item)" class="img-fluid rounded mr-2"
                           style="width: 50px; height: 50px; object-fit: cover" [alt]="item.productName">
                         <div class="flex-grow-1">
                           <h6 class="mb-0">{{ item.productName }}</h6>
                           <small class="text-muted">{{ item.brand }}</small>
                           <div class="mt-1">
                             <span class="badge badge-light-primary">Qty: {{ item.quantity }}</span>
-                            <span class="badge badge-light-success ml-1">${{ item.subTotal }}</span>
+                            <span class="badge badge-light-success ml-1">{{ item.subTotal }} EGP</span>
                           </div>
                         </div>
                       </div>
@@ -508,12 +510,12 @@
                     <ul class="list-unstyled">
                       <li class="price-detail d-flex justify-content-between">
                         <span class="detail-title">Subtotal ({{ cartItems?.length || 0 }} items)</span>
-                        <span class="detail-amt font-weight-bold">${{ getFormattedSubTotal() }}</span>
+                        <span class="detail-amt font-weight-bold">{{ getFormattedSubTotal() }} EGP</span>
                       </li>
                       <li class="price-detail d-flex justify-content-between" *ngIf="checkoutData?.discountTotal > 0">
                         <span class="detail-title text-success">Discount</span>
-                        <span class="detail-amt text-success font-weight-bold">-${{ checkoutData?.discountTotal || 0
-                          }}</span>
+                        <span class="detail-amt text-success font-weight-bold">-{{ checkoutData?.discountTotal || 0 }}
+                          EGP</span>
                       </li>
                       <li class="price-detail d-flex justify-content-between">
                         <span class="detail-title">
@@ -522,14 +524,14 @@
                         </span>
                         <span class="detail-amt font-weight-bold"
                           [class.text-success]="checkoutData?.freeShippingApplied">
-                          {{ checkoutData?.freeShippingApplied ? 'Free' : '$' + (checkoutData?.shippingTotal || 0) }}
+                          {{ checkoutData?.freeShippingApplied ? 'Free' : (checkoutData?.shippingTotal || 0) + ' EGP' }}
                         </span>
                       </li>
                     </ul>
                     <hr class="my-2">
                     <div class="d-flex justify-content-between">
                       <span class="detail-title h5 font-weight-bold">Total</span>
-                      <span class="detail-amt h5 font-weight-bold text-primary">${{ getFormattedTotal() }}</span>
+                      <span class="detail-amt h5 font-weight-bold text-primary">{{ getFormattedTotal() }} EGP</span>
                     </div>
                   </div>
 

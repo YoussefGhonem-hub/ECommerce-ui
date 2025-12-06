@@ -1,0 +1,242 @@
+<div class="content-wrapper container-xxl p-0">
+    <app-content-header [contentHeader]="contentHeader"></app-content-header>
+
+    <div class="content-body">
+        <!-- Filters -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Basic Filters -->
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-4 mb-2 mb-md-0">
+                        <label class="form-label">Search by Code</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i data-feather="search"></i></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Search by coupon code..."
+                                [(ngModel)]="searchText" (ngModelChange)="onSearchChange()" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-2 mb-2 mb-md-0">
+                        <label class="form-label">Status</label>
+                        <select class="form-control" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-outline-secondary btn-block" (click)="toggleAdvancedFilters()">
+                            <i [data-feather]="showAdvancedFilters ? 'chevron-up' : 'chevron-down'" class="mr-50"></i>
+                            <span>{{showAdvancedFilters ? 'Hide' : 'Show'}} Advanced Filters</span>
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-3 mb-2 mb-md-0">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-primary btn-block" (click)="createCoupon()">
+                            <i data-feather="plus" class="mr-50"></i>
+                            <span>Create Coupon</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Filters -->
+                <div class="row mt-2" *ngIf="showAdvancedFilters">
+                    <div class="col-12">
+                        <hr class="my-2">
+                    </div>
+
+                    <!-- Free Shipping Filter -->
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">Free Shipping</label>
+                        <select class="form-control" [(ngModel)]="filterFreeShipping"
+                            (ngModelChange)="onFilterChange()">
+                            <option value="all">All</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <!-- Fixed Amount Filter -->
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">Fixed Amount (EGP)</label>
+                        <input type="number" class="form-control" placeholder="Enter amount..."
+                            [(ngModel)]="filterFixedAmount" (ngModelChange)="onFilterChange()" />
+                    </div>
+
+                    <!-- Percentage Filter -->
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">Percentage (%)</label>
+                        <input type="number" class="form-control" placeholder="Enter percentage..."
+                            [(ngModel)]="filterPercentage" (ngModelChange)="onFilterChange()" />
+                    </div>
+
+                    <div class="col-12">
+                        <hr class="my-2">
+                        <h6 class="mb-1">Date Ranges</h6>
+                    </div>
+
+                    <!-- Start Date Range -->
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">Start Date From</label>
+                        <input type="date" class="form-control" [(ngModel)]="filterStartDateFrom"
+                            (ngModelChange)="onFilterChange()" />
+                    </div>
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">Start Date To</label>
+                        <input type="date" class="form-control" [(ngModel)]="filterStartDateTo"
+                            (ngModelChange)="onFilterChange()" />
+                    </div>
+
+                    <!-- End Date Range -->
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">End Date From</label>
+                        <input type="date" class="form-control" [(ngModel)]="filterEndDateFrom"
+                            (ngModelChange)="onFilterChange()" />
+                    </div>
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label">End Date To</label>
+                        <input type="date" class="form-control" [(ngModel)]="filterEndDateTo"
+                            (ngModelChange)="onFilterChange()" />
+                    </div>
+
+                    <!-- Clear Filters Button -->
+                    <div class="col-12 mt-1">
+                        <button class="btn btn-outline-danger" (click)="clearFilters()">
+                            <i data-feather="x" class="mr-50"></i>
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coupons List -->
+        <div class="row match-height" *ngIf="!isLoading && coupons.length > 0">
+            <div class="col-xl-4 col-md-6 col-12" *ngFor="let coupon of getPaginatedCoupons()">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div>
+                                <h4 class="card-title mb-0">
+                                    <span class="badge badge-pill" [ngClass]="getCouponTypeBadge(coupon)">
+                                        {{ getCouponTypeText(coupon) }}
+                                    </span>
+                                </h4>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge badge-pill mr-1"
+                                    [ngClass]="isCouponValid(coupon) ? 'badge-light-success' : 'badge-light-danger'">
+                                    <i data-feather="{{isCouponValid(coupon) ? 'check-circle' : 'x-circle'}}"
+                                        class="mr-25"></i>
+                                    {{ isCouponValid(coupon) ? 'Valid' : (isCouponExpired(coupon) ? 'Expired' :
+                                    'Inactive') }}
+                                </span>
+                                <div ngbDropdown container="body">
+                                    <button class="btn btn-sm btn-icon btn-flat-secondary" ngbDropdownToggle
+                                        rippleEffect>
+                                        <i data-feather="more-vertical" class="cursor-pointer"></i>
+                                    </button>
+                                    <div ngbDropdownMenu class="dropdown-menu-end">
+                                        <a class="dropdown-item" (click)="editCoupon(coupon)">
+                                            <i data-feather="edit" class="mr-50"></i>
+                                            <span>Edit</span>
+                                        </a>
+                                        <a class="dropdown-item" (click)="toggleStatus(coupon)">
+                                            <i data-feather="{{coupon.isActive ? 'pause' : 'play'}}" class="mr-50"></i>
+                                            <span>{{ coupon.isActive ? 'Deactivate' : 'Activate' }}</span>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item text-danger" (click)="deleteCoupon(coupon)">
+                                            <i data-feather="trash-2" class="mr-50"></i>
+                                            <span>Delete</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Coupon Code -->
+                        <div class="my-3">
+                            <label class="form-label text-muted mb-1">Coupon Code</label>
+                            <div class="coupon-code-box">
+                                <div class="coupon-code-text">
+                                    <span class="code-value">{{ coupon.code }}</span>
+                                </div>
+                                <button class="btn btn-sm btn-relief-primary copy-btn"
+                                    (click)="copyCouponCode(coupon.code)" rippleEffect>
+                                    <i data-feather="copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Coupon Details -->
+                        <div class="coupon-details">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">Start Date:</span>
+                                <strong>{{ coupon.startDate | date:'MMM d, y' }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">End Date:</span>
+                                <strong>{{ coupon.endDate | date:'MMM d, y' }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" *ngIf="coupon.usageLimit">
+                                <span class="text-muted">Usage Limit:</span>
+                                <strong>{{ coupon.timesUsed }} / {{ coupon.usageLimit }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" *ngIf="coupon.perUserLimit">
+                                <span class="text-muted">Per User Limit:</span>
+                                <strong>{{ coupon.perUserLimit }}</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1" *ngIf="coupon.freeShipping">
+                                <span class="text-muted">Free Shipping:</span>
+                                <strong class="text-success">
+                                    <i data-feather="check" class="mr-25"></i>Yes
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="card" *ngIf="!isLoading && coupons.length === 0">
+            <div class="card-body text-center py-5">
+                <i data-feather="tag" class="font-large-2 text-muted mb-2"></i>
+                <h4 class="text-muted">No Coupons Found</h4>
+                <p class="text-muted">
+                    {{ searchText || filterStatus !== 'all' ? 'Try adjusting your filters' : 'Create your first coupon
+                    to get started' }}
+                </p>
+                <button class="btn btn-primary" (click)="createCoupon()" *ngIf="!searchText && filterStatus === 'all'">
+                    <i data-feather="plus" class="mr-50"></i>
+                    Create Coupon
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="card" *ngIf="isLoading">
+            <div class="card-body text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading coupons...</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row" *ngIf="!isLoading && coupons.length > itemsPerPage">
+            <div class="col-12">
+                <div class="d-flex justify-content-center">
+                    <ngb-pagination [(page)]="currentPage" [pageSize]="itemsPerPage" [collectionSize]="totalItems"
+                        [maxSize]="5" [rotate]="true" [boundaryLinks]="true">
+                    </ngb-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

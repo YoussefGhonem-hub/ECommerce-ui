@@ -1,2 +1,22 @@
 @import '@core/scss/base/pages/app-ecommerce.scss';
 @import '@core/scss/angular/libs/noui-slider.component.scss';
+
+// Mobile responsive styles for Create Product button
+.view-options {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  @media (max-width: 575.98px) {
+    .btn-primary {
+      margin-left: 0 !important;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+  }
+
+  @media (min-width: 576px) and (max-width: 767.98px) {
+    .btn-primary {
+      margin-left: 0.5rem !important;
+    }
+  }
+}
