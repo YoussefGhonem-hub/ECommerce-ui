@@ -200,7 +200,7 @@ export class CreateCouponComponent implements OnInit {
             code: formValue.code.toUpperCase(),
             percentage: formValue.discountType === 'percentage' ? formValue.percentage : null,
             fixedAmount: formValue.discountType === 'fixedAmount' ? formValue.fixedAmount : null,
-            freeShipping: formValue.discountType === 'freeShipping' ? true : false,
+            freeShipping: formValue.discountType === 'freeShipping',
             startDate: new Date(formValue.startDate).toISOString(),
             endDate: new Date(formValue.endDate).toISOString(),
             usageLimit: formValue.usageLimit,
