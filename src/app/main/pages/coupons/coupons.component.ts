@@ -241,6 +241,33 @@ export class CouponsComponent implements OnInit {
     }
 
     /**
+     * Copy coupon code to clipboard
+     */
+    copyCouponCode(code: string): void {
+        navigator.clipboard.writeText(code).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: `Coupon code "${code}" copied to clipboard`,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to copy coupon code',
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        });
+    }
+
+    /**
      * Delete coupon
      */
     deleteCoupon(coupon: any): void {
