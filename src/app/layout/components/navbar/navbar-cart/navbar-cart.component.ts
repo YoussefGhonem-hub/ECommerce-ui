@@ -20,7 +20,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
   public cartListLength: number = 0;
   public cartTotal: number = 0;
   public Math = Math; // Make Math available in template
-
+  baseUrl: any = environment.baseURL + '/';
   // Private
   private _unsubscribeAll: Subject<any>;
 
@@ -54,7 +54,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
           normalizedItem.productId = item.productId || item.ProductId;
           normalizedItem.productName = item.productName || item.ProductName;
           normalizedItem.brand = item.brand || item.Brand;
-          normalizedItem.mainImagePath = environment.baseURL + '/' + (item.mainImagePath || item.MainImagePath);
+          normalizedItem.mainImagePath = (item.mainImagePath || item.MainImagePath);
           normalizedItem.price = item.price || item.Price || 0;
           normalizedItem.quantity = item.quantity || item.Quantity || 0;
           normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);

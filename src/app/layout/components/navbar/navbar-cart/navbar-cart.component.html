@@ -20,8 +20,7 @@
       <ng-container *ngIf="cartItems.length > 0; else emptyCart">
         <ng-container *ngFor="let item of cartItems">
           <div class="media align-items-center">
-            <img class="d-block rounded mr-1" [src]="item.mainImagePath" [alt]="item.productName" width="62"
-              onerror="this.src='assets/images/placeholder-product.png'" />
+            <img class="d-block rounded mr-1" [src]="baseUrl+item.mainImagePath" [alt]="item.productName" width="62" />
             <div class="media-body">
               <button class="btn p-0" (click)="removeFromCart(item)">
                 <i class="ficon cart-item-remove" data-feather="x"></i>

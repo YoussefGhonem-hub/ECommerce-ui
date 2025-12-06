@@ -758,6 +758,9 @@ export class EcommerceCheckoutComponent implements OnInit {
       discountAmount = Number(Math.min(coupon.fixedAmount, originalSubTotal).toFixed(2));
     }
 
+    // Ensure discount is never negative
+    discountAmount = Math.max(discountAmount, 0);
+
     // Check for free shipping
     if (coupon.freeShipping === true) {
       freeShippingApplied = true;
@@ -768,7 +771,10 @@ export class EcommerceCheckoutComponent implements OnInit {
     this.checkoutData.discountTotal = discountAmount;
     this.checkoutData.freeShippingApplied = freeShippingApplied;
     this.checkoutData.shippingTotal = freeShippingApplied ? 0 : originalShipping;
-    this.checkoutData.total = Number((originalSubTotal - discountAmount + this.checkoutData.shippingTotal).toFixed(2));
+
+    // Calculate final total and ensure it's not negative
+    const calculatedTotal = originalSubTotal - discountAmount + this.checkoutData.shippingTotal;
+    this.checkoutData.total = Number(Math.max(calculatedTotal, 0).toFixed(2));
 
     console.log('[Coupon Applied]', {
       coupon: coupon.code,
