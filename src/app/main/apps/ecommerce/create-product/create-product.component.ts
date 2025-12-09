@@ -96,8 +96,8 @@ export class CreateProductComponent implements OnInit {
         this.http.GET(ProductAttributesController.GetAll).subscribe({
             next: (res) => {
                 // API returns array directly: [{ attributeId, attributeName, hasNullMapping, values: [{ id, value }] }]
-                if (res && Array.isArray(res)) {
-                    this.attributes = res.map((attr: any) => ({
+                if (res && Array.isArray(res.items)) {
+                    this.attributes = res.items.map((attr: any) => ({
                         attributeId: attr.attributeId || attr.id,
                         attributeName: attr.attributeName || attr.name,
                         hasNullMapping: attr.hasNullMapping || false,
