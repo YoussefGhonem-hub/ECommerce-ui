@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
+import { environment } from 'environments/environment';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
@@ -44,6 +45,10 @@ export class EcommerceDetailsComponent implements OnInit {
   public isSubmittingReview: boolean = false;
   public showReviewForm: boolean = false;
 
+  // Image carousel
+  public selectedImage: string = '';
+  public productImages: any[] = [];
+
   // Color mapping for common color names
   private readonly COLOR_PALETTE: { [key: string]: string } = {
     'Red': '#dc3545',
@@ -68,31 +73,35 @@ export class EcommerceDetailsComponent implements OnInit {
     'Maroon': '#800000'
   };
   public swiperResponsive: SwiperConfigInterface = {
-    slidesPerView: 3,
-    spaceBetween: 50,
+    slidesPerView: 5,
+    spaceBetween: 10,
     navigation: {
       nextEl: '.swiper-button-next',
       prevEl: '.swiper-button-prev'
     },
     breakpoints: {
       1024: {
-        slidesPerView: 3,
-        spaceBetween: 40
+        slidesPerView: 5,
+        spaceBetween: 10
       },
       768: {
-        slidesPerView: 3,
-        spaceBetween: 30
+        slidesPerView: 4,
+        spaceBetween: 10
       },
       640: {
-        slidesPerView: 2,
-        spaceBetween: 20
+        slidesPerView: 3,
+        spaceBetween: 10
       },
       320: {
-        slidesPerView: 1,
+        slidesPerView: 2,
         spaceBetween: 10
       }
     }
   };
+
+  selectImage(imagePath: string) {
+    this.selectedImage = imagePath;
+  }
 
   constructor(
     private _activatedRoute: ActivatedRoute,
@@ -143,6 +152,22 @@ export class EcommerceDetailsComponent implements OnInit {
         this.product.isInCart = (this.product.isInCart !== undefined) ? this.product.isInCart : (this.product.IsInCart !== undefined ? this.product.IsInCart : false);
         this.product.isInWishlist = (this.product.isInWishlist !== undefined) ? this.product.isInWishlist : (this.product.IsInWishlist !== undefined ? this.product.IsInWishlist : false);
       }
+
+      // Initialize product images
+      if (this.product?.images && this.product.images.length > 0) {
+        // Sort images by sortOrder and prepend baseURL
+        this.productImages = this.product.images.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(img => ({
+          ...img,
+          path: `${environment.baseURL}/${img.path}`
+        }));
+        // Set main image or first image as selected
+        const mainImage = this.productImages.find(img => img.isMain);
+        this.selectedImage = mainImage ? mainImage.path : this.productImages[0]?.path;
+      } else {
+        this.productImages = [];
+        this.selectedImage = this.product?.mainImagePath ? `${environment.baseURL}/${this.product.mainImagePath}` : '';
+      }
+
       // Group attributes by name
       if (this.product?.attributes && this.product.attributes.length > 0) {
         this.groupAttributesByName();
