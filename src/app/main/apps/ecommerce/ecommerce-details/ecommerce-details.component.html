@@ -8,27 +8,28 @@
         <div class="card-body">
           <div class="row my-2">
             <div class="col-12 col-md-5 mb-2 mb-md-0">
-              <!-- Main Image Display -->
-              <div class="d-flex align-items-center justify-content-center mb-2">
-                <img [src]="selectedImage || product?.mainImagePath" class="img-fluid product-img" alt="product image"
-                  style="max-height: 400px; object-fit: contain;" />
-              </div>
-
-              <!-- Image Thumbnails Carousel -->
-              <div class="product-image-carousel" *ngIf="productImages.length > 0">
-                <swiper [config]="swiperResponsive" class="swiper-responsive-breakpoints">
-                  <div class="swiper-wrapper">
-                    <div class="swiper-slide" *ngFor="let img of productImages">
-                      <div class="img-container cursor-pointer" [class.active-thumbnail]="selectedImage === img.path"
-                        (click)="selectImage(img.path)">
-                        <img [src]="img.path" class="img-fluid" alt="product thumbnail" />
+              <!-- Main Image Carousel -->
+              <div class="product-main-carousel">
+                <ng-container *ngIf="productImages.length > 1; else singleImage">
+                  <ngb-carousel [interval]="0" [showNavigationArrows]="true" [showNavigationIndicators]="true">
+                    <ng-template ngbSlide *ngFor="let img of productImages">
+                      <div class="carousel-img-wrapper">
+                        <img [src]="img.path" alt="product image" class="d-block w-100"
+                          style="max-height: 500px; object-fit: contain;" />
+                        <span class="badge badge-primary position-absolute" style="top: 10px; right: 10px;"
+                          *ngIf="img.isMain">Main Image</span>
                       </div>
-                    </div>
+                    </ng-template>
+                  </ngb-carousel>
+                </ng-container>
+
+                <!-- Single image fallback -->
+                <ng-template #singleImage>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <img [src]="selectedImage || product?.mainImagePath" class="img-fluid product-img"
+                      alt="product image" style="max-height: 500px; object-fit: contain;" />
                   </div>
-                  <!-- Add Arrows -->
-                  <div class="swiper-button-next"></div>
-                  <div class="swiper-button-prev"></div>
-                </swiper>
+                </ng-template>
               </div>
             </div>
             <div class="col-12 col-md-7">

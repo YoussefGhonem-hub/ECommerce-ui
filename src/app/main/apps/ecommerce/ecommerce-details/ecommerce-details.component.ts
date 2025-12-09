@@ -75,10 +75,7 @@ export class EcommerceDetailsComponent implements OnInit {
   public swiperResponsive: SwiperConfigInterface = {
     slidesPerView: 5,
     spaceBetween: 10,
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev'
-    },
+    navigation: true,
     breakpoints: {
       1024: {
         slidesPerView: 5,
