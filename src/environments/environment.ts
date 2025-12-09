@@ -5,9 +5,7 @@
 export const environment = {
   production: false,
   hmr: false,
-  // Use 10.0.2.2 for Android emulator (maps to host machine's localhost)
-  // Use http instead of https for development to avoid certificate issues
-  baseURL: 'http://10.0.2.2:62506'
+  baseURL: 'http://amrsherif-002-site4.ntempurl.com'
 };
 
 /*

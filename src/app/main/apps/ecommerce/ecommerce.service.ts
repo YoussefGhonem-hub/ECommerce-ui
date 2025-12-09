@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ProductsController } from '@shared/Controllers/ProductsController';
+import { WishlistController } from '@shared/Controllers/WishlistController';
+import { CartController } from '@shared/Controllers/CartController';
 
 @Injectable({
   providedIn: 'root'
@@ -78,8 +81,8 @@ export class EcommerceService implements Resolve<any> {
    */
   getProducts(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/ecommerce-products').subscribe((response: any) => {
-        this.productList = response;
+      this._httpClient.get(ProductsController.GetProducts).subscribe((response: any) => {
+        this.productList = response.data || response;
         this.sortProduct('featured'); // Default shorting
         resolve(this.productList);
       }, reject);
@@ -91,8 +94,8 @@ export class EcommerceService implements Resolve<any> {
    */
   getWishlist(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/ecommerce-userWishlist').subscribe((response: any) => {
-        this.wishlist = response;
+      this._httpClient.get(WishlistController.GetWishlistItems).subscribe((response: any) => {
+        this.wishlist = response.data || response || [];
         this.onWishlistChange.next(this.wishlist);
         resolve(this.wishlist);
       }, reject);
@@ -104,8 +107,8 @@ export class EcommerceService implements Resolve<any> {
    */
   getCartList(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/ecommerce-userCart').subscribe((response: any) => {
-        this.cartList = response;
+      this._httpClient.get(CartController.GetCartItems).subscribe((response: any) => {
+        this.cartList = response.data || response || [];
 
         this.onCartListChange.next(this.cartList);
         resolve(this.cartList);
@@ -118,8 +121,12 @@ export class EcommerceService implements Resolve<any> {
    */
   getSelectedProduct(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/ecommerce-products?id=' + this.idHandel).subscribe((response: any) => {
-        this.selectedProduct = response;
+      if (!this.idHandel) {
+        resolve(null);
+        return;
+      }
+      this._httpClient.get(ProductsController.GetProductId(this.idHandel)).subscribe((response: any) => {
+        this.selectedProduct = response.data || response;
         this.onSelectedProductChange.next(this.selectedProduct);
         resolve(this.selectedProduct);
       }, reject);
@@ -131,11 +138,11 @@ export class EcommerceService implements Resolve<any> {
    */
   getRelatedProducts(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get('api/ecommerce-relatedProducts').subscribe((response: any) => {
-        this.relatedProducts = response;
-        this.onRelatedProductsChange.next(this.relatedProducts);
-        resolve(this.relatedProducts);
-      }, reject);
+      // For now, return empty array or subset of products
+      // You can implement related products logic on backend later
+      this.relatedProducts = [];
+      this.onRelatedProductsChange.next(this.relatedProducts);
+      resolve(this.relatedProducts);
     });
   }
 

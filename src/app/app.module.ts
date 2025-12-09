@@ -26,6 +26,7 @@ import { fakeBackendProvider } from 'app/auth/helpers'; // used to create fake b
 import { JwtInterceptor, ErrorInterceptor } from 'app/auth/helpers';
 import { GuestUserInterceptor } from '@shared/interceptors/guest-user.interceptor';
 import { ToastrInterceptor } from './shared/interceptors/toastr.interceptor';
+import { BaseUrlInterceptor } from '@shared/interceptors/base-url.interceptor';
 import { AppComponent } from 'app/app.component';
 import { LayoutModule } from 'app/layout/layout.module';
 import { ContentHeaderModule } from 'app/layout/components/content-header/content-header.module';
@@ -106,10 +107,10 @@ const appRoutes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    HttpClientInMemoryWebApiModule.forRoot(FakeDbService, {
-      delay: 0,
-      passThruUnknownUrl: true
-    }),
+    // HttpClientInMemoryWebApiModule.forRoot(FakeDbService, {
+    //   delay: 0,
+    //   passThruUnknownUrl: true
+    // }),  // COMMENTED OUT - Using real API
     RouterModule.forRoot(appRoutes, {
       scrollPositionRestoration: 'enabled', // Add options right here
       relativeLinkResolution: 'legacy'
@@ -129,13 +130,14 @@ const appRoutes: Routes = [
   ],
 
   providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true }, // Must be first to prepend base URL
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: GuestUserInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ToastrInterceptor, multi: true },
 
     // ! IMPORTANT: Provider used to create fake backend, comment while using real API
-    fakeBackendProvider
+    // fakeBackendProvider  // COMMENTED OUT - Using real API
   ],
   entryComponents: [BasicCustomContextMenuComponent, AnimatedCustomContextMenuComponent],
   bootstrap: [AppComponent]
