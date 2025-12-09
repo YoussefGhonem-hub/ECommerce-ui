@@ -72,8 +72,8 @@ export class UpdateProductComponent implements OnInit {
             this.http.GET(ProductAttributesController.GetAll).subscribe({
                 next: (res: any) => {
                     // API returns array directly: [{ attributeId, attributeName, hasNullMapping, values: [{ id, value }] }]
-                    if (res && Array.isArray(res)) {
-                        this.availableAttributes = res.map((attr: any) => {
+                    if (res && Array.isArray(res.items)) {
+                        this.availableAttributes = res.items.map((attr: any) => {
                             const attributeId = attr.attributeId || attr.id || null;
                             const attributeName = attr.attributeName || attr.name || '';
                             const values = Array.isArray(attr.values) ? attr.values.map((v: any) => ({
