@@ -177,7 +177,8 @@ export class EcommerceDetailsComponent implements OnInit {
         rp.nameAr = rp.nameAr || rp.NameAr || '';
         rp.price = rp.price || rp.Price || 0;
         rp.brand = rp.brand || rp.Brand || '';
-        rp.mainImagePath = rp.mainImagePath || rp.mainImagePath || rp.mainImage || rp.image || '';
+        const imagePath = rp.mainImagePath || rp.mainImagePath || rp.mainImage || rp.image || '';
+        rp.mainImagePath = imagePath ? `${environment.baseURL}/${imagePath}` : '';
         rp.averageRating = rp.averageRating || rp.AverageRating || rp.averageRating || rp.rating || 0;
         rp.isInCart = (rp.isInCart !== undefined) ? rp.isInCart : (rp.IsInCart !== undefined ? rp.IsInCart : false);
         rp.isInWishlist = (rp.isInWishlist !== undefined) ? rp.isInWishlist : (rp.IsInWishlist !== undefined ? rp.IsInWishlist : false);
