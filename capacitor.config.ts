@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Ecommerce App',
   webDir: 'dist/vuexy',
   server: {
-    androidScheme: 'https',
-    iosScheme: 'https',
+    androidScheme: 'http',
+    iosScheme: 'http',
     // For development, you can set your API URL here
     // url: 'http://your-api-url',
     cleartext: true

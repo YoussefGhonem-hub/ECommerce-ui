@@ -45,7 +45,7 @@ export class NavbarBookmarkComponent implements OnInit {
    * @param document
    * @param _searchService
    */
-  constructor(@Inject(DOCUMENT) private document, public _searchService: SearchService) {}
+  constructor(@Inject(DOCUMENT) private document, public _searchService: SearchService) { }
 
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
@@ -184,9 +184,9 @@ export class NavbarBookmarkComponent implements OnInit {
   ngOnInit(): void {
     this._searchService.onApiDataChange.subscribe(res => {
       this.apiData = res;
-      this.pages = this.apiData[0].data;
-      this.bookmarkedItems = this.pages.filter(page => page.isBookmarked === true);
-      this.bookmarkSearchLimit = this.apiData[0].bookmarkLimit;
+      this.pages = this.apiData[0]?.data;
+      this.bookmarkedItems = this.pages?.filter(page => page.isBookmarked === true);
+      this.bookmarkSearchLimit = this.apiData[0]?.bookmarkLimit;
     });
     this._searchService.onIsBookmarkOpenChange.subscribe(res => {
       this.openBookmarkRef = res;

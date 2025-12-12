@@ -6,6 +6,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { WishlistController } from '@shared/Controllers/WishlistController';
 import { CartController } from '@shared/Controllers/CartController';
+import { GuestUserService } from '@shared/services/guest-user.service';
+import { AuthenticationService } from 'app/auth/service/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +47,11 @@ export class EcommerceService implements Resolve<any> {
    *
    * @param {HttpClient} _httpClient
    */
-  constructor(private _httpClient: HttpClient) {
+  constructor(
+    private _httpClient: HttpClient,
+    private guestUserService: GuestUserService,
+    private authService: AuthenticationService
+  ) {
     this.onProductListChange = new BehaviorSubject({});
     this.onRelatedProductsChange = new BehaviorSubject({});
     this.onWishlistChange = new BehaviorSubject({});
@@ -94,7 +100,16 @@ export class EcommerceService implements Resolve<any> {
    */
   getWishlist(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get(WishlistController.GetWishlistItems).subscribe((response: any) => {
+      // Add guestId as query parameter if user is not authenticated
+      const currentUser = this.authService.currentUserValue;
+      let url = WishlistController.GetWishlistItems;
+
+      if (!currentUser) {
+        const guestId = this.guestUserService.getGuestId();
+        url = `${url}?guestId=${guestId}`;
+      }
+
+      this._httpClient.get(url).subscribe((response: any) => {
         this.wishlist = response.data || response || [];
         this.onWishlistChange.next(this.wishlist);
         resolve(this.wishlist);
@@ -107,7 +122,16 @@ export class EcommerceService implements Resolve<any> {
    */
   getCartList(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-      this._httpClient.get(CartController.GetCartItems).subscribe((response: any) => {
+      // Add guestId as query parameter if user is not authenticated
+      const currentUser = this.authService.currentUserValue;
+      let url = CartController.GetCartItems;
+
+      if (!currentUser) {
+        const guestId = this.guestUserService.getGuestId();
+        url = `${url}?guestId=${guestId}`;
+      }
+
+      this._httpClient.get(url).subscribe((response: any) => {
         this.cartList = response.data || response || [];
 
         this.onCartListChange.next(this.cartList);
@@ -166,9 +190,9 @@ export class EcommerceService implements Resolve<any> {
       return 'id';
     })();
 
-    const sortedData = this.productList.sort(this.sortRef(sortByKey));
-    if (sortDesc) sortedData.reverse();
-    this.productList = sortedData;
+    // const sortedData = this.productList?.sort(this.sortRef(sortByKey));
+    // if (sortDesc) sortedData.reverse();
+    // this.productList = sortedData;
     this.onProductListChange.next(this.productList);
   }
 

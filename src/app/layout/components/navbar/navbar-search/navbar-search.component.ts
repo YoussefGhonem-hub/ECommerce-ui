@@ -47,7 +47,7 @@ export class NavbarSearchComponent implements OnInit {
     private _elementRef: ElementRef,
     private router: Router,
     public _searchService: SearchService
-  ) {}
+  ) { }
 
   // Public Methods
   // -----------------------------------------------------------------------------------------------------
@@ -135,10 +135,10 @@ export class NavbarSearchComponent implements OnInit {
   ngOnInit(): void {
     this._searchService.onApiDataChange.subscribe(res => {
       this.apiData = res;
-      this.pages = this.apiData[0].data;
-      this.pageSearchLimit = this.apiData[0].searchLimit;
-      this.files = this.apiData[1].data;
-      this.contacts = this.apiData[2].data;
+      this.pages = this.apiData[0]?.data;
+      this.pageSearchLimit = this.apiData[0]?.searchLimit;
+      this.files = this.apiData[1]?.data;
+      this.contacts = this.apiData[2]?.data;
     });
   }
 }
