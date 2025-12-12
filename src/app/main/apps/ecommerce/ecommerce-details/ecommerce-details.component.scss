@@ -274,3 +274,150 @@ width: 30px;
 .cursor-pointer {
   cursor: pointer;
 }
+
+// Product Image Carousel Styling
+.product-image-carousel {
+  margin-top: 1rem;
+  
+  .swiper-container {
+    position: relative;
+    padding: 0 35px;
+  }
+  
+  .img-container {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+    
+    &:hover {
+      border-color: #7367f0;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(115, 103, 240, 0.2);
+    }
+    
+    &.active-thumbnail {
+      border-color: #7367f0;
+      box-shadow: 0 2px 12px rgba(115, 103, 240, 0.3);
+    }
+    
+    img {
+      width: 100%;
+      height: 80px;
+      object-fit: contain;
+      display: block;
+    }
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: #7367f0;
+    cursor: pointer;
+    
+    &::after {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    &:hover {
+      background: #7367f0;
+      color: #fff;
+    }
+    
+    &.swiper-button-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+  
+  .swiper-button-prev {
+    left: 0;
+  }
+  
+  .swiper-button-next {
+    right: 0;
+  }
+}
+
+.product-img {
+  border-radius: 8px;
+}
+
+// Product Main Carousel Styling
+.product-main-carousel {
+  .carousel-img-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+    min-height: 400px;
+    
+    img {
+      border-radius: 8px;
+    }
+  }
+  
+  // Carousel controls styling
+  ::ng-deep {
+    .carousel-control-prev,
+    .carousel-control-next {
+      width: 50px;
+      height: 50px;
+      background: rgba(40, 48, 70, 0.9);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.8;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        opacity: 1;
+        background: rgba(40, 48, 70, 1);
+      }
+      
+      .carousel-control-prev-icon,
+      .carousel-control-next-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    
+    .carousel-control-prev {
+      left: 10px;
+    }
+    
+    .carousel-control-next {
+      right: 10px;
+    }
+    
+    .carousel-indicators {
+      bottom: -35px;
+      
+      li {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #d1d1d1;
+        border: none;
+        margin: 0 5px;
+        
+        &.active {
+          background-color: #7367f0;
+        }
+      }
+    }
+  }
+}

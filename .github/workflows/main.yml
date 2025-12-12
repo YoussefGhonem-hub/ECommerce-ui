@@ -33,5 +33,5 @@ jobs:
           username: amrsherif-002
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/vuexy/
-          server-dir: /dubaidashbord/
+          server-dir: /ecommerce-ui/
           port: 21

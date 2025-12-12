@@ -7,9 +7,29 @@
         <!-- Product Details starts -->
         <div class="card-body">
           <div class="row my-2">
-            <div class="col-12 col-md-5 d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              <div class="d-flex align-items-center justify-content-center">
-                <img [src]="product?.mainImagePath" class="img-fluid product-img" alt="product image" />
+            <div class="col-12 col-md-5 mb-2 mb-md-0">
+              <!-- Main Image Carousel -->
+              <div class="product-main-carousel">
+                <ng-container *ngIf="productImages.length > 1; else singleImage">
+                  <ngb-carousel [interval]="0" [showNavigationArrows]="true" [showNavigationIndicators]="true">
+                    <ng-template ngbSlide *ngFor="let img of productImages">
+                      <div class="carousel-img-wrapper">
+                        <img [src]="img.path" alt="product image" class="d-block w-100"
+                          style="max-height: 500px; object-fit: contain;" />
+                        <span class="badge badge-primary position-absolute" style="top: 10px; right: 10px;"
+                          *ngIf="img.isMain">Main Image</span>
+                      </div>
+                    </ng-template>
+                  </ngb-carousel>
+                </ng-container>
+
+                <!-- Single image fallback -->
+                <ng-template #singleImage>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <img [src]="selectedImage || product?.mainImagePath" class="img-fluid product-img"
+                      alt="product image" style="max-height: 500px; object-fit: contain;" />
+                  </div>
+                </ng-template>
               </div>
             </div>
             <div class="col-12 col-md-7">
@@ -84,7 +104,7 @@
 
               <hr />
               <div class="d-flex flex-column flex-sm-row pt-1">
-                <ng-container *ngxPermissionsOnly="['Customer']">
+                <ng-container *ngxPermissionsExcept="['Admin']">
                   <a *ngIf="product?.isInCart !== true" href="javascript:void(0)"
                     class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="addToCart(product)">
                     <i data-feather="shopping-cart" class="mr-25"></i>
