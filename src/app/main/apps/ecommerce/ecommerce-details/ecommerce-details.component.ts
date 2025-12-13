@@ -48,6 +48,8 @@ export class EcommerceDetailsComponent implements OnInit {
   // Image carousel
   public selectedImage: string = '';
   public productImages: any[] = [];
+  public isImageMaximized: boolean = false;
+  public maximizedImage: string = '';
 
   // Color mapping for common color names
   private readonly COLOR_PALETTE: { [key: string]: string } = {
@@ -98,6 +100,18 @@ export class EcommerceDetailsComponent implements OnInit {
 
   selectImage(imagePath: string) {
     this.selectedImage = imagePath;
+  }
+
+  maximizeImage(imagePath: string) {
+    this.maximizedImage = imagePath;
+    this.isImageMaximized = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeMaximizedImage() {
+    this.isImageMaximized = false;
+    this.maximizedImage = '';
+    document.body.style.overflow = 'auto';
   }
 
   constructor(
