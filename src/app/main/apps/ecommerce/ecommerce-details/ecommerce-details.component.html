@@ -13,7 +13,7 @@
                 <ng-container *ngIf="productImages.length > 1; else singleImage">
                   <ngb-carousel [interval]="0" [showNavigationArrows]="true" [showNavigationIndicators]="true">
                     <ng-template ngbSlide *ngFor="let img of productImages">
-                      <div class="carousel-img-wrapper">
+                      <div class="carousel-img-wrapper" (click)="maximizeImage(img.path)" style="cursor: pointer;">
                         <img [src]="img.path" alt="product image" class="d-block w-100"
                           style="max-height: 500px; object-fit: contain;" />
                         <span class="badge badge-primary position-absolute" style="top: 10px; right: 10px;"
@@ -25,7 +25,8 @@
 
                 <!-- Single image fallback -->
                 <ng-template #singleImage>
-                  <div class="d-flex align-items-center justify-content-center">
+                  <div class="d-flex align-items-center justify-content-center"
+                    (click)="maximizeImage(selectedImage || product?.mainImagePath)" style="cursor: pointer;">
                     <img [src]="selectedImage || product?.mainImagePath" class="img-fluid product-img"
                       alt="product image" style="max-height: 500px; object-fit: contain;" />
                   </div>
@@ -273,52 +274,56 @@
             <h4>Related Products</h4>
             <p class="card-text">People also search for this items</p>
           </div>
-          <div class="swiper-responsive-breakpoints swiper-container px-4 py-2" [swiper]="swiperResponsive">
-            <div class="swiper-wrapper mb-2">
-              <div class="swiper-slide" *ngFor="let relatedProduct of relatedProducts">
-                <div class="card h-100">
-                  <div class="card-body text-center">
-                    <div class="item-heading">
-                      <h5 class="text-truncate mb-0">{{ relatedProduct?.nameEn || relatedProduct?.name }}</h5>
-                      <small class="text-body">by {{ relatedProduct?.brand }}</small>
+          <div class="row">
+            <div class="col-6 col-md-3 mb-3" *ngFor="let relatedProduct of relatedProducts.slice(0, 4)">
+              <div class="card h-100">
+                <div class="card-body text-center">
+                  <div class="item-heading">
+                    <h5 class="text-truncate mb-0">{{ relatedProduct?.nameEn || relatedProduct?.name }}</h5>
+                    <small class="text-body">by {{ relatedProduct?.brand }}</small>
+                  </div>
+                  <div class="img-container mx-auto py-75">
+                    <img [src]="relatedProduct?.mainImagePath || relatedProduct?.image || relatedProduct?.mainImage"
+                      class="img-fluid" alt="image" />
+                  </div>
+                  <div class="item-meta">
+                    <div class="rating rating-sm">
+                      <ngb-rating [rate]="relatedProduct?.averageRating || relatedProduct?.rating || 0"
+                        [readonly]="true" [max]="5" class="outline-none">
+                        <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
+                            [class.fa-star]="fill === 100"></span></ng-template>
+                      </ngb-rating>
                     </div>
-                    <div class="img-container mx-auto py-75">
-                      <img [src]="relatedProduct?.mainImagePath || relatedProduct?.image || relatedProduct?.mainImage"
-                        class="img-fluid" alt="image" />
-                    </div>
-                    <div class="item-meta">
-                      <div class="rating rating-sm">
-                        <ngb-rating [rate]="relatedProduct?.averageRating || relatedProduct?.rating || 0"
-                          [readonly]="true" [max]="5" class="outline-none">
-                          <ng-template let-fill="fill" let-index="index"><span class="fa fa-star-o mr-25"
-                              [class.fa-star]="fill === 100"></span></ng-template>
-                        </ngb-rating>
-                      </div>
-                      <p class="card-text text-primary mb-0">{{ relatedProduct?.price }} EGP</p>
-                      <div class="mt-2">
-                        <a [routerLink]="['/apps/e-commerce/details', relatedProduct?.id]"
-                          class="btn btn-sm btn-primary mr-1">
-                          <i data-feather="eye" class="mr-25"></i>
-                          <span>See Details</span>
-                        </a>
-                        <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
-                          <i class="fa"
-                            [ngClass]="relatedProduct?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
-                        </button>
-                      </div>
+                    <p class="card-text text-primary mb-0">{{ relatedProduct?.price }} EGP</p>
+                    <div class="mt-2">
+                      <a [routerLink]="['/apps/e-commerce/details', relatedProduct?.id]"
+                        class="btn btn-sm btn-primary mr-1">
+                        <i data-feather="eye" class="mr-25"></i>
+                      </a>
+                      <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
+                        <i class="fa"
+                          [ngClass]="relatedProduct?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Add Arrows -->
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
           </div>
         </div>
         <!-- Related Products ends -->
       </div>
     </section>
     <!-- app e-commerce details end -->
+
+    <!-- Image Maximized Modal -->
+    <div class="image-modal-overlay" *ngIf="isImageMaximized" (click)="closeMaximizedImage()">
+      <div class="image-modal-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeMaximizedImage()">
+          <i data-feather="x"></i>
+        </button>
+        <img [src]="maximizedImage" alt="Maximized product image" class="maximized-image" />
+      </div>
+    </div>
   </div>
 </div>
