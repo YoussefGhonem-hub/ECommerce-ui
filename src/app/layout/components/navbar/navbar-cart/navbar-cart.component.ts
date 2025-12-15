@@ -58,13 +58,13 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
           normalizedItem.price = item.price || item.Price || 0;
           normalizedItem.quantity = item.quantity || item.Quantity || 0;
           normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
-          
+
           // Normalize product attributes
           normalizedItem.productAttributes = (item.productAttributes || item.ProductAttributes || []).map((attr: any) => ({
             attributeName: attr.attributeName || attr.AttributeName,
             value: attr.value || attr.Value
           }));
-          
+
           return normalizedItem;
         });
 
