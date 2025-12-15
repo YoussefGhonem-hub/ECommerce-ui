@@ -123,8 +123,15 @@ export class EcommerceDetailsComponent implements OnInit {
     private authService: AuthenticationService,
     private router: Router
   ) {
+    // Subscribe to route params changes to reload data when navigating to different products
     this._activatedRoute.params.subscribe(params => {
       this.productId = params['id'];
+
+      // Reload product data whenever the product ID changes
+      if (this.productId) {
+        this.getProductId();
+        this.loadReviews();
+      }
     });
   }
 
