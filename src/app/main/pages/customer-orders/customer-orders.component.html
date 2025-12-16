@@ -141,8 +141,24 @@
                                                     }}</span></p>
                                             <p class="mb-1"><strong>Tracking:</strong> {{ order.trackingNumber || '-' }}
                                             </p>
-                                            <p class="mb-0"><strong>Address:</strong> {{ order.shippingAddress?.fullName
-                                                }} — {{ order.shippingAddress?.street }}</p>
+                                            <div *ngIf="order.shippingAddress">
+                                                <p class="mb-1"><strong>Full Name:</strong> {{
+                                                    order.shippingAddress.fullName }}</p>
+                                                <p class="mb-1"><strong>Mobile:</strong> {{
+                                                    order.shippingAddress.mobileNumber }}</p>
+                                                <p class="mb-1"><strong>Street:</strong> {{ order.shippingAddress.street
+                                                    }}</p>
+                                                <p class="mb-1"><strong>House No:</strong> {{
+                                                    order.shippingAddress.houseNo }}</p>
+                                                <p class="mb-1"><strong>City:</strong> {{
+                                                    order.shippingAddress.cityNameEn || order.shippingAddress.cityNameAr
+                                                    }}</p>
+                                                <p class="mb-0"><strong>Country:</strong> {{
+                                                    order.shippingAddress.countryNameEn ||
+                                                    order.shippingAddress.countryNameAr }}</p>
+                                            </div>
+                                            <p class="mb-0 text-muted" *ngIf="!order.shippingAddress">No shipping
+                                                address available</p>
                                         </div>
                                     </ng-template>
                                 </li>
