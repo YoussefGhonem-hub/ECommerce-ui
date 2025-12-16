@@ -7,7 +7,7 @@
   <div class="search-input" [class.open]="openSearchRef === true">
     <!-- Search Input -->
     <div class="search-input-icon"><span [data-feather]="'search'"></span></div>
-    <input class="form-control input" type="text" placeholder="Explore API Brand..." tabindex="-1" data-search="search"
+    <input class="form-control input" type="text" placeholder="Explore ABI Brand..." tabindex="-1" data-search="search"
       (keyup)="searchUpdate($event)" [(ngModel)]="searchText" #openSearch /><button class="btn search-input-close p-0"
       (click)="toggleSearch()"><span [data-feather]="'x'"></span></button>
 

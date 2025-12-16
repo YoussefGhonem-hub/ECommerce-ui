@@ -1,4 +1,4 @@
-<div *ngIf="horizontalMenu" class="navbar-header d-xl-block d-none">
+<div *ngIf="horizontalMenu" class="navbar-header ">
   <!-- Navbar brand -->
   <ul class="nav navbar-nav flex-row">
     <li class="nav-item">
@@ -31,7 +31,7 @@
 
   <ul class="nav navbar-nav align-items-center ml-auto">
     <!-- Language selection -->
-    <li ngbDropdown class="nav-item dropdown dropdown-language">
+    <!-- <li ngbDropdown class="nav-item dropdown dropdown-language">
       <a class="nav-link dropdown-toggle" id="dropdown-flag" ngbDropdownToggle>
         <i class="flag-icon flag-icon-{{ languageOptions[_translateService.currentLang].flag }}"></i><span
           class="selected-language">{{ languageOptions[_translateService.currentLang].title }}</span></a>
@@ -40,11 +40,11 @@
           <i class="flag-icon flag-icon-{{ languageOptions[lang].flag }}"></i> {{ languageOptions[lang].title }}
         </a>
       </div>
-    </li>
+    </li> -->
     <!--/ Language selection -->
 
     <!-- Toggle skin -->
-    <li class="nav-item d-none d-lg-block">
+    <li class="nav-item">
       <a class="nav-link nav-link-style btn" (click)="toggleDarkSkin()">
         <span [ngClass]="currentSkin === 'dark' ? 'icon-sun' : 'icon-moon'" class="ficon font-medium-5 feather"></span>
       </a>
@@ -52,7 +52,7 @@
     <!--/ Toggle skin -->
 
     <!-- Search -->
-    <app-navbar-search></app-navbar-search>
+    <!-- <app-navbar-search></app-navbar-search> -->
     <!--/ Search -->
 
     <!-- Cart -->
