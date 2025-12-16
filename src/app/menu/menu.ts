@@ -90,6 +90,15 @@ export const menu: CoreMenu[] = [
         type: 'item',
         icon: 'tag',
         url: 'admin/coupons'
+      },
+      {
+        id: 'Shipping',
+        role: ['Admin'],
+        title: 'Shipping',
+        translate: 'MENU.APPS.ECOMMERCE.SHIPPING',
+        type: 'item',
+        icon: 'truck',
+        url: 'admin/shipping'
       }
 
     ]

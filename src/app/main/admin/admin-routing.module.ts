@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CouponsComponent } from '../pages/coupons/coupons.component';
 import { CreateCouponComponent } from '../pages/coupons/create-coupon/create-coupon.component';
+import { ShippingManagementComponent } from './shipping/shipping-management.component';
 
 const routes: Routes = [
     {
@@ -16,6 +17,10 @@ const routes: Routes = [
     {
         path: 'coupons/edit/:id',
         component: CreateCouponComponent
+    },
+    {
+        path: 'shipping',
+        component: ShippingManagementComponent
     }
 ];
 
