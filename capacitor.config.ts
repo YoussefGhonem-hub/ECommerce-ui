@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.ecommerce.app',
-  appName: 'ABI-Store',
+  appName: 'ABI-Brand',
   webDir: 'dist/vuexy',
   server: {
     androidScheme: 'http',
