@@ -53,14 +53,17 @@ export class CartService {
                     normalizedItem.quantity = item.quantity || item.Quantity || 0;
                     normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
 
-                    // Normalize product attributes - filter only selected attributes
+                    // Normalize product attributes - only include actually selected attributes
+                    // Backend should send only selected attributes, but we filter to be safe
                     const allAttributes = item.productAttributes || item.ProductAttributes || [];
                     normalizedItem.productAttributes = allAttributes
                         .filter((attr: any) => {
-                            // Only include attributes that are marked as selected or have a value
-                            // If isSelected exists, use it; otherwise include all (backend should send only selected)
-                            const isSelected = attr.isSelected !== undefined ? attr.isSelected : true;
-                            return isSelected && (attr.value || attr.Value);
+                            // Only include if explicitly marked as selected, or if it has both IDs (indicating it was selected)
+                            const hasIds = (attr.attributeId || attr.AttributeId) && (attr.valueId || attr.ValueId);
+                            const isMarkedSelected = attr.isSelected === true;
+
+                            // Include only if: marked as selected OR has both IDs (means it was selected when adding to cart)
+                            return isMarkedSelected || hasIds;
                         })
                         .map((attr: any) => ({
                             attributeId: attr.attributeId || attr.AttributeId,
