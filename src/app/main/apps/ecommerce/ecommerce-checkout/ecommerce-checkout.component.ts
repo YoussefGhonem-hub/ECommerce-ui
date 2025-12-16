@@ -13,6 +13,7 @@ import { OrderController } from '@shared/Controllers/OrderController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { CartService } from '@shared/services/cart.service';
 import { AuthenticationService } from 'app/auth/service/authentication.service';
+import { environment } from 'environments/environment';
 
 // Address related interfaces
 interface CountryLookupDto {
@@ -616,41 +617,38 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   getCheckoutCommand() {
     const command: any = {
-      shippingAddressId: this.selectedAddressId,
+      shippingAddressId: this.selectedAddressId || null,
       couponCode: this.checkoutData.appliedCoupon?.code || null,
-      shippingMethodId: null, // Add shipping method selection later if needed
+      shippingMethodId: null,
       itemSelections: this.cartItems.map(item => {
-        // Only include the currently selected attribute for each attribute group
+        // Build attributes array from productAttributes
         let attributes: any[] = [];
-        if (item.groupedAttributes && item.productAttributes) {
-          // Build a map to ensure only one valueId per attributeId
-          const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
-          Object.keys(item.groupedAttributes).forEach(attrName => {
-            const selectedValue = item.productAttributes[attrName];
-            const attrObj = (item.groupedAttributes[attrName] || []).find(a => a.value === selectedValue);
-            if (attrObj && attrObj.attributeId) {
-              attrMap[attrObj.attributeId] = {
-                attributeId: attrObj.attributeId,
-                valueId: attrObj.valueId || null
+
+        if (Array.isArray(item.productAttributes) && item.productAttributes.length > 0) {
+          // Map productAttributes to the expected format with proper Guid handling
+          const attrMap: { [key: string]: { attributeId: string, valueId: string | null } } = {};
+
+          item.productAttributes.forEach((attr: any) => {
+            const attributeId = attr.attributeId || attr.AttributeId;
+            const valueId = attr.valueId || attr.ValueId || null;
+
+            // Only include if we have valid attributeId
+            if (attributeId) {
+              attrMap[attributeId] = {
+                attributeId: attributeId,
+                valueId: valueId
               };
             }
           });
-          attributes = Object.values(attrMap);
-        } else if (Array.isArray(item.productAttributes)) {
-          // fallback for old structure
-          const attrMap: { [attributeId: string]: { attributeId: string, valueId: string } } = {};
-          item.productAttributes
-            .filter(attr => attr && attr.attributeId)
-            .forEach(attr => {
-              const attributeId = attr.attributeId || attr.AttributeId;
-              const valueId = attr.valueId || attr.ValueId || null;
-              attrMap[attributeId] = { attributeId, valueId };
-            });
+
           attributes = Object.values(attrMap);
         }
+
+        console.log('[Checkout] Item attributes for', item.productName, ':', attributes);
+
         return {
           cartItemId: item.id,
-          quantity: item.quantity,
+          quantity: parseInt(item.quantity) || 1,
           attributes: attributes
         };
       })
@@ -662,13 +660,17 @@ export class EcommerceCheckoutComponent implements OnInit {
       command.newAddress = {
         countryId: formValue.countryId,
         cityId: formValue.cityId,
-        street: formValue.street,
-        fullName: formValue.fullName,
-        mobileNumber: formValue.mobileNumber,
-        houseNo: formValue.houseNo || null,
+        street: formValue.street?.trim() || '',
+        fullName: formValue.fullName?.trim() || '',
+        mobileNumber: formValue.mobileNumber?.trim() || '',
+        houseNo: formValue.houseNo?.trim() || null,
         isDefault: false
       };
+
+      console.log('[Checkout] New address included:', command.newAddress);
     }
+
+    console.log('[Checkout] Final command:', JSON.stringify(command, null, 2));
 
     return command;
   }
@@ -698,6 +700,26 @@ export class EcommerceCheckoutComponent implements OnInit {
       return;
     }
 
+    // Validate address selection
+    if (!this.selectedAddressId && !this.isAddingNewAddress) {
+      alert('Please select a shipping address or add a new one.');
+      return;
+    }
+
+    // Validate new address form if adding new address
+    if (this.isAddingNewAddress && !this.addressForm.valid) {
+      alert('Please fill in all required address fields.');
+      this.addressForm.markAllAsTouched();
+      return;
+    }
+
+    // Validate cart is not empty
+    if (!this.cartItems || this.cartItems.length === 0) {
+      alert('Your cart is empty. Please add items before checkout.');
+      this.router.navigate(['/apps/e-commerce/shop']);
+      return;
+    }
+
     const checkoutCommand = this.getCheckoutCommand();
 
     console.log('[Checkout] Submitting order:', checkoutCommand);
@@ -708,17 +730,21 @@ export class EcommerceCheckoutComponent implements OnInit {
       (res: any) => {
         if (res && res.succeeded) {
           console.log('[Checkout] Order placed successfully:', res.data);
+          alert('Order placed successfully!');
           // Clear the cart in the navbar
           this.cartService.refreshCart();
           // Redirect to product list/shop page
           this.router.navigate(['/apps/e-commerce/shop']);
         } else {
           console.error('[Checkout] Order submission failed:', res.message);
+          alert('Order submission failed: ' + (res.message || 'Unknown error'));
         }
         this.isSubmittingOrder = false;
       },
       (error) => {
         console.error('[Checkout] Order submission error:', error);
+        const errorMessage = error?.error?.message || error?.message || 'An error occurred while placing your order';
+        alert('Error: ' + errorMessage);
         this.isSubmittingOrder = false;
       }
     );
@@ -902,8 +928,11 @@ export class EcommerceCheckoutComponent implements OnInit {
    */
   getItemImage(item: any): string {
     if (item.imageUrls && item.imageUrls.length > 0) {
-      return item.imageUrls[0];
+      return `${environment.baseURL}/${item.imageUrls[0]}`;
     }
-    return item.mainImagePath || 'assets/images/placeholder-product.png';
+    if (item.mainImagePath) {
+      return `${environment.baseURL}/${item.mainImagePath}`;
+    }
+    return 'assets/images/placeholder-product.png';
   }
 }

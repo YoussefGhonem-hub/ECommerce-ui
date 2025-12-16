@@ -68,6 +68,8 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
               return isSelected && (attr.value || attr.Value);
             })
             .map((attr: any) => ({
+              attributeId: attr.attributeId || attr.AttributeId,
+              valueId: attr.valueId || attr.ValueId,
               attributeName: attr.attributeName || attr.AttributeName,
               value: attr.value || attr.Value,
               isSelected: true
