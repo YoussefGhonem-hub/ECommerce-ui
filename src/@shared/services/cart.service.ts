@@ -53,11 +53,20 @@ export class CartService {
                     normalizedItem.quantity = item.quantity || item.Quantity || 0;
                     normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
 
-                    // Normalize product attributes
-                    normalizedItem.productAttributes = (item.productAttributes || item.ProductAttributes || []).map((attr: any) => ({
-                        attributeName: attr.attributeName || attr.AttributeName,
-                        value: attr.value || attr.Value
-                    }));
+                    // Normalize product attributes - filter only selected attributes
+                    const allAttributes = item.productAttributes || item.ProductAttributes || [];
+                    normalizedItem.productAttributes = allAttributes
+                        .filter((attr: any) => {
+                            // Only include attributes that are marked as selected or have a value
+                            // If isSelected exists, use it; otherwise include all (backend should send only selected)
+                            const isSelected = attr.isSelected !== undefined ? attr.isSelected : true;
+                            return isSelected && (attr.value || attr.Value);
+                        })
+                        .map((attr: any) => ({
+                            attributeName: attr.attributeName || attr.AttributeName,
+                            value: attr.value || attr.Value,
+                            isSelected: true
+                        }));
 
                     return normalizedItem;
                 });
