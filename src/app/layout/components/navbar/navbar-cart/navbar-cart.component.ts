@@ -58,6 +58,26 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
           normalizedItem.price = item.price || item.Price || 0;
           normalizedItem.quantity = item.quantity || item.Quantity || 0;
           normalizedItem.subTotal = item.subTotal || item.SubTotal || (normalizedItem.price * normalizedItem.quantity);
+
+          // Normalize product attributes - only include actually selected attributes
+          // Only include attributes that have BOTH attributeId and valueId (indicating actual selection)
+          const allAttributes = item.productAttributes || item.ProductAttributes || [];
+          normalizedItem.productAttributes = allAttributes
+            .filter((attr: any) => {
+              const attributeId = attr.attributeId || attr.AttributeId;
+              const valueId = attr.valueId || attr.ValueId;
+
+              // Must have both IDs to be considered a selected attribute
+              return attributeId && valueId;
+            })
+            .map((attr: any) => ({
+              attributeId: attr.attributeId || attr.AttributeId,
+              valueId: attr.valueId || attr.ValueId,
+              attributeName: attr.attributeName || attr.AttributeName,
+              value: attr.value || attr.Value,
+              isSelected: true
+            }));
+
           return normalizedItem;
         });
 

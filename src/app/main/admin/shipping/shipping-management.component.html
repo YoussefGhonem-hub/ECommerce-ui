@@ -1,0 +1,110 @@
+<div class="content-wrapper container-xxl p-0">
+    <div class="content-header row">
+        <div class="content-header-left col-md-9 col-12 mb-2">
+            <div class="row breadcrumbs-top">
+                <div class="col-12">
+                    <h2 class="content-header-title float-left mb-0">Shipping Management</h2>
+                    <div class="breadcrumb-wrapper">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+                            <li class="breadcrumb-item"><a>Admin</a></li>
+                            <li class="breadcrumb-item active">Shipping</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-header-right text-md-right col-md-3 col-12 d-md-block d-none">
+            <button class="btn btn-primary" (click)="openCreateModal()" rippleEffect>
+                <i data-feather="plus" class="mr-50"></i>
+                <span>Add Shipping Method</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <!-- Loading State -->
+        <div class="text-center py-5" *ngIf="isLoading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-2">Loading shipping methods...</p>
+        </div>
+
+        <!-- Shipping Methods List -->
+        <div class="row" *ngIf="!isLoading">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Shipping Methods</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Cost (EGP)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let method of shippingMethods">
+                                        <td>
+                                            <span class="badge badge-light-success">{{ method.cost }} EGP</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-icon btn-outline-primary mr-50"
+                                                (click)="openEditModal(method)" title="Edit" rippleEffect>
+                                                <i data-feather="edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="shippingMethods.length === 0">
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i data-feather="package" class="font-large-2 mb-1"></i>
+                                            <p>No shipping methods found. Click "Add Shipping Method" to create one.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Create/Edit Shipping Method -->
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1"
+    role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ isEditMode ? 'Edit' : 'Add' }} Shipping Method</h5>
+                <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="cost">Shipping Cost (EGP) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="cost" [(ngModel)]="currentMethod.cost" name="cost"
+                            placeholder="Enter shipping cost" min="0" step="0.01" required />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeModal()" rippleEffect>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" (click)="submitForm()" rippleEffect>
+                    <i data-feather="save" class="mr-50"></i>
+                    {{ isEditMode ? 'Update' : 'Create' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>

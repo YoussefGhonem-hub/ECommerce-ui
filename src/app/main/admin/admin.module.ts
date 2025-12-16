@@ -10,11 +10,13 @@ import { CoreDirectivesModule } from '@core/directives/directives';
 import { AdminRoutingModule } from './admin-routing.module';
 import { CouponsComponent } from '../pages/coupons/coupons.component';
 import { CreateCouponComponent } from '../pages/coupons/create-coupon/create-coupon.component';
+import { ShippingManagementComponent } from './shipping/shipping-management.component';
 
 @NgModule({
     declarations: [
         CouponsComponent,
-        CreateCouponComponent
+        CreateCouponComponent,
+        ShippingManagementComponent
     ],
     imports: [
         CommonModule,

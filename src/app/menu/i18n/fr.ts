@@ -31,7 +31,8 @@ export const locale = {
           ORDERS: 'Commandes',
           ATTRIBUTES: 'Attributs de produit',
           CATEGORIES: 'Catégories',
-          COUPONS: 'Coupons'
+          COUPONS: 'Coupons',
+          SHIPPING: 'Expédition'
         },
         USER: {
           COLLAPSIBLE: 'Utilisateur',
