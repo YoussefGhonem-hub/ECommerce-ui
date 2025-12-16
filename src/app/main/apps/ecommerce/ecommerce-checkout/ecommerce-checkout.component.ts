@@ -597,13 +597,10 @@ export class EcommerceCheckoutComponent implements OnInit {
       // User selected existing address
       console.log('[Checkout] Proceeding with selected address:', this.selectedAddressId);
       this.nextStep();
-    } else if (this.isAddingNewAddress && this.addressForm.valid) {
-      // User is adding new address and form is valid
-      console.log('[Checkout] Proceeding with new address:', this.addressForm.value);
-      this.nextStep();
     } else if (this.addressForm.valid) {
-      // Form is valid, proceed
-      console.log('[Checkout] Address form valid, proceeding');
+      // Form is valid - set isAddingNewAddress to true and proceed
+      this.isAddingNewAddress = true;
+      console.log('[Checkout] Proceeding with new address:', this.addressForm.value);
       this.nextStep();
     } else {
       console.log('[Checkout] Address validation failed');
