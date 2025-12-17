@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { HttpService } from '@shared/services/http.service';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -7,6 +6,7 @@ import { AuthController } from '@shared/Controllers/AuthController';
 import { User, Role } from 'app/auth/models';
 import { ToastrService } from 'ngx-toastr';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { GuestUserService } from '@shared/services/guest-user.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -24,7 +24,8 @@ export class AuthenticationService {
   constructor(
     private http: HttpService,
     private _toastrService: ToastrService,
-    private permissionsService: NgxPermissionsService
+    private permissionsService: NgxPermissionsService,
+    private guestUserService: GuestUserService
   ) {
     this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     this.currentUser = this.currentUserSubject.asObservable();
@@ -241,6 +242,10 @@ export class AuthenticationService {
     localStorage.removeItem('accessTokenExpiresAtUtc');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('refreshTokenExpiresAtUtc');
+
+    // Remove guest ID from localStorage on logout
+    this.guestUserService.clearGuestId();
+
     // notify
     this.currentUserSubject.next(null);
     this.permissionsService.flushPermissions();

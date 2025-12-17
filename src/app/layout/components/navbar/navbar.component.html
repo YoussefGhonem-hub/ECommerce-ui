@@ -1,4 +1,4 @@
-<div *ngIf="horizontalMenu" class="navbar-header ">
+<div *ngIf="horizontalMenu" class="navbar-header d-xl-block d-none">
   <!-- Navbar brand -->
   <ul class="nav navbar-nav flex-row">
     <li class="nav-item">
@@ -44,7 +44,7 @@
     <!--/ Language selection -->
 
     <!-- Toggle skin -->
-    <li class="nav-item">
+    <li class="nav-item ">
       <a class="nav-link nav-link-style btn" (click)="toggleDarkSkin()">
         <span [ngClass]="currentSkin === 'dark' ? 'icon-sun' : 'icon-moon'" class="ficon font-medium-5 feather"></span>
       </a>
@@ -55,8 +55,8 @@
     <!-- <app-navbar-search></app-navbar-search> -->
     <!--/ Search -->
 
-    <!-- Cart -->
-    <app-navbar-cart></app-navbar-cart>
+    <!-- Cart - Only show for Customers or Guest Users -->
+    <app-navbar-cart *ngxPermissionsExcept="['Admin']"></app-navbar-cart>
     <!--/ Cart -->
 
     <!-- Notification -->

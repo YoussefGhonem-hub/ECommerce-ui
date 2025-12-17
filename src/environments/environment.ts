@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   hmr: false,
-  baseURL: 'http://amrsherif-002-site4.ntempurl.com'
+  // baseURL: 'http://amrsherif-002-site4.ntempurl.com'
+  baseURL: 'https://localhost:62506'
+
 };
 
 /*
