@@ -7,6 +7,7 @@ import { WishlistController } from '@shared/Controllers/WishlistController';
 import { ProductsController } from '@shared/Controllers/ProductsController';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { CartService } from '@shared/services/cart.service';
+import { SelectedAttributesService } from '@shared/services/selected-attributes.service';
 import { env } from 'process';
 import { environment } from 'environments/environment.prod';
 
@@ -53,7 +54,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
   constructor(
     private httpService: HttpService,
     private guestUserService: GuestUserService,
-    private cartService: CartService
+    private cartService: CartService,
+    private selectedAttributesService: SelectedAttributesService
   ) { }
 
   ngOnInit(): void {
@@ -152,6 +154,9 @@ export class EcommerceCheckoutItemComponent implements OnInit {
         }
       }
     });
+    
+    // Save initial selections to the service
+    this.saveCurrentSelectionsToService();
   }
 
   getColorHex(colorName: string): string {
@@ -201,6 +206,43 @@ export class EcommerceCheckoutItemComponent implements OnInit {
       valueId: attrObj.valueId || attrObj.id || null,
       value: value
     });
+    
+    // Save current selections to the service for navbar cart display
+    this.saveCurrentSelectionsToService();
+  }
+  
+  /**
+   * Save current attribute selections to the SelectedAttributesService
+   */
+  private saveCurrentSelectionsToService(): void {
+    if (!this.product || !this.product.id || !this.product.productId) {
+      return;
+    }
+    
+    // Build array of currently selected attributes
+    const selectedAttributes: any[] = [];
+    
+    Object.keys(this.productAttributes).forEach(attrName => {
+      const attrValue = this.productAttributes[attrName];
+      const attrGroup = this.groupedAttributes[attrName] || [];
+      const attrObj = attrGroup.find(a => a.value === attrValue);
+      
+      if (attrObj) {
+        selectedAttributes.push({
+          attributeId: attrObj.attributeId || attrObj.id,
+          attributeName: attrName,
+          valueId: attrObj.valueId || attrObj.id,
+          value: attrValue
+        });
+      }
+    });
+    
+    // Save to service
+    this.selectedAttributesService.updateSelectedAttributes(
+      this.product.id,
+      this.product.productId,
+      selectedAttributes
+    );
   }
 
   /**
@@ -301,6 +343,8 @@ export class EcommerceCheckoutItemComponent implements OnInit {
     this.cartService.removeFromCart(product.id).then((success) => {
       if (success) {
         console.log('[CheckoutItem] removed from cart ->', product.productName);
+        // Remove selected attributes for this item
+        this.selectedAttributesService.removeSelectedAttributes(product.id);
         // CartService refresh will automatically trigger parent component updates
         // No need to emit cartRefresh event to prevent duplicate API calls
       }

@@ -30,14 +30,14 @@
                     item.productName
                     }}</a>
                 </h6>
-                <small class="cart-item-by">{{ item.brand }}</small>
+                <small class="cart-item-by">{{ item.brand }}-Brand</small>
 
                 <!-- Display selected attributes -->
                 <div class="cart-item-attributes" *ngIf="item.productAttributes && item.productAttributes.length > 0">
                   <small class="d-block text-muted mt-50">
                     <span *ngFor="let attr of item.productAttributes; let last = last">
                       <ng-container *ngIf="attr.attributeName.toLowerCase() === 'color'; else normalAttribute">
-                        <strong>{{ attr.attributeName }}:</strong>
+                        <strong>{{ attr.attributeName }} : </strong>
                         <span class="color-indicator d-inline-block rounded-circle" [style.backgroundColor]="attr.value"
                           [title]="attr.value"
                           style="width: 14px; height: 14px; border: 1px solid #ddd; vertical-align: middle; margin: 0 2px;"></span>

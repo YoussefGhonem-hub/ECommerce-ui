@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { HttpService } from '@shared/services/http.service';
 import { CartService } from '@shared/services/cart.service';
+import { SelectedAttributesService } from '@shared/services/selected-attributes.service';
 import { CartController } from '@shared/Controllers/CartController';
 import { environment } from 'environments/environment';
 
@@ -30,7 +31,8 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
   constructor(
     public _ecommerceService: EcommerceService,
     private httpService: HttpService,
-    private cartService: CartService
+    private cartService: CartService,
+    private selectedAttributesService: SelectedAttributesService
   ) {
     this._unsubscribeAll = new Subject();
   }
@@ -107,6 +109,8 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
   removeFromCart(item: any) {
     this.cartService.removeFromCart(item.id).then(() => {
       console.log('[NavbarCart] Item removed successfully');
+      // Also remove selected attributes for this item
+      this.selectedAttributesService.removeSelectedAttributes(item.id);
     }).catch((err) => {
       console.error('[NavbarCart] Failed to remove item:', err);
     });
@@ -158,7 +162,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
     this.cartService.cartItems$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(items => {
-        this.cartItems = items;
+        this.updateCartItemsWithSelectedAttributes(items);
         console.log('[NavbarCart] Cart items updated:', items.length);
       });
 
@@ -173,9 +177,39 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
       .subscribe(total => {
         this.cartTotal = total;
       });
+      
+    // Subscribe to selected attributes changes
+    this.selectedAttributesService.attributesChanged$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(() => {
+        // Re-merge cart items with updated selected attributes
+        this.updateCartItemsWithSelectedAttributes(this.cartService.getCurrentCartItems());
+        console.log('[NavbarCart] Selected attributes updated');
+      });
 
     // CartService already loads cart data in constructor, no need for additional call here
     // this.cartService.refreshCart(); // Removed to prevent duplicate API calls
+  }
+  
+  /**
+   * Update cart items with selected attributes from the service
+   */
+  private updateCartItemsWithSelectedAttributes(items: any[]): void {
+    this.cartItems = items.map(item => {
+      // Check if user has selected attributes for this item in checkout
+      const selectedAttrs = this.selectedAttributesService.getSelectedAttributes(item.id);
+      
+      if (selectedAttrs && selectedAttrs.length > 0) {
+        // Use user-selected attributes from checkout
+        return {
+          ...item,
+          productAttributes: selectedAttrs
+        };
+      } else {
+        // Use backend attributes (already filtered by cart service)
+        return item;
+      }
+    });
   }
 
   /**
