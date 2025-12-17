@@ -1,0 +1,15 @@
+# Android Keystore and Credentials
+*.keystore
+*.jks
+key.properties
+keystore.properties
+
+# Local signing configuration
+local.properties
+
+# Google Services
+google-services.json
+
+# Sensitive environment files
+.env.local
+.env.production.local

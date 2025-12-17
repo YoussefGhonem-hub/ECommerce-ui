@@ -1,0 +1,24 @@
+# Android Release Signing Configuration
+# ⚠️ IMPORTANT: Never commit this file to version control!
+# Add 'key.properties' to .gitignore
+
+# Path to your keystore file (relative to android/app/ directory)
+storeFile=abi-brand-release.keystore
+
+# Keystore password
+storePassword=YOUR_KEYSTORE_PASSWORD_HERE
+
+# Key alias (name you gave when creating the keystore)
+keyAlias=abi-brand
+
+# Key password (usually same as keystore password)
+keyPassword=YOUR_KEY_PASSWORD_HERE
+
+# ------------------------------------------------------------
+# How to generate a keystore:
+# ------------------------------------------------------------
+# cd android/app
+# keytool -genkey -v -keystore abi-brand-release.keystore -alias abi-brand -keyalg RSA -keysize 2048 -validity 10000
+#
+# Then replace YOUR_KEYSTORE_PASSWORD_HERE and YOUR_KEY_PASSWORD_HERE
+# with the passwords you entered during keystore generation
