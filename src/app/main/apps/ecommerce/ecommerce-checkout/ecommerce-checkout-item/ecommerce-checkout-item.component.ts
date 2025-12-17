@@ -154,7 +154,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
         }
       }
     });
-    
+
     // Save initial selections to the service
     this.saveCurrentSelectionsToService();
   }
@@ -206,11 +206,11 @@ export class EcommerceCheckoutItemComponent implements OnInit {
       valueId: attrObj.valueId || attrObj.id || null,
       value: value
     });
-    
+
     // Save current selections to the service for navbar cart display
     this.saveCurrentSelectionsToService();
   }
-  
+
   /**
    * Save current attribute selections to the SelectedAttributesService
    */
@@ -218,15 +218,15 @@ export class EcommerceCheckoutItemComponent implements OnInit {
     if (!this.product || !this.product.id || !this.product.productId) {
       return;
     }
-    
+
     // Build array of currently selected attributes
     const selectedAttributes: any[] = [];
-    
+
     Object.keys(this.productAttributes).forEach(attrName => {
       const attrValue = this.productAttributes[attrName];
       const attrGroup = this.groupedAttributes[attrName] || [];
       const attrObj = attrGroup.find(a => a.value === attrValue);
-      
+
       if (attrObj) {
         selectedAttributes.push({
           attributeId: attrObj.attributeId || attrObj.id,
@@ -236,7 +236,7 @@ export class EcommerceCheckoutItemComponent implements OnInit {
         });
       }
     });
-    
+
     // Save to service
     this.selectedAttributesService.updateSelectedAttributes(
       this.product.id,

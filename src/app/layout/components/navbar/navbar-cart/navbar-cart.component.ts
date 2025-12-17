@@ -177,7 +177,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
       .subscribe(total => {
         this.cartTotal = total;
       });
-      
+
     // Subscribe to selected attributes changes
     this.selectedAttributesService.attributesChanged$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -190,7 +190,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
     // CartService already loads cart data in constructor, no need for additional call here
     // this.cartService.refreshCart(); // Removed to prevent duplicate API calls
   }
-  
+
   /**
    * Update cart items with selected attributes from the service
    */
@@ -198,7 +198,7 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
     this.cartItems = items.map(item => {
       // Check if user has selected attributes for this item in checkout
       const selectedAttrs = this.selectedAttributesService.getSelectedAttributes(item.id);
-      
+
       if (selectedAttrs && selectedAttrs.length > 0) {
         // Use user-selected attributes from checkout
         return {
