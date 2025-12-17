@@ -26,6 +26,17 @@ export class GuestUserService {
     }
 
     /**
+     * Remove guest id from localStorage (called on user logout)
+     */
+    public clearGuestId(): void {
+        try {
+            localStorage.removeItem(this.storageKey);
+        } catch (e) {
+            // Silently fail if localStorage is unavailable
+        }
+    }
+
+    /**
      * Helper: deterministic random uuid v4-like string (sufficient for client-side id)
      */
     private generateUuid(): string {

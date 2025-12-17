@@ -1,7 +1,6 @@
 <li ngbDropdown class="nav-item dropdown-cart mr-25">
-  <a *ngxPermissionsOnly="['Customer']" class="nav-link" tabindex="0" ngbDropdownToggle id="navbarCartDropdown"><span
-      [data-feather]="'shopping-cart'" [class]="'ficon'"></span><span
-      class="badge badge-pill badge-primary badge-up cart-item-count">{{ cartListLength
+  <a class="nav-link" tabindex="0" ngbDropdownToggle id="navbarCartDropdown"><span [data-feather]="'shopping-cart'"
+      [class]="'ficon'"></span><span class="badge badge-pill badge-primary badge-up cart-item-count">{{ cartListLength
       }}</span></a>
 
   <ul ngbDropdownMenu aria-labelledby="navbarCartDropdown"
