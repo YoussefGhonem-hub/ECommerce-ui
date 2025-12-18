@@ -11,16 +11,9 @@
 <!-- / horizontal-layout -->
 
 <!-- theme customizer -->
-<core-sidebar
-  name="themeCustomizer"
-  class="customizer d-none d-md-block"
-  [invisibleOverlay]="true"
-  *ngIf="coreConfig.layout.customizer"
->
-  <a
-    class="customizer-toggle d-flex align-items-center justify-content-center"
-    (click)="toggleSidebar('themeCustomizer')"
-  >
+<core-sidebar name="themeCustomizer" class="customizer d-none d-md-block" [invisibleOverlay]="true"
+  *ngIf="coreConfig.layout.customizer">
+  <a class="customizer-toggle d-flex align-items-center justify-content-center" (click)="openWhatsApp()">
     <span [data-feather]="'settings'" [class]="'spinner'"></span>
   </a>
   <core-theme-customizer></core-theme-customizer>

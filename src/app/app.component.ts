@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, ElementRef, Renderer2 } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ElementRef, Renderer2, Input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 
@@ -33,7 +33,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Private
   private _unsubscribeAll: Subject<any>;
+  @Input() phoneNumber: string = '1234567890'; // Default phone number
+  @Input() message: string = 'Hello! I need help.'; // Default message
 
+  openWhatsApp(): void {
+    // Format phone number (remove spaces, dashes, etc.)
+    const formattedPhone = this.phoneNumber.replace(/\D/g, '');
+
+    // Encode the message
+    const encodedMessage = encodeURIComponent(this.message);
+
+    // Create WhatsApp URL
+    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+
+    // Open in new window/tab
+    window.open(whatsappUrl, '_blank');
+  }
   /**
    * Constructor
    *
