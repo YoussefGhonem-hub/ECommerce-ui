@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Private
   private _unsubscribeAll: Subject<any>;
-  @Input() phoneNumber: string = '1234567890'; // Default phone number
+  @Input() phoneNumber: string = '201140701616'; // Default phone number
   @Input() message: string = 'Hello! I need help.'; // Default message
 
   openWhatsApp(): void {
