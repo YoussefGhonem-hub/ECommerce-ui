@@ -127,6 +127,9 @@ export class EcommerceCheckoutItemComponent implements OnInit {
     this.productAttributes = {};
     this.colorMap = {};
 
+    // First, check if there are selected attributes from SelectedAttributesService
+    const savedSelectedAttributes = this.selectedAttributesService.getSelectedAttributes(this.product.id);
+    
     this.product.productAttributes?.forEach((attr: any) => {
       const attrName = attr.attributeName;
       if (!this.groupedAttributes[attrName]) {
@@ -134,8 +137,20 @@ export class EcommerceCheckoutItemComponent implements OnInit {
       }
       this.groupedAttributes[attrName].push(attr);
 
-      // Set selected attribute based on isSelected flag from cart
-      if (attr.isSelected === true && !this.productAttributes[attrName]) {
+      // Priority 1: Check if this attribute was saved in SelectedAttributesService
+      if (savedSelectedAttributes && savedSelectedAttributes.length > 0 && !this.productAttributes[attrName]) {
+        const savedAttr = savedSelectedAttributes.find((sa: any) => 
+          sa.attributeName === attrName || 
+          (sa.attributeId === attr.attributeId || sa.attributeId === attr.id)
+        );
+        if (savedAttr) {
+          this.productAttributes[attrName] = savedAttr.value;
+          attr.isSelected = true; // Mark as selected
+        }
+      }
+      
+      // Priority 2: Set selected attribute based on isSelected flag from cart
+      if (!this.productAttributes[attrName] && attr.isSelected === true) {
         this.productAttributes[attrName] = attr.value;
       }
 
@@ -154,6 +169,9 @@ export class EcommerceCheckoutItemComponent implements OnInit {
         }
       }
     });
+
+    console.log('[CheckoutItem] Initialized attributes for cart item:', this.product.id);
+    console.log('[CheckoutItem] Selected attributes:', this.productAttributes);
 
     // Save initial selections to the service
     this.saveCurrentSelectionsToService();
