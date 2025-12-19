@@ -692,14 +692,7 @@ export class EcommerceCheckoutComponent implements OnInit {
       return;
     }
 
-    // Check if user is authenticated
-    if (!this.authService.currentUserValue) {
-      // Not logged in, redirect to login/register and return to checkout after
-      this.router.navigate(['/pages/authentication/login-v1'], { queryParams: { returnUrl: '/apps/e-commerce/checkout' } });
-      return;
-    }
-
-    // Validate address selection
+    // Validate address selection (guest checkout is now allowed)
     if (!this.selectedAddressId && !this.isAddingNewAddress) {
       this.toastr.warning('Please select a shipping address or add a new one.', 'Address Required');
       return;
