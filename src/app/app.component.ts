@@ -37,6 +37,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any>;
   @Input() phoneNumber: string = '201140701616'; // Default phone number
   @Input() message: string = 'Hello! I need help.'; // Default message
+  @Input() facebookUrl: string = 'https://www.facebook.com/profile.php?id=61584819486829'; // Facebook page URL
+  @Input() instagramUrl: string = 'https://www.instagram.com/abi_brand_1'; // Instagram profile URL
 
   openWhatsApp(): void {
     // Format phone number (remove spaces, dashes, etc.)
@@ -50,6 +52,16 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // Open in new window/tab
     window.open(whatsappUrl, '_blank');
+  }
+
+  openFacebook(): void {
+    // Open Facebook page in new window/tab
+    window.open(this.facebookUrl, '_blank');
+  }
+
+  openInstagram(): void {
+    // Open Instagram profile in new window/tab
+    window.open(this.instagramUrl, '_blank');
   }
   /**
    * Constructor

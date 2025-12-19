@@ -17,3 +17,75 @@
     border-width: 0.3rem;
   }
 }
+
+// Social Media Buttons
+.social-media-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+
+  .social-toggle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+
+    .social-icon {
+      width: 26px;
+      height: 26px;
+      color: white;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    &.whatsapp-toggle {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+
+      &:hover {
+        background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+      }
+    }
+
+    &.facebook-toggle {
+      background: linear-gradient(135deg, #1877F2 0%, #0C63D4 100%);
+
+      &:hover {
+        background: linear-gradient(135deg, #0C63D4 0%, #084D9F 100%);
+      }
+    }
+
+    &.instagram-toggle {
+      background: linear-gradient(135deg, #E4405F 0%, #C13584 50%, #833AB4 100%);
+
+      &:hover {
+        background: linear-gradient(135deg, #C13584 0%, #833AB4 50%, #5851DB 100%);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    bottom: 15px;
+    right: 15px;
+    gap: 12px;
+
+    .social-toggle {
+      width: 30px;
+      height: 30px;
+
+      .social-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+  }
+}
