@@ -12,6 +12,7 @@ import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.s
 import { CoreConfigService } from '@core/services/config.service';
 import { CoreLoadingScreenService } from '@core/services/loading-screen.service';
 import { CoreTranslationService } from '@core/services/translation.service';
+import { LoadingService } from '@shared/services/loading.service';
 
 import { menu } from 'app/menu/menu';
 import { AuthenticationService } from 'app/auth/service';
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
   menu: any;
   defaultLanguage: 'en'; // This language will be used as a fallback when a translation isn't found in the current language
   appLanguage: 'en'; // Set application default language i.e fr
+  isLoading$ = this.loadingService.isLoading$;
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -74,7 +76,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private _coreMenuService: CoreMenuService,
     private _coreTranslationService: CoreTranslationService,
     private _translateService: TranslateService,
-    private _authenticationService: AuthenticationService
+    private _authenticationService: AuthenticationService,
+    public loadingService: LoadingService
   ) {
     // Get the application main menu
     this.menu = menu;

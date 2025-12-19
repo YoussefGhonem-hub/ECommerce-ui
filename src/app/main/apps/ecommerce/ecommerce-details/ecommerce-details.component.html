@@ -105,6 +105,21 @@
 
               <hr />
               <div class="d-flex flex-column flex-sm-row pt-1">
+                <!-- Admin Actions -->
+                <ng-container *ngxPermissionsOnly="['Admin']">
+                  <button type="button" class="btn btn-warning mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="editProduct()"
+                    rippleEffect>
+                    <i data-feather="edit" class="mr-25"></i>
+                    <span>Edit Product</span>
+                  </button>
+                  <button type="button" class="btn btn-danger mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="deleteProduct()"
+                    rippleEffect>
+                    <i data-feather="trash-2" class="mr-25"></i>
+                    <span>Delete Product</span>
+                  </button>
+                </ng-container>
+
+                <!-- Customer Actions -->
                 <ng-container *ngxPermissionsExcept="['Admin']">
                   <a *ngIf="product?.isInCart !== true" href="javascript:void(0)"
                     class="btn btn-primary btn-cart mr-0 mr-sm-1 mb-1 mb-sm-0" (click)="addToCart(product)">

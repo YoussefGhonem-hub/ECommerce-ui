@@ -4,4 +4,5 @@ export const ProductsController = {
     GetProductId: (id: any) => `api/products/${id}`,
     GetProductByIdforUpdate: (id: any) => `api/products/${id}/for-update`,
     UpdateProduct: 'api/products',
+    DeleteProduct: (id: any) => `api/products/${id}`,
 }

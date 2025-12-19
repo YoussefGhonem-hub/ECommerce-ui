@@ -217,20 +217,24 @@ export class NavbarCartComponent implements OnInit, OnDestroy {
    */
   hasSelectedAttributes(item: any): boolean {
     if (!item) return false;
-    
+
     // Check if there are attributes from SelectedAttributesService
     const serviceAttributes = this.selectedAttributesService.getSelectedAttributes(item.id);
+    debugger
     if (serviceAttributes && serviceAttributes.length > 0) {
       return true;
     }
-    
-    // Check if there are product attributes with actual values
-    if (item.productAttributes && item.productAttributes.length > 0) {
-      return item.productAttributes.some((attr: any) => {
-        return attr && (attr.valueId || attr.value) && (attr.attributeId || attr.attributeName);
-      });
+    else {
+      return false;
     }
-    
+
+    // // Check if there are product attributes with actual values
+    // if (item.productAttributes && item.productAttributes.length > 0) {
+    //   return item.productAttributes.some((attr: any) => {
+    //     return attr && (attr.valueId || attr.value) && (attr.attributeId || attr.attributeName);
+    //   });
+    // }
+
     return false;
   }
 

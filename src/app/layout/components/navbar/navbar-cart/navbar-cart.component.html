@@ -39,8 +39,8 @@
                       <ng-container *ngIf="attr.attributeName && attr.value">
                         <ng-container *ngIf="attr.attributeName.toLowerCase() === 'color'; else normalAttribute">
                           <strong>{{ attr.attributeName }} : </strong>
-                          <span class="color-indicator d-inline-block rounded-circle" [style.backgroundColor]="attr.value"
-                            [title]="attr.value"
+                          <span class="color-indicator d-inline-block rounded-circle"
+                            [style.backgroundColor]="attr.value" [title]="attr.value"
                             style="width: 14px; height: 14px; border: 1px solid #ddd; vertical-align: middle; margin: 0 2px;"></span>
                         </ng-container>
                         <ng-template #normalAttribute>

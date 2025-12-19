@@ -2,6 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 import { EcommerceService } from 'app/main/apps/ecommerce/ecommerce.service';
 import { environment } from 'environments/environment';
@@ -121,7 +122,8 @@ export class EcommerceDetailsComponent implements OnInit {
     private _ecommerceService: EcommerceService,
     private cartService: CartService,
     private authService: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private permissionsService: NgxPermissionsService
   ) {
     // Subscribe to route params changes to reload data when navigating to different products
     this._activatedRoute.params.subscribe(params => {
@@ -131,6 +133,82 @@ export class EcommerceDetailsComponent implements OnInit {
       if (this.productId) {
         this.getProductId();
         this.loadReviews();
+      }
+    });
+  }
+
+  /**
+   * Check if current user has admin permission
+   */
+  hasAdminPermission(): boolean {
+    const permissions = this.permissionsService.getPermissions();
+    return permissions && permissions['Admin'] !== undefined;
+  }
+
+  /**
+   * Navigate to edit product page (Admin only)
+   */
+  editProduct(): void {
+    if (!this.hasAdminPermission()) {
+      console.warn('[EcommerceDetails] Unauthorized: Only admins can edit products');
+      return;
+    }
+
+    if (!this.productId) {
+      console.error('[EcommerceDetails] No product ID available');
+      return;
+    }
+
+    // Navigate to admin product edit page
+    this.router.navigate(['/admin/products/edit', this.productId]);
+  }
+
+  /**
+   * Delete product (Admin only)
+   */
+  deleteProduct(): void {
+    if (!this.hasAdminPermission()) {
+      console.warn('[EcommerceDetails] Unauthorized: Only admins can delete products');
+      return;
+    }
+
+    if (!this.productId) {
+      console.error('[EcommerceDetails] No product ID available');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to delete "${this.product?.nameEn}"? This action cannot be undone!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.HttpService.DELETE(ProductsController.DeleteProduct(this.productId)).subscribe(
+          (res: any) => {
+            if (res && res.succeeded) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Product has been deleted successfully.',
+                confirmButtonColor: '#7367F0'
+              }).then(() => {
+                // Navigate back to products list
+                this.router.navigate(['/apps/e-commerce/shop']);
+              });
+            } else {
+              Swal.fire('Error!', res.message || 'Failed to delete product.', 'error');
+            }
+          },
+          (error) => {
+            console.error('[EcommerceDetails] Error deleting product:', error);
+            Swal.fire('Error!', 'An error occurred while deleting the product.', 'error');
+          }
+        );
       }
     });
   }

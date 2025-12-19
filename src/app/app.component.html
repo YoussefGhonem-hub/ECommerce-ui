@@ -1,3 +1,10 @@
+<!-- Global Loading Overlay -->
+<div class="loading-overlay" *ngIf="isLoading$ | async">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
 <!-- vertical-layout -->
 <ng-container *ngIf="coreConfig.layout.type === 'vertical'">
   <vertical-layout></vertical-layout>
