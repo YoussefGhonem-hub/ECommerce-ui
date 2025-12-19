@@ -161,8 +161,8 @@ export class ShippingManagementComponent implements OnInit {
      * Validate form
      */
     validateForm(): boolean {
-        if (!this.currentMethod.cost || this.currentMethod.cost <= 0) {
-            Swal.fire('Validation Error', 'Please enter a valid cost greater than 0', 'warning');
+        if (this.currentMethod.cost === null || this.currentMethod.cost === undefined || this.currentMethod.cost < 0) {
+            Swal.fire('Validation Error', 'Please enter a valid cost (0 or greater)', 'warning');
             return false;
         }
         return true;

@@ -14,6 +14,7 @@ import { CartService } from '@shared/services/cart.service';
 import { GuestUserService } from '@shared/services/guest-user.service';
 import { HttpService } from '@shared/services/http.service';
 import { AuthenticationService } from 'app/auth/service/authentication.service';
+import { SelectedAttributesService } from '@shared/services/selected-attributes.service';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-ecommerce-details',
@@ -123,7 +124,8 @@ export class EcommerceDetailsComponent implements OnInit {
     private cartService: CartService,
     private authService: AuthenticationService,
     private router: Router,
-    private permissionsService: NgxPermissionsService
+    private permissionsService: NgxPermissionsService,
+    private selectedAttributesService: SelectedAttributesService
   ) {
     // Subscribe to route params changes to reload data when navigating to different products
     this._activatedRoute.params.subscribe(params => {
@@ -373,6 +375,8 @@ export class EcommerceDetailsComponent implements OnInit {
     if (!product) return;
 
     let attributes = [];
+    let selectedAttributesForService = [];
+
     if (!quickAdd) {
       // Build selected attributes array from productAttributes object
       attributes = Object.entries(this.productAttributes).map(([name, value]) => {
@@ -384,6 +388,19 @@ export class EcommerceDetailsComponent implements OnInit {
           ValueId: attrObj?.valueId || attrObj?.id || null
         };
       });
+
+      // Build attributes for SelectedAttributesService (with names and values)
+      selectedAttributesForService = Object.entries(this.productAttributes).map(([name, value]) => {
+        const attrGroup = this.groupedAttributes[name] || [];
+        const attrObj = attrGroup.find(a => a.value === value);
+
+        return {
+          attributeId: attrObj?.attributeId || attrObj?.id,
+          attributeName: name,
+          valueId: attrObj?.valueId || attrObj?.id || null,
+          value: value
+        };
+      });
     }
 
     // Use CartService for better integration with navbar cart
@@ -392,14 +409,24 @@ export class EcommerceDetailsComponent implements OnInit {
         product.isInCart = true;
         console.log('[EcommerceDetails] Item added to cart successfully');
 
-        // Optional: Show success notification
-        // You can add a toast notification here
+        // Store selected attributes for this cart item
+        if (!quickAdd && selectedAttributesForService.length > 0) {
+          // Get the latest cart items to find the newly added item
+          const currentCartItems = this.cartService.getCurrentCartItems();
+          const newCartItem = currentCartItems.find(item => item.productId === product.id);
+
+          if (newCartItem && newCartItem.id) {
+            console.log('[EcommerceDetails] Storing selected attributes for cart item:', newCartItem.id);
+            this.selectedAttributesService.updateSelectedAttributes(
+              newCartItem.id,
+              product.id,
+              selectedAttributesForService
+            );
+          }
+        }
       })
       .catch((error) => {
         console.error('[EcommerceDetails] Failed to add item to cart:', error);
-
-        // Optional: Show error notification
-        // You can add a toast notification here
       });
   }
 
