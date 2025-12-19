@@ -411,18 +411,26 @@ export class EcommerceDetailsComponent implements OnInit {
 
         // Store selected attributes for this cart item
         if (!quickAdd && selectedAttributesForService.length > 0) {
-          // Get the latest cart items to find the newly added item
-          const currentCartItems = this.cartService.getCurrentCartItems();
-          const newCartItem = currentCartItems.find(item => item.productId === product.id);
+          // Wait for cart to refresh before trying to get the new item
+          const subscription = this.cartService.cartRefresh$.subscribe(() => {
+            const currentCartItems = this.cartService.getCurrentCartItems();
+            const newCartItem = currentCartItems.find(item => item.productId === product.id);
 
-          if (newCartItem && newCartItem.id) {
-            console.log('[EcommerceDetails] Storing selected attributes for cart item:', newCartItem.id);
-            this.selectedAttributesService.updateSelectedAttributes(
-              newCartItem.id,
-              product.id,
-              selectedAttributesForService
-            );
-          }
+            if (newCartItem && newCartItem.id) {
+              console.log('[EcommerceDetails] Storing selected attributes for cart item:', newCartItem.id);
+              this.selectedAttributesService.updateSelectedAttributes(
+                newCartItem.id,
+                product.id,
+                selectedAttributesForService
+              );
+              console.log('[EcommerceDetails] Attributes stored:', selectedAttributesForService);
+            } else {
+              console.warn('[EcommerceDetails] Could not find new cart item for product:', product.id);
+            }
+
+            // Unsubscribe after first refresh to avoid memory leaks
+            subscription.unsubscribe();
+          });
         }
       })
       .catch((error) => {
