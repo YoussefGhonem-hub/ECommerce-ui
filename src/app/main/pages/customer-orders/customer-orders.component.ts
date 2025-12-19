@@ -133,7 +133,17 @@ export class CustomerOrdersComponent implements OnInit {
 
     formatAttributes(attrs: any[] | undefined | null): string {
         if (!attrs || !Array.isArray(attrs) || attrs.length === 0) { return ''; }
-        return attrs.map(a => a.attributeName + (a.value ? (': ' + a.value) : '')).join(', ');
+        // Filter out color attributes as they will be displayed separately
+        const nonColorAttrs = attrs.filter(a => a.attributeName?.toLowerCase() !== 'color');
+        return nonColorAttrs.map(a => a.attributeName + (a.value ? (': ' + a.value) : '')).join(', ');
+    }
+
+    /**
+     * Get color attributes from item attributes
+     */
+    getColorAttributes(attrs: any[] | undefined | null): any[] {
+        if (!attrs || !Array.isArray(attrs) || attrs.length === 0) { return []; }
+        return attrs.filter(a => a.attributeName?.toLowerCase() === 'color');
     }
 
     getStatusLabel(statusValue: any): string {

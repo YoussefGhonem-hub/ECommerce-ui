@@ -32,20 +32,22 @@
                 </h6>
                 <small class="cart-item-by">{{ item.brand }}-Brand</small>
 
-                <!-- Display selected attributes -->
-                <div class="cart-item-attributes" *ngIf="item.productAttributes && item.productAttributes.length > 0">
+                <!-- Display selected attributes - only show if attributes are actually selected -->
+                <div class="cart-item-attributes" *ngIf="hasSelectedAttributes(item)">
                   <small class="d-block text-muted mt-50">
                     <span *ngFor="let attr of item.productAttributes; let last = last">
-                      <ng-container *ngIf="attr.attributeName.toLowerCase() === 'color'; else normalAttribute">
-                        <strong>{{ attr.attributeName }} : </strong>
-                        <span class="color-indicator d-inline-block rounded-circle" [style.backgroundColor]="attr.value"
-                          [title]="attr.value"
-                          style="width: 14px; height: 14px; border: 1px solid #ddd; vertical-align: middle; margin: 0 2px;"></span>
+                      <ng-container *ngIf="attr.attributeName && attr.value">
+                        <ng-container *ngIf="attr.attributeName.toLowerCase() === 'color'; else normalAttribute">
+                          <strong>{{ attr.attributeName }} : </strong>
+                          <span class="color-indicator d-inline-block rounded-circle"
+                            [style.backgroundColor]="attr.value" [title]="attr.value"
+                            style="width: 14px; height: 14px; border: 1px solid #ddd; vertical-align: middle; margin: 0 2px;"></span>
+                        </ng-container>
+                        <ng-template #normalAttribute>
+                          <strong>{{ attr.attributeName }}:</strong> {{ attr.value }}
+                        </ng-template>
+                        <span *ngIf="!last"> | </span>
                       </ng-container>
-                      <ng-template #normalAttribute>
-                        <strong>{{ attr.attributeName }}:</strong> {{ attr.value }}
-                      </ng-template>
-                      <span *ngIf="!last"> | </span>
                     </span>
                   </small>
                 </div>

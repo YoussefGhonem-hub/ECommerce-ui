@@ -24,6 +24,7 @@ import { AuthGuard } from 'app/auth/helpers/auth.guards';
 import { fakeBackendProvider } from 'app/auth/helpers'; // used to create fake backend
 import { JwtInterceptor, ErrorInterceptor } from 'app/auth/helpers';
 import { GuestUserInterceptor } from '@shared/interceptors/guest-user.interceptor';
+import { LoaderInterceptor } from '@shared/interceptors/loader-interceptor';
 import { ToastrInterceptor } from './shared/interceptors/toastr.interceptor';
 import { BaseUrlInterceptor } from '@shared/interceptors/base-url.interceptor';
 import { AppComponent } from 'app/app.component';
@@ -129,6 +130,7 @@ const appRoutes: Routes = [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: GuestUserInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ToastrInterceptor, multi: true },
 
     // ! IMPORTANT: Provider used to create fake backend, comment while using real API

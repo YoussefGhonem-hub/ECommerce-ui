@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import Stepper from 'bs-stepper';
 
@@ -114,7 +115,8 @@ export class EcommerceCheckoutComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private cartService: CartService,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private toastr: ToastrService
   ) {
     this.initializeAddressForm();
   }
@@ -690,29 +692,22 @@ export class EcommerceCheckoutComponent implements OnInit {
       return;
     }
 
-    // Check if user is authenticated
-    if (!this.authService.currentUserValue) {
-      // Not logged in, redirect to login/register and return to checkout after
-      this.router.navigate(['/pages/authentication/login-v1'], { queryParams: { returnUrl: '/apps/e-commerce/checkout' } });
-      return;
-    }
-
-    // Validate address selection
+    // Validate address selection (guest checkout is now allowed)
     if (!this.selectedAddressId && !this.isAddingNewAddress) {
-      alert('Please select a shipping address or add a new one.');
+      this.toastr.warning('Please select a shipping address or add a new one.', 'Address Required');
       return;
     }
 
     // Validate new address form if adding new address
     if (this.isAddingNewAddress && !this.addressForm.valid) {
-      alert('Please fill in all required address fields.');
+      this.toastr.warning('Please fill in all required address fields.', 'Invalid Address');
       this.addressForm.markAllAsTouched();
       return;
     }
 
     // Validate cart is not empty
     if (!this.cartItems || this.cartItems.length === 0) {
-      alert('Your cart is empty. Please add items before checkout.');
+      this.toastr.error('Your cart is empty. Please add items before checkout.', 'Empty Cart');
       this.router.navigate(['/apps/e-commerce/shop']);
       return;
     }
@@ -727,21 +722,24 @@ export class EcommerceCheckoutComponent implements OnInit {
       (res: any) => {
         if (res && res.succeeded) {
           console.log('[Checkout] Order placed successfully:', res.data);
-          alert('Order placed successfully!');
+          this.toastr.success('Your order has been placed successfully!', 'Order Placed', {
+            timeOut: 3000,
+            progressBar: true
+          });
           // Clear the cart in the navbar
           this.cartService.refreshCart();
           // Redirect to product list/shop page
           this.router.navigate(['/apps/e-commerce/shop']);
         } else {
           console.error('[Checkout] Order submission failed:', res.message);
-          alert('Order submission failed: ' + (res.message || 'Unknown error'));
+          this.toastr.error(res.message || 'Unknown error', 'Order Failed');
         }
         this.isSubmittingOrder = false;
       },
       (error) => {
         console.error('[Checkout] Order submission error:', error);
         const errorMessage = error?.error?.message || error?.message || 'An error occurred while placing your order';
-        alert('Error: ' + errorMessage);
+        this.toastr.error(errorMessage, 'Order Error');
         this.isSubmittingOrder = false;
       }
     );

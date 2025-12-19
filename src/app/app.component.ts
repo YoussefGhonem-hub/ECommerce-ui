@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, ElementRef, Renderer2 } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ElementRef, Renderer2, Input } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 
@@ -12,6 +12,7 @@ import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.s
 import { CoreConfigService } from '@core/services/config.service';
 import { CoreLoadingScreenService } from '@core/services/loading-screen.service';
 import { CoreTranslationService } from '@core/services/translation.service';
+import { LoadingService } from '@shared/services/loading.service';
 
 import { menu } from 'app/menu/menu';
 import { AuthenticationService } from 'app/auth/service';
@@ -31,10 +32,26 @@ export class AppComponent implements OnInit, OnDestroy {
   menu: any;
   defaultLanguage: 'en'; // This language will be used as a fallback when a translation isn't found in the current language
   appLanguage: 'en'; // Set application default language i.e fr
+  isLoading$ = this.loadingService.isLoading$;
 
   // Private
   private _unsubscribeAll: Subject<any>;
+  @Input() phoneNumber: string = '201140701616'; // Default phone number
+  @Input() message: string = 'Hello! I need help.'; // Default message
 
+  openWhatsApp(): void {
+    // Format phone number (remove spaces, dashes, etc.)
+    const formattedPhone = this.phoneNumber.replace(/\D/g, '');
+
+    // Encode the message
+    const encodedMessage = encodeURIComponent(this.message);
+
+    // Create WhatsApp URL
+    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+
+    // Open in new window/tab
+    window.open(whatsappUrl, '_blank');
+  }
   /**
    * Constructor
    *
@@ -60,7 +77,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private _coreMenuService: CoreMenuService,
     private _coreTranslationService: CoreTranslationService,
     private _translateService: TranslateService,
-    private _authenticationService: AuthenticationService
+    private _authenticationService: AuthenticationService,
+    public loadingService: LoadingService
   ) {
     // Get the application main menu
     this.menu = menu;
