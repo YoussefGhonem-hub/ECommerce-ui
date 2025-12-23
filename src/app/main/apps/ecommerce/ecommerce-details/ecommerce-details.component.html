@@ -312,13 +312,13 @@
                     <p class="card-text text-primary mb-0">{{ relatedProduct?.price }} EGP</p>
                     <div class="mt-2">
                       <a [routerLink]="['/apps/e-commerce/details', relatedProduct?.id]"
-                        class="btn btn-sm btn-primary mr-1">
+                        class="btn btn-sm btn-primary ">
                         <i data-feather="eye" class="mr-25"></i>
                       </a>
-                      <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
+                      <!-- <button class="btn btn-sm btn-outline-secondary" (click)="toggleWishlist(relatedProduct)">
                         <i class="fa"
                           [ngClass]="relatedProduct?.isInWishlist ? ['fa-heart','text-danger'] : ['fa-heart-o']"></i>
-                      </button>
+                      </button> -->
                     </div>
                   </div>
                 </div>
